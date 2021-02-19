@@ -1,0 +1,47 @@
+name: hacking_kidney
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.7
+
+  - cudatoolkit=10.1
+  - pytorch=1.6
+  - torchvision=0.7
+
+  - opencv
+  - cython
+  - scipy
+  - scikit-learn
+#  - matplotlib
+  - tqdm
+  - pandas
+  - pyyaml
+  - scikit-image
+  #- gdal
+  #- pyvips
+  - kaggle
+  - tifffile
+
+  - pip
+  - pip:
+    - optuna
+    - mlflow
+    - pillow-simd
+    - tensorboardX
+    - albumentations
+    - future
+    - resnest
+    - adabelief-pytorch
+#    - lazy-import
+#    - git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI
+
+#    - opencv-python-headless
+    - git+https://github.com/NVIDIA/apex.git@3ae89c754d945e407a6674aa2006d5a0e35d540e
+#    - torchsummary
+    - pretrainedmodels
+    - efficientnet-pytorch
+    - streamlit
+
+
