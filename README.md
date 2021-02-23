@@ -10,7 +10,7 @@
   ```
 
 ## Models
-In DAINAS `/cc/CC ACT/ML/hacking_kidney`
+Trained model (to be shared on request):
 * `hacking_kidney_16934_best_metric.model-384e1332.pth`
   * single fold/model kaggle LB: 0.873
   * input patch 1024x1024
