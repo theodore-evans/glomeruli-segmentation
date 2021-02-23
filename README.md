@@ -33,6 +33,8 @@ Trained model (to be shared on request):
       --data-aug-clahe-p=0.2 \
       --data-aug-distort-p=0.7
   ```
+  Demo screenshot:
+  ![](demo_screenshot.png)
   
 ## Docker
 1. Download the model file into the project folder.
