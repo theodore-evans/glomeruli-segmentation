@@ -10,7 +10,7 @@
   ```
 
 ## Models
-Trained model (download from [NextCloud]()):
+Trained model:
 * `hacking_kidney_16934_best_metric.model-384e1332.pth`
   * single fold/model kaggle LB: 0.873
   * input patch 1024x1024
@@ -36,8 +36,8 @@ Trained model (download from [NextCloud]()):
   Demo screenshot:
   ![](demo_screenshot.png)
   
-## Docker
-1. Download the model file (default directory: project folder).
+## Running the demo
+1. Download the model from [NextCloud](https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy) (default directory: project folder). **Do not distribute**.
 2. Download the kaggle data (default directory: `./data/hubmap-kidney-segmentation`) and ensure that the directory contains the following files:
     ```
     tree -L 1 /data/hubmap-kidney-segmentation
