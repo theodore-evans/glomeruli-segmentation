@@ -6,4 +6,4 @@ FROM nvcr.io/nvidia/pytorch:20.07-py3
 RUN pip install future albumentations resnest pretrainedmodels efficientnet-pytorch streamlit
 
 # set working dir
-WORKDIR /workspace/hacking_kidney
+WORKDIR /app

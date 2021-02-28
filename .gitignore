@@ -131,8 +131,9 @@ dmypy.json
 # pycharm
 .idea
 
-
 xuyuan/hacking-kidney-submission/dataset/src.zip
 submissions/
 runs/
 *.pth
+
+local_starter.sh
