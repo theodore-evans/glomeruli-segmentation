@@ -1,15 +1,33 @@
 #!/usr/bin/env sh
 
-if [$# -ne 3]; then echo "Arguments expected: data path, EMPAIA test suite path, model path"
-else
-    data_path=$1
-    test_suite_path=$2
-    model=$3
-fi
+usage="Usage: $0 [-d data_path] [-m model_path] [-t test_suite_path]\n \
+  -d data_path: Relative path to directory containing HuBMAP: Hacking Kidney data\n\t \
+  \t(default: ./data/hubmap-kidney-segmentation)\n\t \
+  -m model_path: Relative path to inference model\n\t \
+  \t(default: ./hacking_kidney_16934_best_metric.model-384e1332.pth)\n\t \
+  -t test_suite_path: Path to empaia-test-suite\n\t
+  \t(default: none, test suite will not be mounted)"
 
-echo "$data_path"
-echo "$test_suite_path"
-echo "$model"
+data_path="/data/hubmap-kidney-segmentation"
+model="hacking_kidney_16934_best_metric.model-384e1332.pth"
+
+while getopts d:m:t:h flag
+do
+    case "${flag}" in
+        d) data_path=${OPTARG};;
+        m) model=${OPTARG};;
+        t) test_suite_path=${OPTARG};;
+        h) echo $usage; exit;
+    esac
+done
+
+echo "Data: $data_path"
+echo "Model: $model"
+
+if [ ! -z "$test_suite_path" ]; then
+  echo "Test suite: $test_suite_path"
+  mount_test_suite="-v $test_suite_path:/test-suite"
+fi
 
 docker run -it --rm \
   --gpus all \
@@ -19,6 +37,7 @@ docker run -it --rm \
   -p 8501:8501 \
   -v $(pwd):/app \
   -v $data_path:/data/hubmap-kidney-segmentation \
-  -v $test_suite_path:/test-suite \
+  $mount_test_suite \
   $USER-hacking-kidney:latest \
-  streamlit run demo.py -- --image-size=1024 --mode=valid --model $model
+  /bin/bash
+  #streamlit run demo.py -- --image-size=1024 --mode=valid --model $model
