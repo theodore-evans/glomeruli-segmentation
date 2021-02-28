@@ -136,4 +136,4 @@ submissions/
 runs/
 *.pth
 
-local_starter.sh
+_*
