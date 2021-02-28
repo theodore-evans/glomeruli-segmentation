@@ -1,22 +1,39 @@
-# HuBMAP: Hacking the Kidney Identify glomeruli in human kidney tissue images
-* Website: https://www.kaggle.com/c/hubmap-kidney-segmentation
-* Download the data into the directory `/data/hubmap-kidney-segmentation`
+# HuBMAP Kidney Segmentation App
 
-## Dependencies
-* Install Anaconda and use the provided environment:
-  ```
-  conda env create -f environment.yml
-  conda activate hacking_kidney
-  ```
+A demonstrator app derived from an inference model developed by Tuguldur Erdene-Ochir (TU-Berlin) and Yuan Xu (TU-Berlin) for submission to the Kaggle challenge [**HuBMAP: Hacking the Kidney** - Identify glomeruli in human kidney tissue images](https://www.kaggle.com/c/hubmap-kidney-segmentation). 
 
-## Models
-Trained model:
+> [The] challenge is to detect functional tissue units (FTUs) across different tissue preparation pipelines. An FTU is defined as a “three-dimensional block of cells centered around a capillary, such that each cell in this block is within diffusion distance from any other cell in the same block” (de Bo
+no, 2013). The goal of this competition is the implementation of a successful and robust glomeruli FTU detector. &mdash; <cite>“HuBMAP - Hacking the Kidney.” Accessed February 28, 2021. https://kaggle.com/c/hubmap-kidney-segmentation.</cite>
+
+## Data
+
+ > [...] The HuBMAP data used in this hackathon includes 11 fresh frozen and 9 Formalin Fixed Paraffin Embedded (FFPE) PAS kidney images. Glomeruli FTU annotations exist for all 20 tissue samples; some of these will be shared for training, and others will be used to judge submissions.
+> There are over 600,000 glomeruli in each human kidney (Nyengaard, 1992). Normal glomeruli typically range from 100-350μm in diameter with a roughly spherical shape (Kannan, 2019).  &mdash; <cite>“HuBMAP - Hacking the Kidney.” Accessed February 28, 2021. https://kaggle.com/c/hubmap-kidney-segmentation/data.</cite>
+
+  **Download from** [**Kaggle**](https://www.kaggle.com/c/hubmap-kidney-segmentation/data) and ensure that the directory contains the following files:
+
+  ```
+  tree -L 1 /data/hubmap-kidney-segmentation
+  /data/hubmap-kidney-segmentation
+  ├── HuBMAP-20-dataset_information.csv
+  ├── sample_submission.csv
+  ├── test
+  ├── train
+  └── train.csv
+  ```
+  
+* The dataset comprises 13 TIFF files of 500MB - 5GB each, along with metadata and annotations in polygon and RLE formats, split into:
+    - train set: 8 TIFF files, ~15GB
+    - test set: 5 TIFF files, ~13GB
+
+## Model
+  **Download from** [**NextCloud**](https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy). Email <theodore.evans@dai-labor.de> for access. **Do not distribute.**
 * `hacking_kidney_16934_best_metric.model-384e1332.pth`
   * single fold/model kaggle LB: 0.873
   * input patch 1024x1024
   * semi supervised [UNet](https://arxiv.org/abs/1505.04597) with [SCSE](https://arxiv.org/abs/1803.02579) using Resnet34 as backbone: [nn/unet.py](nn/unet.py)
   * streamlit demo: `streamlit run demo.py -- --image-size=1024 --mode=valid --model hacking_kidney_16934_best_metric.model-384e1332.pth`
-    * it will visualize the validation dataset overlaying predictions and masks.
+    * visualizes the validation dataset overlaid with predictions and annotations (see screenshot below)
   * example training parameters for supervised learning on 8 GPUs:
   ```
   python -m torch.distributed.launch --nproc_per_node 8 train.py --data-root /data/hubmap-kidney-segmentation --jobs=40 \
@@ -33,29 +50,34 @@ Trained model:
       --data-aug-clahe-p=0.2 \
       --data-aug-distort-p=0.7
   ```
-  Demo screenshot:
+
   ![](demo_screenshot.png)
-  
-## Running the demo
-1. Download the model from [NextCloud](https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy) (default directory: project folder). **Do not distribute**.
-2. Download the kaggle data (default directory: `./data/hubmap-kidney-segmentation`) and ensure that the directory contains the following files:
-    ```
-    tree -L 1 /data/hubmap-kidney-segmentation
-    /data/hubmap-kidney-segmentation
-    ├── HuBMAP-20-dataset_information.csv
-    ├── sample_submission.csv
-    ├── test
-    ├── train
-    └── train.csv
-    ```
-2. Build docker image (we are using `nvcr.io/nvidia/pytorch:20.07-py3` which contains PyTorch 1.6 and Anaconda packages):
+
+## Run demo with Docker (recommended)
+1. Download the HuBMAP data (default directory: `./data/hubmap-kidney-segmentation`)
+2. Download the model (default directory: project folder).
+3. Build Docker image (we are using `nvcr.io/nvidia/pytorch:20.07-py3` which contains PyTorch 1.6 and Anaconda packages):
   ```
   ./build_container.sh
   ```
 
-3. Run the docker container. Optional arguments may be provided if data or model are located in non-default directories.
+4. Run the Docker container. Optional arguments may be provided if data or model are located in non-default directories.
   ```
-  ./start_container.sh [-d data_path] [-m model_path] [-t test_suite_path]
+  ./start_container.sh [-d data_path] [-m model_path]
   ```
 
-4. Access the UI on http://localhost:8501/
+5. Access the UI on `http://localhost:8501/` or `http://<server address>:8501/`
+
+## Run demo without Docker
+1. Download the data to `./data/hubmap-kidney-segmentation`
+2. Download the model into the project directory
+3. Install Anaconda and use the provided environment:
+  ```
+  conda env create -f environment.yml
+  conda activate hacking_kidney
+  ```
+4. Run the streamlit demo 
+```
+streamlit run demo.py -- --image-size=1024 --mode=valid --model hacking_kidney_16934_best_metric.model-384e1332.pth
+```
+5. Access the UI on `http://localhost:8501/`
