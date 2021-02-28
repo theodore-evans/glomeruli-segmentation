@@ -21,11 +21,11 @@ do
     esac
 done
 
-echo "Data: $data_path"
-echo "Model: $model"
+echo "Data path: $data_path"
+echo "Model path: $model"
 
 if [ ! -z "$test_suite_path" ]; then
-  echo "Test suite: $test_suite_path"
+  echo "Test suite path: $test_suite_path"
   mount_test_suite="-v $test_suite_path:/test-suite"
 fi
 
@@ -39,5 +39,4 @@ docker run -it --rm \
   -v $data_path:/data/hubmap-kidney-segmentation \
   $mount_test_suite \
   $USER-hacking-kidney:latest \
-  /bin/bash
-  #streamlit run demo.py -- --image-size=1024 --mode=valid --model $model
+  streamlit run demo.py -- --image-size=1024 --mode=valid --model $model
