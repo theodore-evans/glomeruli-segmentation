@@ -23,6 +23,8 @@ print_help () {
   echo -e "     (default: \$(pwd)/hacking_kidney_16934_best_metric.model-384e1332.pth)"
   echo -e "-t   test_suite_dir: Path to empaia-app-test-suite"
   echo -e "     (default: none, test suite will not be mounted)"
+  echo -e "-i   docker_image_name: name of Docker image for app"
+  echo -e "     (default: \$USER-hacking-kidney)"
   echo -e "entry_point: command to run when the container starts"
   echo -e "     (default: streamlit run demo.py -- --image-size=1024 --mode=valid --model <trained_model>)\n"
   print_example
