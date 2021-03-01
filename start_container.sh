@@ -4,7 +4,7 @@
 data_dir="$(pwd)/data/hubmap-kidney-segmentation"
 model_path="$(pwd)/hacking_kidney_16934_best_metric.model-384e1332.pth"
 image_size=1024
-docker_image_name=$USER-hacking-kidney
+docker_image_tag=$USER-hacking-kidney
 
 print_usage () {
   echo -e "usage: $0 [-d data_path] [-m model_path] [-t test_suite_dir] [entry_point]\n"
@@ -23,7 +23,7 @@ print_help () {
   echo -e "     (default: \$(pwd)/hacking_kidney_16934_best_metric.model-384e1332.pth)"
   echo -e "-t   test_suite_dir: Path to empaia-app-test-suite"
   echo -e "     (default: none, test suite will not be mounted)"
-  echo -e "-i   docker_image_name: name of Docker image for app"
+  echo -e "-i   docker_image_tag: name of Docker image for app"
   echo -e "     (default: \$USER-hacking-kidney)"
   echo -e "entry_point: command to run when the container starts"
   echo -e "     (default: streamlit run demo.py -- --image-size=1024 --mode=valid --model <trained_model>)\n"
@@ -31,11 +31,11 @@ print_help () {
 }
 
 check_for_docker_image () {
-  if [[ -z $(docker images -q $docker_image_name) ]]; then
+  if [[ -z $(docker images -q $docker_image_tag) ]]; then
     read -p "Docker image $1 not found. Build now? (y/n): " yn
     case $yn in
       [Yy]* )
-          bash build_container.sh $docker_image_name;;
+          bash build_container.sh $docker_image_tag;;
       * )
           exit;;
     esac
@@ -78,7 +78,7 @@ while getopts d:m:t:i:h flag
           d) data_dir=${OPTARG};;
           m) model_path=${OPTARG};;
           t) test_suite_dir=${OPTARG};;
-          i) docker_image_name=${OPTARG};;
+          i) docker_image_tag=${OPTARG};;
           h) print_help; exit;;
       esac
   done
@@ -91,7 +91,7 @@ check_for_test_suite
 check_for_docker_image
 
 echo
-echo "Running Docker image $docker_image_name with entry point $entry_point"
+echo "Running Docker image $docker_image_tag with entry point $entry_point"
 echo
 echo "Data path: $data_dir"
 echo "Model path: $model_path" 
@@ -107,5 +107,5 @@ docker run -it --rm \
   --mount type=bind,source=$data_dir,target=/data/hubmap-kidney-segmentation \
   $mount_test_suite \
   $mount_model_file \
-  $docker_image_name \
+  $docker_image_tag \
   $entry_point
