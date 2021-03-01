@@ -46,9 +46,8 @@ check_for_model () {
   if [[ ! -z $model_path ]]; then
     if [[ -f "$model_path" && "${model_path##*.}" == "pth" ]]; then
       model_filename="${model_path##*/}"
-      model_path_in_container="/tmp/$model_filename"
+      model_path_in_container="/model/$model_filename"
       mount_model_file="--mount type=bind,source=$model_path,target=$model_path_in_container"
-      echo $mount_model_file
     else
       echo -e "Model file $model_path not found or wrong extension. \nUse -d <PATH> to specify absolute path to a .pth model "
       exit
@@ -64,8 +63,7 @@ check_for_entry_point () {
 
 check_for_test_suite () {
   if [[ ! -z "$test_suite_dir" ]]; then
-    echo "Test suite path: $test_suite_dir"
-    mount_test_suite="-v $test_suite_dir:/test-suite "
+    mount_test_suite="--mount type=bind,source=$test_suite_dir,target=/test-suite"
   fi 
 }
 
@@ -84,17 +82,20 @@ while getopts d:m:t:i:h flag
           h) print_help; exit;;
       esac
   done
-  shift $((OPTIND-1))
-  entry_point=$1
+shift $((OPTIND-1))
+entry_point=$1
 
 check_for_model
 check_for_entry_point
 check_for_test_suite
 check_for_docker_image
 
+echo
+echo "Running Docker image $docker_image_name with entry point $entry_point"
+echo
 echo "Data path: $data_dir"
 echo "Model path: $model_path" 
-echo "Entry point: $entry_point"
+if [[ ! -z mount_test_suite ]]; then echo "Test suite path: $test_suite_dir"; fi
 
 docker run -it --rm \
   --gpus all \
