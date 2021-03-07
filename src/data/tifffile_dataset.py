@@ -3,7 +3,6 @@ from .dataset import Dataset
 import numpy as np
 import cv2
 
-
 class KidneyDataset(Dataset):
     def __init__(self, tiff_file, scale=None):
         self.scale = scale

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Defaults
 data_dir="$(pwd)/data/hubmap-kidney-segmentation"
 model_path="$(pwd)/hacking_kidney_16934_best_metric.model-384e1332.pth"
@@ -56,7 +58,7 @@ check_for_model () {
 }
 
 check_for_entry_point () {
-  if [[ -z "$entry_point" ]]; then 
+  if [[ $entry_point == "demo" ]]; then 
     entry_point=$(run_demo $image_size $model_path_in_container)
   fi
 }
@@ -103,9 +105,12 @@ docker run -it --rm \
   --ulimit memlock=-1 \
   --ulimit stack=67108864 \
   -p 8501:8501 \
-  --mount type=bind,source=$(pwd),target=/app \
+  --mount type=bind,source=$(pwd)/src,target=/app \
   --mount type=bind,source=$data_dir,target=/data/hubmap-kidney-segmentation \
   $mount_test_suite \
   $mount_model_file \
+  -e EMPAIA_APP_API="http://localhost:80" \
+  -e EMPAIA_JOB_ID="someId" \
+  -e EMPAIA_TOKEN="someToken" \
   $docker_image_tag \
   $entry_point

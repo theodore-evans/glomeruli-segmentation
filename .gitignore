@@ -131,9 +131,13 @@ dmypy.json
 # pycharm
 .idea
 
+# vscode
+.vscode
+
 xuyuan/hacking-kidney-submission/dataset/src.zip
 submissions/
 runs/
 *.pth
 
+# local scripts
 _*

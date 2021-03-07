@@ -70,8 +70,8 @@ streamlit run demo.py -- --image-size=1024 --mode=valid --model hacking_kidney_1
 1. Download the HuBMAP data (default directory: `./data/hubmap-kidney-segmentation`)
 2. Download the model (default directory: project folder).
 3. Run the starter script, building the Docker image when prompted. Optional arguments may be provided if data or model are located in non-default directories, or if a non-default Docker image tag should be used (default `$USER-hacking-kidney`). You may need to make the script executable using `chmod a+x start_container.sh`.
-  ```
-  ./start_container.sh [-d data_path] [-m model_path] [-i docker_image_tag]
+  ```bash
+  ./start_container.sh [-d data_path] [-m model_path] [-i docker_image_tag] demo
   ```
 
 5. Access the UI on `http://localhost:8501/` or `http://<server address>:8501/`
@@ -80,12 +80,12 @@ streamlit run demo.py -- --image-size=1024 --mode=valid --model hacking_kidney_1
 1. Download the data to `./data/hubmap-kidney-segmentation`
 2. Download the model into the project directory
 3. Install Anaconda and use the provided environment:
-  ```
+  ```bash
   conda env create -f environment.yml
   conda activate hacking_kidney
   ```
 4. Run the streamlit demo 
-```
-streamlit run demo.py -- --image-size=1024 --mode=valid --model hacking_kidney_16934_best_metric.model-384e1332.pth
-```
+  ```bash
+  streamlit run demo.py -- --image-size=1024 --mode=valid --model hacking_kidney_16934_best_metric.model-384e1332.pth
+  ```
 5. Access the UI on `http://localhost:8501/`

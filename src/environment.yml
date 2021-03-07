@@ -10,6 +10,7 @@ dependencies:
   - pytorch=1.6
   - torchvision=0.7
 
+  - numpy
   - opencv
   - cython
   - scipy
@@ -23,6 +24,9 @@ dependencies:
   #- pyvips
   - kaggle
   - tifffile
+
+  - unittest2
+  - pylint
 
   - pip
   - pip:
