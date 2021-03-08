@@ -48,7 +48,7 @@ check_for_model () {
   if [[ ! -z $model_path ]]; then
     if [[ -f "$model_path" && "${model_path##*.}" == "pth" ]]; then
       model_filename="${model_path##*/}"
-      model_path_in_container="/model/$model_filename"
+      model_path_in_container="/app/src/model/$model_filename"
       mount_model_file="--mount type=bind,source=$model_path,target=$model_path_in_container"
     else
       echo -e "Model file $model_path not found or wrong extension. \nUse -d <PATH> to specify absolute path to a .pth model "
