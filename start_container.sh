@@ -7,6 +7,10 @@ data_dir="$(pwd)/data/hubmap-kidney-segmentation"
 model_path="$(pwd)/hacking_kidney_16934_best_metric.model-384e1332.pth"
 image_size=1024
 docker_image_tag=$USER-hacking-kidney
+empaia_app_api="http://localhost:80"
+empaia_job_id="someId"
+empaia_token="someToken"
+#TODO: add argument parsing for environment variables, or package this all up into a docker-compose configuration
 
 print_usage () {
   echo -e "usage: $0 [-d data_path] [-m model_path] [-t test_suite_dir] [entry_point]\n"
@@ -48,7 +52,7 @@ check_for_model () {
   if [[ ! -z $model_path ]]; then
     if [[ -f "$model_path" && "${model_path##*.}" == "pth" ]]; then
       model_filename="${model_path##*/}"
-      model_path_in_container="/app/src/model/$model_filename"
+      model_path_in_container="/app/model/$model_filename"
       mount_model_file="--mount type=bind,source=$model_path,target=$model_path_in_container"
     else
       echo -e "Model file $model_path not found or wrong extension. \nUse -d <PATH> to specify absolute path to a .pth model "
@@ -99,7 +103,7 @@ echo "Data path: $data_dir"
 echo "Model path: $model_path" 
 if [[ ! -z mount_test_suite ]]; then echo "Test suite path: $test_suite_dir"; fi
 
-docker run -it --rm \
+docker run -it \
   --gpus all \
   --shm-size=32g \
   --ulimit memlock=-1 \
@@ -109,8 +113,8 @@ docker run -it --rm \
   --mount type=bind,source=$data_dir,target=/data/hubmap-kidney-segmentation \
   $mount_test_suite \
   $mount_model_file \
-  -e EMPAIA_APP_API="http://localhost:80" \
-  -e EMPAIA_JOB_ID="someId" \
-  -e EMPAIA_TOKEN="someToken" \
+  -e EMPAIA_APP_API="$empaia_app_api" \
+  -e EMPAIA_JOB_ID="$empaia_job_id" \
+  -e EMPAIA_TOKEN="$empaia_token" \
   $docker_image_tag \
   $entry_point

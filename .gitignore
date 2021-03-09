@@ -134,10 +134,15 @@ dmypy.json
 # vscode
 .vscode
 
+# macOS generated files
+.DS_Store
+
+
 xuyuan/hacking-kidney-submission/dataset/src.zip
 submissions/
 runs/
 *.pth
 
 # local scripts
-_*
+_*.sh
+src/notepad.py
