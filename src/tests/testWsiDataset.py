@@ -15,3 +15,6 @@ class TestWSIDataset(unittest.TestCase):
 
     def test_that_dataset_is_created_from_image(self):
         self.assertTrue(self.dataset.width != 0)
+        
+    def test_that_dataset_entries_are_images_of_correct_size(self):
+        pass

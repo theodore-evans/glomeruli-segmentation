@@ -33,7 +33,7 @@ def post_output(key: str, data: dict) -> dict:
     r.raise_for_status()
     return r.json()
 
-def get_wsi_tile(my_wsi: dict, my_rectangle: dict):
+def get_wsi_tile(my_wsi: dict, my_rectangle: dict) -> Image.Image:
     """
     get a WSI tile on level 0
 
@@ -49,8 +49,13 @@ def get_wsi_tile(my_wsi: dict, my_rectangle: dict):
     level = 0
     
     tile_url = f"{APP_API}/v1/{JOB_ID}/regions/{wsi_id}/level/{level}/start/{x}/{y}/size/{width}/{height}"
+    # not matching documentation at https://gitlab.cc-asp.fraunhofer.de/empaia/platform/data/medical-data-service
+
     r = requests.get(tile_url, headers=HEADERS)
     r.raise_for_status()
 
     return Image.open(r.content)
     
+my_wsi = get_input("my_kidney_wsi")
+my_rectangle = get_input("my_rectangle")
+

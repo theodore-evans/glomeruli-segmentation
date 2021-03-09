@@ -6,9 +6,9 @@ from PIL import Image
 
 from data.dataset import Dataset
 
-class WSIDataLoader(KidneyTestDataset):
+class WSIDataset(KidneyTestDataset):
     def __init__(self, 
-                 wsi_tile: Image.Image, 
+                 wsi_image: Image.Image, 
                  window_size: int = 1024,
                  image_stride: Optional[int] = None,
                  scale: Optional[float] = None
@@ -17,7 +17,7 @@ class WSIDataLoader(KidneyTestDataset):
         self.scale = scale
         self.window_size = window_size
         self.image_stride = window_size if image_stride is None else image_stride
-        self.image = np.asarray_chkfinite(wsi_tile).squeeze()
+        self.image = np.asarray_chkfinite(wsi_image).squeeze()
         
         if self.image.shape[0] == 3:
             self.image = np.transpose(self.image, (1, 2, 0))
@@ -48,4 +48,5 @@ class WSIDataLoader(KidneyTestDataset):
 
     def read(self, x, y, width, height) -> np.ndarray:
         return self.image[y:y + height, x:x + width]
+    
     

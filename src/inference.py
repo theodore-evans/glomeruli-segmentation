@@ -35,5 +35,5 @@ class InferenceRunner:
         prediction = (cv2.resize(probs, (H, W), interpolation=cv2.INTER_LINEAR) * 255).astype(dtype=np.uint8)
         return prediction
 
-    def run_inference_on_dataset(self, dataset: Dataset):
+    def run_inference_on_dataset(self, dataset: Dataset):# -> np.ndarray:
         pass

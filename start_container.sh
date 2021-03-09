@@ -109,7 +109,7 @@ docker run -it \
   --ulimit memlock=-1 \
   --ulimit stack=67108864 \
   -p 8501:8501 \
-  --mount type=bind,source=$(pwd)/src,target=/app \
+  --mount type=bind,source=$(pwd),target=/app \
   --mount type=bind,source=$data_dir,target=/data/hubmap-kidney-segmentation \
   $mount_test_suite \
   $mount_model_file \
