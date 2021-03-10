@@ -137,10 +137,6 @@ dmypy.json
 # macOS generated files
 .DS_Store
 
-<<<<<<< HEAD
-
-=======
->>>>>>> d49799a038034453010a93b32a0124257006741b
 xuyuan/hacking-kidney-submission/dataset/src.zip
 submissions/
 runs/
@@ -148,7 +144,4 @@ runs/
 
 # local scripts
 _*.sh
-<<<<<<< HEAD
-src/notepad.py
-=======
->>>>>>> d49799a038034453010a93b32a0124257006741b
+notepad.py

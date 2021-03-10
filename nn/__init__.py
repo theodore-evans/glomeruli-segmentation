@@ -3,7 +3,6 @@ import functools
 
 from .unet import UNet
 
-
 def create(arch, backbone, activation=None, pretrained='imagenet', frozen_layers=0, n_classes=8,
            feature_layers=None, frozen_batchnorm=True, objectness=False, tta=0, scales=None, resize=None):
     if arch.startswith('unet'):

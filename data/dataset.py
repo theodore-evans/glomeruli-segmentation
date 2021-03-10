@@ -7,7 +7,6 @@ import torch.utils.data as tud
 
 REPR_INDENT = ' ' * 2
 
-
 class AttributeMissingMixin(object):
     """ A Mixin' to implement the 'method_missing' Ruby-like protocol. """
     def __getattribute__(self, attr):

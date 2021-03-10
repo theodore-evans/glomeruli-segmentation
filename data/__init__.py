@@ -11,10 +11,8 @@ from .dataset import Dataset
 from .rle import rle_decode
 from .tifffile_dataset import KidneyDataset
 
-
 def prob_to_mask(prob, threshold=0.5):
     return prob > threshold
-
 
 def pred_to_prob(predictions, height, width, ignore_border=0):
     """merge prediction to one prob array"""
