@@ -3,7 +3,7 @@ import argparse
 from data.wsi_data_loader import WSITileDataset
 from app.inference_runner import InferenceRunner
 from app.postprocessing import EntityExtractor
-from api import get_input, get_wsi_tile, post_output, put_finalize
+from app.api import get_input, get_wsi_tile, post_output, put_finalize
 
 from data.data_processing import kaggle_test_transform
 
