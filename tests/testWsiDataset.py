@@ -1,8 +1,6 @@
-import os
 import unittest
 import tifffile
 
-import cv2
 from PIL import Image
 
 from data.wsi_data_loader import WSITileDataset
@@ -18,5 +16,5 @@ class TestWSIDataset(unittest.TestCase):
         self.assertTrue(self.dataset.width != 0)
         
     def test_that_dataset_entries_are_arrays_of_correct_size(self):
-        self.assertEqual(self.dataset[0].shape[0], self.tile_width)
+        self.assertEqual(self.dataset[0]["image"].shape[0], self.tile_width)
         

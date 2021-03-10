@@ -1,7 +1,7 @@
 import os
 import unittest
 import numpy as np
-from inference import InferenceRunner
+from app.inference_runner import InferenceRunner
 from nn import UNet
 
 class TestInferenceRunner(unittest.TestCase):
@@ -15,6 +15,6 @@ class TestInferenceRunner(unittest.TestCase):
         self.assertIsInstance(self.inference.model, UNet)
 
     def test_that_model_accepts_entry_from_wsi_dataset_as_input(self):
-        output = self.inference(test_data).detach().numpy()
+        output = self.inference.run_inference_on_tile_image(self.test_input).detach().numpy()
         self.assertEqual(output.shape, self.test_input.shape)
         

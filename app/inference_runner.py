@@ -6,16 +6,16 @@ import copy
 
 import numpy as np
 from numpy import ndarray
-from torchvision.transforms import Compose, ToTensor, Normalize
+from torchvision.transforms import Compose
 from torch import Tensor
 
 from nn import load_model
 from nn.segnet import SegNet
 from data.wsi_data_loader import Tile, WSITileDataset, combine_tiles
-from data.data_processing import kaggle_test_transform
+
 
 class InferenceRunner:
-    def __init__(self, model_path: str, data_transform: Compose = kaggle_test_transform()) -> None:
+    def __init__(self, model_path: str, data_transform: Compose) -> None:
         """
         TODO: write docstring
         """
@@ -62,5 +62,5 @@ class InferenceRunner:
         original_width = dataset.original_width
         return combine_tiles(predicted_tiles, original_height, original_width)
         
-    def __call__(self, inputs) -> ndarray:
-        return self.run_inference_on_tile_image(inputs)
+    def __call__(self, input_dataset) -> ndarray:
+        return self.run_inference_on_dataset(input_dataset)

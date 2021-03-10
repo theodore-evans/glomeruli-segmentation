@@ -16,8 +16,8 @@ def prob_to_mask(prob, threshold=0.5):
 
 def pred_to_prob(predictions, height, width, ignore_border=0):
     """merge prediction to one prob array"""
-    prob = torch.zeros((height, width), dtype=torch.float32)
-    n = torch.zeros((height, width), dtype=torch.uint8)
+    prob = torch.zeros((height, width), dtype=torch.float32) #type: ignore
+    n = torch.zeros((height, width), dtype=torch.uint8) #type: ignore
     for image_id, pred in predictions:
         x, y = [int(i) for i in image_id.split('_')]
 
