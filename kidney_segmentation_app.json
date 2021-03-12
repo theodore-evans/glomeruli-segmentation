@@ -4,11 +4,8 @@
     "namespace": "org.empaia.empaia.hubmap-hacking-kidney.v1",
     "description": "Kidney segmentation algorithm for detection and counting of glomeruli in kidney WSI data",
     "inputs": {
-        "my_wsi": {
+        "kidney_wsi": {
             "type": "wsi"
-        },
-        "my_rectangle": {
-            "type": "rectangle"
         }
     },
     "outputs": {

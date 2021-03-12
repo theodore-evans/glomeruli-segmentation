@@ -113,8 +113,9 @@ docker run -it \
   --mount type=bind,source=$data_dir,target=/data/hubmap-kidney-segmentation \
   $mount_test_suite \
   $mount_model_file \
-  -e EMPAIA_APP_API="$empaia_app_api" \
-  -e EMPAIA_JOB_ID="$empaia_job_id" \
-  -e EMPAIA_TOKEN="$empaia_token" \
+  -e EMPAIA_APP_API=$empaia_app_api \
+  -e EMPAIA_JOB_ID=$empaia_job_id \
+  -e EMPAIA_TOKEN=$empaia_token \
+  --name $docker_image_tag \
   $docker_image_tag \
   $entry_point

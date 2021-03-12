@@ -54,7 +54,7 @@ class Dataset(tud.Dataset):
 
         return self.getitem(item)
 
-    def getitem(self, idx):
+    def getitem(self, _):
         raise NotImplementedError(self.__class__.__name__ + " 'getitem' method has not been implemented.")
 
 
