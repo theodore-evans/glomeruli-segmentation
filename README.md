@@ -63,8 +63,6 @@ streamlit run demo.py -- --image-size=1024 --mode=valid --model hacking_kidney_1
 
  * Running the demo in a Docker container is recommended. This requires Docker to be installed on the host machine.
  * The scripts in this repository require a Bash shell.
- * The app currently requires `cudatoolkit:10.1` to run, meaning that a CUDA-capable GPU is required on the host machine. 
-   - CPU support will be added as per the current EMPAIA requirements
 
 ## Run demo with Docker (recommended)
 1. Download the HuBMAP data (default directory: `./data/hubmap-kidney-segmentation`)
