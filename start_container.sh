@@ -7,6 +7,7 @@ data_dir="$(pwd)/data/hubmap-kidney-segmentation"
 model_path="$(pwd)/hacking_kidney_16934_best_metric.model-384e1332.pth"
 image_size=1024
 docker_image_tag=$USER-hacking-kidney
+docker_container_name=$docker_image_tag
 empaia_app_api="http://localhost:80"
 empaia_job_id="someId"
 empaia_token="someToken"
@@ -67,12 +68,6 @@ check_for_entry_point () {
   fi
 }
 
-check_for_test_suite () {
-  if [[ ! -z "$test_suite_dir" ]]; then
-    mount_test_suite="--mount type=bind,source=$test_suite_dir,target=/test-suite"
-  fi 
-}
-
 run_demo () {
   echo "streamlit run demo.py -- --image-size=$1 --mode=valid --model $2"
 }
@@ -93,7 +88,6 @@ entry_point=$1
 
 check_for_model
 check_for_entry_point
-check_for_test_suite
 check_for_docker_image
 
 echo
@@ -103,7 +97,7 @@ echo "Data path: $data_dir"
 echo "Model path: $model_path" 
 if [[ ! -z mount_test_suite ]]; then echo "Test suite path: $test_suite_dir"; fi
 
-docker run -it \
+docker run -d \
   --gpus all \
   --shm-size=32g \
   --ulimit memlock=-1 \
@@ -111,11 +105,16 @@ docker run -it \
   -p 8501:8501 \
   --mount type=bind,source=$(pwd),target=/app \
   --mount type=bind,source=$data_dir,target=/data/hubmap-kidney-segmentation \
-  $mount_test_suite \
   $mount_model_file \
   -e EMPAIA_APP_API=$empaia_app_api \
   -e EMPAIA_JOB_ID=$empaia_job_id \
   -e EMPAIA_TOKEN=$empaia_token \
-  --name $docker_image_tag \
+  --name $docker_container_name \
   $docker_image_tag \
   $entry_point
+
+if [[ ! -z "$test_suite_dir" ]]; then
+    bash install_test_suite.sh $docker_container_name $test_suite_dir
+fi
+
+docker exec -it $docker_container_name /bin/bash

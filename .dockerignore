@@ -8,3 +8,5 @@
 # Ignore generated files
 **/*.pyc
 **/*.ipynb
+
+install_test_suite.sh
