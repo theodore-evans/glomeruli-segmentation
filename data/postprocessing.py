@@ -10,8 +10,8 @@ def combine_tiles(tiles: List[Tile],
         """
         Stitch tiles to an array of size original_height x original_width
         """
-        combined_image = np.zeros((original_height, original_width), dtype=torch.float32) #type: ignore
-        n = np.zeros((original_height, original_width), dtype=torch.uint8) #type: ignore
+        combined_image = np.zeros((original_height, original_width), dtype=np.float32) #type: ignore
+        n = np.zeros((original_height, original_width), dtype=np.uint8) #type: ignore
         
         for tile in tiles:
             image = tile["image"]
@@ -41,6 +41,7 @@ def combine_tiles(tiles: List[Tile],
                 
             combined_image[y:yy, x:xx] += image[t:h, l:w]
             n[y:yy, x:xx] += 1
+        assert np.min(n) > 0
         
         combined_image /= n
-        return combined_image
+        return combined_image.astype(np.uint8)

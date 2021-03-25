@@ -1,20 +1,33 @@
+from app.mock_api import MockAPI
 import unittest
 import tifffile
+from numpy import ndarray
 
 from PIL import Image
 
-from data.wsi_data_loader import WSITiler
+from data.wsi_tile_fetcher import WSITileFetcher
+from data.postprocessing import combine_tiles
+
+from app.data_types import Rectangle
 
 class TestWSIDataset(unittest.TestCase):
     def setUp(self):
-        self.tile_width = 1024
+        self.image_size = (2048, 2048)
         sample_image_file = "/data/hubmap-kidney-segmentation/test/26dc41664.tiff"
-        self.sample_image = Image.fromarray(tifffile.imread(sample_image_file).squeeze().transpose(1,2,0))
-        self.dataset = WSITiler(wsi_tile=self.sample_image, window_size=self.tile_width)
+        self.mock_api = MockAPI(sample_image_file)
+        self.wsi_tile_fetcher = WSITileFetcher(self.mock_api.mock_tile_request, self.image_size)
 
-    def test_that_dataset_is_created_from_image(self):
-        self.assertTrue(self.dataset.width != 0)
-        
-    def test_that_dataset_entries_are_arrays_of_correct_size(self):
-        self.assertEqual(self.dataset[0]["image"].shape[0], self.tile_width)
-        
+    def test_that_tile_fetcher_provides_a_tile_on_getitem(self):
+        first_tile = self.wsi_tile_fetcher[0]["image"]
+        self.assertIsInstance(first_tile, ndarray)
+        self.assertEqual(first_tile.shape, (1024, 1024, 3))
+
+    def test_that_combine_tiles_combines_tiles(self):
+        tiles = []
+        for tile in self.wsi_tile_fetcher:
+            tile["image"] = tile["image"][:,:,0]
+            tiles.append(tile)
+            
+        combined_tiles = combine_tiles(tiles, *self.image_size)
+        self.assertEqual(combined_tiles.shape, self.image_size)
+        self.assertEqual(len(tiles), 4)

@@ -9,5 +9,3 @@ RUN conda config --add channels conda-forge \
     && rm -rf /opt/conda/pkgs/*
 
 ENV PATH /opt/conda/envs/hacking-kidney/bin:$PATH
-
-ENTRYPOINT python3 -u /app/main.py

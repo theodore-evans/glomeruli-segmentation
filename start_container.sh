@@ -107,4 +107,5 @@ docker run --rm -t -d \
   -e EMPAIA_JOB_ID=$empaia_job_id \
   -e EMPAIA_TOKEN=$empaia_token \
   --name $docker_container_name \
-  $docker_image_tag
+  $docker_image_tag \
+  $entry_point
