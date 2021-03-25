@@ -145,3 +145,6 @@ runs/
 # local scripts
 _*.sh
 notepad.py
+
+# tiff files
+*.tiff

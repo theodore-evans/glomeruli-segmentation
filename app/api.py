@@ -15,7 +15,7 @@ def put_finalize():
     """
     finalize job, such that no more data can be added and to inform EMPAIA infrastructure about job state
     """
-    url = f"{APP_API}/v1/{JOB_ID}/finalize"
+    url = f"{APP_API}/v0/{JOB_ID}/finalize"
     r = requests.put(url, headers=HEADERS)
     r.raise_for_status()
 
@@ -23,7 +23,7 @@ def get_input(key: str) -> dict:
     """
     get input data by key as defined in EAD
     """
-    url = f"{APP_API}/v1/{JOB_ID}/inputs/{key}"
+    url = f"{APP_API}/v0/{JOB_ID}/inputs/{key}"
     r = requests.get(url, headers=HEADERS)
     r.raise_for_status()
     return r.json()
@@ -45,7 +45,7 @@ def post_output(key: str, data: dict) -> dict:
     """
     post output data by key as defined in EAD
     """
-    url = f"{APP_API}/v1/{JOB_ID}/outputs/{key}"
+    url = f"{APP_API}/v0/{JOB_ID}/outputs/{key}"
     r = requests.post(url, json=data, headers=HEADERS)
     r.raise_for_status()
     return r.json()
@@ -65,7 +65,7 @@ def get_wsi_tile(wsi: WSI, rectangle_to_fetch: Rectangle) -> Image.Image:
     
     wsi_id = wsi["id"]
  
-    tile_url = f"{APP_API}/v1/{JOB_ID}/regions/{wsi_id}/level/{level}/start/{x}/{y}/size/{width}/{height}"
+    tile_url = f"{APP_API}/v0/{JOB_ID}/regions/{wsi_id}/level/{level}/start/{x}/{y}/size/{width}/{height}"
 
     r = requests.get(tile_url, headers=HEADERS)
     r.raise_for_status()

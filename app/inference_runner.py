@@ -60,8 +60,10 @@ class InferenceRunner:
         return  prediction_mask
     
     async def run_inference_on_tile(self, tile: Tile) -> Tile:
+        print(f"\nRunning inference on {tile}")
         predicted_mask = self.run_inference_on_image(tile["image"])
-        predicted_tile: Tile = {"image": predicted_mask, "x": tile["x"], "y": tile["y"]} 
+        predicted_tile: Tile = {"image": predicted_mask, "x": tile["x"], "y": tile["y"]}
+        print("\nDone")
         return predicted_tile
     
     def run_inference_on_dataset(self, dataset: WSITileFetcher) -> ndarray:

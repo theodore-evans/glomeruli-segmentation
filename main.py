@@ -2,15 +2,15 @@ import argparse
 
 from data.wsi_tile_fetcher import WSITileFetcher
 from app.inference_runner import InferenceRunner
-from app.api import get_wsi_data, get_wsi_tile, post_output, put_finalize
+from app.api import get_input, get_wsi_data, get_wsi_tile, post_output, put_finalize
 from app.data_types import TileRequest, WSI
 from app.entity_extractor import EntityExtractor
 from data.preprocessing import kaggle_test_transform
     
 def run_app():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--wsi_id', default=None, type=str, help='wsi_id for wsi to fetch from EMPAIA API')
-    parser.add_argument('--model', default=None, type=str, help='path to a pre-trained model (.pth)')
+    parser.add_argument('--wsi_id', default="kidney_wsi", type=str, help='wsi_id for wsi to fetch from EMPAIA API')
+    parser.add_argument('--model', default="/model/hacking_kidney_16934_best_metric.model-384e1332.pth", type=str, help='path to a pre-trained model (.pth)')
     parser.add_argument('--window_size', default=1024, type=int, help='')
     args = parser.parse_args()
 

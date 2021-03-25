@@ -2,8 +2,8 @@
 
 docker_image_tag=$USER-hacking-kidney
 
-if [ "$#" -eq  "0" ]; then
+if [ "$#" -eq  "1" ]; then
     docker_image_tag=$1
 fi
 
-docker build --tag $docker_image_tag --build-arg current_user=$USER .
+docker build -t $docker_image_tag .

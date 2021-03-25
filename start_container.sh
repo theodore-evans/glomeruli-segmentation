@@ -28,8 +28,6 @@ print_help () {
   echo -e "     (default: \$(pwd)/data/hubmap-kidney-segmentation)"
   echo -e "-m   model_path: Absolute path to trained inference model in .pth format"
   echo -e "     (default: \$(pwd)/hacking_kidney_16934_best_metric.model-384e1332.pth)"
-  echo -e "-t   test_suite_dir: Path to empaia-app-test-suite"
-  echo -e "     (default: none, test suite will not be mounted)"
   echo -e "-i   docker_image_tag: name of Docker image for app"
   echo -e "     (default: \$USER-hacking-kidney)"
   echo -e "entry_point: command to run when the container starts"
@@ -78,7 +76,6 @@ while getopts d:m:t:i:h flag
       case "${flag}" in
           d) data_dir=${OPTARG};;
           m) model_path=${OPTARG};;
-          t) test_suite_dir=${OPTARG};;
           i) docker_image_tag=${OPTARG};;
           h) print_help; exit;;
       esac
@@ -95,14 +92,14 @@ echo "Running Docker image $docker_image_tag with entry point $entry_point"
 echo
 echo "Data path: $data_dir"
 echo "Model path: $model_path" 
-if [[ ! -z mount_test_suite ]]; then echo "Test suite path: $test_suite_dir"; fi
 
-docker run -d \
+docker run --rm -t -d \
   --gpus all \
   --shm-size=32g \
   --ulimit memlock=-1 \
   --ulimit stack=67108864 \
   -p 8501:8501 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
   --mount type=bind,source=$(pwd),target=/app \
   --mount type=bind,source=$data_dir,target=/data/hubmap-kidney-segmentation \
   $mount_model_file \
@@ -110,11 +107,4 @@ docker run -d \
   -e EMPAIA_JOB_ID=$empaia_job_id \
   -e EMPAIA_TOKEN=$empaia_token \
   --name $docker_container_name \
-  $docker_image_tag \
-  $entry_point
-
-if [[ ! -z "$test_suite_dir" ]]; then
-    bash install_test_suite.sh $docker_container_name $test_suite_dir
-fi
-
-docker exec -it $docker_container_name /bin/bash
+  $docker_image_tag
