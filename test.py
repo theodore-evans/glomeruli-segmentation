@@ -18,8 +18,9 @@ test_transform = Compose([ToTensor(), Normalize(
 model_path = "/model/hacking_kidney_16934_best_metric.model-384e1332.pth"
 sample_image_file = "/data/hubmap-kidney-segmentation/train/54f2eec69.tiff"
 inference = InferenceRunner(model_path, data_transform=test_transform)
-upper_left = (14000, 6000)
-size_to_process = (4096, 4096)
+# %%
+upper_left = (15000, 8000)
+size_to_process = (2048, 2048)
 mock_api = MockAPI(sample_image_file, upper_left)
 tile_fetcher = WSITileFetcher(mock_api.mock_tile_request, size_to_process)
 # %%
@@ -38,4 +39,6 @@ alpha = 0.5
 superimposed = cv2.addWeighted(input_image, alpha, output_mask, (1 - alpha), 0)
 Image.fromarray(superimposed)
 
+# %%
+Image.fromarray(tile_fetcher[1]["image"])
 # %%
