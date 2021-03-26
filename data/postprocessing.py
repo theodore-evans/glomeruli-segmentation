@@ -5,6 +5,7 @@ from app.data_types import Tile
 
 
 def combine_tiles(tiles: List[Tile],
+                  upper_left: List[int],
                   original_height: int,
                   original_width: int,
                   ignore_border=0):
@@ -18,8 +19,8 @@ def combine_tiles(tiles: List[Tile],
 
     for tile in tiles:
         image = tile["image"]
-        x = tile["x"]
-        y = tile["y"]
+        x = tile["x"] - upper_left[0]
+        y = tile["y"] - upper_left[1]
 
         w = image.shape[1]
         h = image.shape[0]

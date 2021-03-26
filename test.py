@@ -10,6 +10,9 @@ import cv2
 from PIL import Image
 from torchvision.transforms import Compose, ToTensor, Normalize
 
+from app.api import API
+from app.data_types import Rectangle
+
 TORCH_VISION_MEAN = np.asarray([0.485, 0.456, 0.406])
 TORCH_VISION_STD = np.asarray([0.229, 0.224, 0.225])
 test_transform = Compose([ToTensor(), Normalize(
@@ -18,11 +21,19 @@ test_transform = Compose([ToTensor(), Normalize(
 model_path = "/model/hacking_kidney_16934_best_metric.model-384e1332.pth"
 sample_image_file = "/data/hubmap-kidney-segmentation/train/54f2eec69.tiff"
 inference = InferenceRunner(model_path, data_transform=test_transform)
+#%%
+# api = API()
+
+# my_rectangle = api.get_input("my_rectangle")
+# kidney_wsi = api.get_input("kidney_wsi")
+
+mock_api = MockAPI(sample_image_file)
 # %%
-upper_left = (15000, 8000)
+upper_left = [14000, 8000]
 size_to_process = (2048, 2048)
-mock_api = MockAPI(sample_image_file, upper_left)
-tile_fetcher = WSITileFetcher(mock_api.mock_tile_request, size_to_process)
+
+my_rectangle: Rectangle = {"upper_left" : upper_left, "width": size_to_process[0], "height": size_to_process[1], "level": 0}
+tile_fetcher = WSITileFetcher(mock_api.mock_tile_request, my_rectangle)
 # %%
 input_image = np.transpose(np.uint8(
     mock_api.image_data[:, upper_left[0]:upper_left[0]+size_to_process[0], upper_left[1]:upper_left[1] + size_to_process[1]]), (1, 2, 0))

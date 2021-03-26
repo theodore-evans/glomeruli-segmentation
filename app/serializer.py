@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import List
 
-
 @dataclass
 class Polygon:
     id: int
@@ -20,6 +19,6 @@ class Collection:
     optional: bool = False
     type: str = "collection"
 
-
 class Output:
     polygons: List[Polygon]
+

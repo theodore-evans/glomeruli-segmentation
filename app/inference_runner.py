@@ -73,13 +73,13 @@ class InferenceRunner:
         print("\nDone")
         return predicted_tile
 
-    def run_inference_on_dataset(self, dataset: WSITileFetcher) -> ndarray:
+    def run_inference_on_dataset(self, tile_fetcher: WSITileFetcher) -> ndarray:
         """
         Fetch and run model inference on WSI tiles and combine results into 
         a single ndarray of the same width and height as the original WSI tile
         """
         # loop = asyncio.get_event_loop()
-        # tile_inference_tasks = (self.run_inference_on_tile(tile) for tile in dataset)
+        # tile_inference_tasks = (self.run_inference_on_tile(tile) for tile in tile_fetcher)
 
         # inference_results = loop.run_until_complete(asyncio.gather(tile_inference_tasks, return_exceptions=True))
         # # TODO: Implement async tqdm.gather for inference tasks, currently having an issue with tqdm version
@@ -93,12 +93,12 @@ class InferenceRunner:
         #         predicted_tiles.append(result)
 
         predicted_tiles = []
-        for tile in dataset:
+        for tile in tile_fetcher:
             #tile["image"] = np.transpose(tile["image"], (2, 0, 1))
             predicted_tiles.append(self.run_inference_on_tile(tile))
 
         # TODO inject rather than hardcode
-        return combine_tiles(predicted_tiles, dataset.height, dataset.width)
+        return combine_tiles(predicted_tiles, tile_fetcher.upper_left, tile_fetcher.height, tile_fetcher.width)
 
     def __call__(self, input_dataset) -> ndarray:
         return self.run_inference_on_dataset(input_dataset)
