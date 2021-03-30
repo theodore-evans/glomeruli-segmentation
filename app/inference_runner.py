@@ -66,7 +66,8 @@ class InferenceRunner:
         return prediction_mask
 
     def run_inference_on_tile(self, tile: Tile) -> Tile:
-        print(f"\nRunning inference on {tile}")
+        print(
+            f"\nRunning inference on tile with x: {tile['x']}, y: {tile['y']}")
         predicted_mask = self.run_inference_on_image(tile["image"])
         predicted_tile: Tile = {
             "image": predicted_mask, "x": tile["x"], "y": tile["y"]}

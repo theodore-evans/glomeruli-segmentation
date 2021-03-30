@@ -13,7 +13,8 @@
     },
     "outputs": {
         "glomerulus_count": {
-            "type": "integer"
+            "type": "integer",
+            "reference": "my_rectangle"
         },
         "glomeruli_polygons": {
             "type": "collection",

@@ -1,6 +1,7 @@
 from typing import List
 from numpy import ndarray
 import cv2 as cv
+import numpy as np
 
 
 class EntityExtractor:
@@ -21,9 +22,8 @@ class EntityExtractor:
         tresholded_mask = self.treshold_mask(segmentation_mask)
         contours, _ = cv.findContours(
             tresholded_mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-        contours = [contour.squeeze() for contour in contours]
-        contours = [[contour[0] + self.upper_left[0],
-                     contour[1] + self.upper_left[1]] for contour in contours]
+        contours = np.array(
+            [contour.squeeze() + self.upper_left for contour in contours])
         return contours
 
     def count_entities(self, contours: List) -> int:

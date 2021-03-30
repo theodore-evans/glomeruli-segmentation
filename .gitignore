@@ -148,3 +148,6 @@ notepad.py
 
 # tiff files
 *.tiff
+
+# Output files
+output/
