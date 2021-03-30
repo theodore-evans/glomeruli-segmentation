@@ -6,7 +6,7 @@ from data.wsi_tile_fetcher import WSITileFetcher
 from app.mock_api import MockAPI
 from PIL import Image
 from torchvision.transforms import Compose, ToTensor, Normalize
-from app.serializer import OutputSerializer
+from app.serializer import contours_to_collection
 
 from app.api import API
 from app.data_types import Rectangle
@@ -52,5 +52,12 @@ count_result = {
     "value": count
 }
 mock_api.post_output(key="glomerulus_count", data=count_result)
+
+contour_result = contours_to_collection(
+    contours, kidney_wsi["id"], my_rectangle["id"])
+
+contour_result.items = [p.__dict__ for p in contour_result.items]
+
+mock_api.post_output(key="glomeruli_polygons", data=contour_result.__dict__)
 
 # %%

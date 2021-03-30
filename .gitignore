@@ -150,4 +150,4 @@ notepad.py
 *.tiff
 
 # Output files
-output/
+outputs/

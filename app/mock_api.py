@@ -25,8 +25,9 @@ class MockAPI:
 
     def get_input(self, key: str):
         if key == "kidney_wsi":
-            extent = Vector3(x=0, y=0, z=0)
-            return WSI(id=kidney_wsi_id, extent=extent, num_levels=1, pixel_size_nm=extent, tile_extent=extent, levels=[Level(extent=extent, downsample_factor=1, generated=True)])
+            extent = Vector3(x=22240, y=30440, z=1)
+            pixel_size = Vector3(x=500, y=500, z=1)
+            return WSI(id=kidney_wsi_id, extent=extent, num_levels=1, pixel_size_nm=pixel_size, tile_extent=extent, levels=[Level(extent=extent, downsample_factor=1, generated=False)])
         elif key == "my_rectangle":
             return Rectangle(id=rectangle_id, upper_left=[15000, 7000], width=4096, height=4096)
 

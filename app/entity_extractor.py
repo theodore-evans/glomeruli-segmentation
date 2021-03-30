@@ -22,8 +22,8 @@ class EntityExtractor:
         tresholded_mask = self.treshold_mask(segmentation_mask)
         contours, _ = cv.findContours(
             tresholded_mask, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-        contours = np.array(
-            [contour.squeeze() + self.upper_left for contour in contours])
+        contours = [(contour.squeeze() + self.upper_left).tolist()
+                    for contour in contours]
         return contours
 
     def count_entities(self, contours: List) -> int:
