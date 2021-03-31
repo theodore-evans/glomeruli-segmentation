@@ -4,21 +4,13 @@ import numpy as np
 from app.inference_runner import InferenceRunner
 from data.wsi_tile_fetcher import WSITileFetcher
 from app.mock_api import MockAPI
-from PIL import Image
-from torchvision.transforms import Compose, ToTensor, Normalize
 from app.serializer import contours_to_collection
+from data.preprocessing import raw_test_transform
 
-from app.api import API
-from app.data_types import Rectangle
-
-TORCH_VISION_MEAN = np.asarray([0.485, 0.456, 0.406])
-TORCH_VISION_STD = np.asarray([0.229, 0.224, 0.225])
-test_transform = Compose([ToTensor(), Normalize(
-    mean=TORCH_VISION_MEAN, std=TORCH_VISION_STD)])
 
 model_path = "/model/hacking_kidney_16934_best_metric.model-384e1332.pth"
 sample_image_file = "/data/hubmap-kidney-segmentation/train/54f2eec69.tiff"
-inference = InferenceRunner(model_path, data_transform=test_transform)
+inference = InferenceRunner(model_path, data_transform=raw_test_transform())
 # %%
 mock_api = MockAPI(sample_image_file)
 # %%
