@@ -6,16 +6,18 @@ from app.data_types import Rectangle, WSI, Vector3, Level
 import os
 import json
 
-kidney_wsi_id = "37bd11b8-3995-4377-bf57-e718e797d515"
-rectangle_id = "37bd11b8-3995-4377-bf57-e718e797d516"
+KIDNEY_WSI_ID = "37bd11b8-3995-4377-bf57-e718e797d515"
+RECT_ID = "37bd11b8-3995-4377-bf57-e718e797d516"
 APP_API = os.environ["EMPAIA_APP_API"]
 JOB_ID = os.environ["EMPAIA_JOB_ID"]
 TOKEN = os.environ["EMPAIA_TOKEN"]
 
+SAMPLE_IMAGE_FILE = "/data/hubmap-kidney-segmentation/train/54f2eec69.tiff"
+
 
 class MockAPI:
-    def __init__(self, sample_image_file: str):
-        self.image_data = tifffile.imread(sample_image_file).squeeze()
+    def __init__(self):
+        self.image_data = tifffile.imread(SAMPLE_IMAGE_FILE).squeeze()
 
     def mock_tile_request(self, rectangle: Rectangle):
         x, y = rectangle['upper_left']
@@ -27,9 +29,9 @@ class MockAPI:
         if key == "kidney_wsi":
             extent = Vector3(x=22240, y=30440, z=1)
             pixel_size = Vector3(x=500, y=500, z=1)
-            return WSI(id=kidney_wsi_id, extent=extent, num_levels=1, pixel_size_nm=pixel_size, tile_extent=extent, levels=[Level(extent=extent, downsample_factor=1, generated=False)])
+            return WSI(id=KIDNEY_WSI_ID, extent=extent, num_levels=1, pixel_size_nm=pixel_size, tile_extent=extent, levels=[Level(extent=extent, downsample_factor=1, generated=False)])
         elif key == "my_rectangle":
-            return Rectangle(id=rectangle_id, upper_left=[15000, 7000], width=4096, height=4096)
+            return Rectangle(id=RECT_ID, upper_left=[15000, 7000], width=4096, height=4096)
 
     def post_output(self, key: str, data: dict) -> dict:
         """
@@ -41,7 +43,7 @@ class MockAPI:
             json.dump(data, outfile, indent=2)
 
     def get_wsi_tile(self, my_wsi: WSI, my_rectangle: Rectangle):
-        if my_wsi["id"] == kidney_wsi_id:
+        if my_wsi["id"] == KIDNEY_WSI_ID:
             return self.mock_tile_request(my_rectangle)
 
     def put_finalize(self):

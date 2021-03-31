@@ -11,6 +11,8 @@ RUN conda config --add channels conda-forge \
     && conda env create -n hacking-kidney -f environment.yml \
     && rm -rf /opt/conda/pkgs/*
 
+RUN mkdir -p /app/model && curl -OJ https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy/download && mv hacking_kidney_16934_best_metric.model-384e1332.pth /app/model
+
 ENV PATH /opt/conda/envs/hacking-kidney/bin:$PATH
 
-ENTRYPOINT python3 /app/main.py
+ENTRYPOINT python3 /app/test.py
