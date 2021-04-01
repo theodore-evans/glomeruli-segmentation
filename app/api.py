@@ -3,6 +3,7 @@ import os
 import io
 import requests
 from PIL import Image
+import json
 
 from app.data_types import Rectangle, WSI
 
@@ -33,10 +34,13 @@ class API:
         """
         post output data by key as defined in EAD
         """
-        url = f"{APP_API}/v0/{JOB_ID}/outputs/{key}"
-        r = requests.post(url, json=data, headers=HEADERS)
-        r.raise_for_status()
-        return r.json()
+        try:
+            url = f"{APP_API}/v0/{JOB_ID}/outputs/{key}"
+            r = requests.post(url, json=data, headers=HEADERS)
+            r.raise_for_status()
+            return r.json()
+        except requests.exceptions.HTTPError as e:
+            print(e.response.text)
 
     def get_wsi_tile(self, wsi: WSI, rectangle_to_fetch: Rectangle) -> Image.Image:
         """

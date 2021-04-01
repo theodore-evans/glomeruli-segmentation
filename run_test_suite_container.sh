@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
 app_dir=$(pwd)
-data_dir="/mnt/hxstorage1/evans/data/hubmap-kidney-segmentation/test"
+data_dir="/mnt/hxstorage1/evans/data/hubmap-kidney-segmentation/"
+samples_dir="/home/evans/empaia-app-test-suite/sample_tests"
 
-docker run -it --rm \
+docker run -it --rm -d\
  -v /var/run/docker.sock:/var/run/docker.sock \
  -v $app_dir:$app_dir \
+ -v $data_dir:$data_dir \
+ -v $samples_dir:$samples_dir \
  --net=host \
  --name $USER-empaia-test-suite \
  empaia-test-suite \

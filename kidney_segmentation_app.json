@@ -14,14 +14,14 @@
     "outputs": {
         "glomerulus_count": {
             "type": "integer",
-            "reference": "my_rectangle"
+            "reference": "inputs.my_rectangle"
         },
         "glomeruli_polygons": {
             "type": "collection",
-            "reference": "my_rectangle",
+            "reference": "inputs.my_rectangle",
             "items": {
                 "type": "polygon",
-                "reference": "kidney_wsi"
+                "reference": "inputs.kidney_wsi"
             }
         }
     }

@@ -1,15 +1,10 @@
 FROM nvcr.io/nvidia/pytorch:21.02-py3
 
-# RUN conda install -c conda-forge -y pyvips  -> pyvips doesn't work inside of container 18.04, rely on tifffile package
-COPY . /app
-
 WORKDIR /app
 
-COPY environment.yml /app/environment.yml
+RUN pip install future albumentations resnest pretrainedmodels efficientnet-pytorch
 
-RUN conda config --add channels conda-forge \
-    && conda env create -n hacking-kidney -f environment.yml \
-    && rm -rf /opt/conda/pkgs/*
+COPY . /app
 
 RUN mkdir -p /app/model && curl -OJ https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy/download && mv hacking_kidney_16934_best_metric.model-384e1332.pth /app/model
 
