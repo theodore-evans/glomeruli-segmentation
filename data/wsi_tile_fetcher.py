@@ -53,12 +53,12 @@ class WSITileFetcher(Dataset):
     @property
     def height(self) -> int:
         """Original wsi image height"""
-        return self.original_size[0]
+        return self.original_size[1]
 
     @property
     def width(self) -> int:
         """Original wsi image width"""
-        return self.original_size[1]
+        return self.original_size[0]
 
     def fetch_tile(self, x: int, y: int, width: int, height: int) -> ndarray:
         """

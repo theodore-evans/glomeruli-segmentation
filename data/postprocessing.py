@@ -43,8 +43,8 @@ def combine_tiles(tiles: List[Tile],
             w = xx - x + l
             h = yy - y + t
 
-        combined_image[x:xx, y:yy] += image[l:w, t:h]
-        n[x:xx, y:yy] += 1
+        combined_image[y:yy, x:xx] += image[t:h, l:w]
+        n[y:yy, x:xx] += 1
     assert np.min(n) > 0
 
     combined_image /= n
