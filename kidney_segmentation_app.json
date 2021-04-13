@@ -6,11 +6,23 @@
     "inputs": {
         "kidney_wsi": {
             "type": "wsi"
+        },
+        "my_rectangle": {
+            "type": "rectangle"
         }
     },
     "outputs": {
         "glomerulus_count": {
-            "type": "integer"
+            "type": "integer",
+            "reference": "inputs.my_rectangle"
+        },
+        "glomeruli_polygons": {
+            "type": "collection",
+            "reference": "inputs.my_rectangle",
+            "items": {
+                "type": "polygon",
+                "reference": "inputs.kidney_wsi"
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ class WSI(TypedDict):
     levels: List[Level]
     
 class Rectangle(TypedDict):
-    upper_left: Tuple[int, int]
+    upper_left: List[int]
     width: int
     height: int
     level: int

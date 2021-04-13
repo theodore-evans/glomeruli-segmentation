@@ -1,0 +1,9 @@
+{
+    "type": "rectangle",
+    "upper_left": [
+        15000,
+        7000
+    ],
+    "width": 2048,
+    "height": 2048
+}
