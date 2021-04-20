@@ -5,7 +5,11 @@ A demonstrator app derived from an inference model developed by Tuguldur Erdene-
 > [The] challenge is to detect functional tissue units (FTUs) across different tissue preparation pipelines. An FTU is defined as a “three-dimensional block of cells centered around a capillary, such that each cell in this block is within diffusion distance from any other cell in the same block” (de Bo
 no, 2013). The goal of this competition is the implementation of a successful and robust glomeruli FTU detector. &mdash; <cite>“HuBMAP - Hacking the Kidney.” Accessed February 28, 2021. https://kaggle.com/c/hubmap-kidney-segmentation.</cite>
 
-## Data
+## App outputs visualised with [ASAP](https://github.com/GeertLitjens/ASAP)
+
+![](app_screenshot.png)
+
+## Training Data
 
  > [...] The HuBMAP data used in this hackathon includes 11 fresh frozen and 9 Formalin Fixed Paraffin Embedded (FFPE) PAS kidney images. Glomeruli FTU annotations exist for all 20 tissue samples; some of these will be shared for training, and others will be used to judge submissions.
 > There are over 600,000 glomeruli in each human kidney (Nyengaard, 1992). Normal glomeruli typically range from 100-350μm in diameter with a roughly spherical shape (Kannan, 2019).  &mdash; <cite>“HuBMAP - Hacking the Kidney.” Accessed February 28, 2021. https://kaggle.com/c/hubmap-kidney-segmentation/data.</cite>
@@ -22,9 +26,7 @@ no, 2013). The goal of this competition is the implementation of a successful an
   └── train.csv
   ```
   
-* The dataset comprises 13 TIFF files of 500MB - 5GB each, along with metadata and annotations in polygon and RLE formats, split into:
-    - train set: 8 TIFF files, ~15GB
-    - test set: 5 TIFF files, ~13GB
+* The model was trained on 13 TIFF files of 500MB - 5GB each, with metadata and annotations in polygon and RLE formats
 
 ## Model
   **Download from** [**NextCloud**](https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy). Email <theodore.evans@dai-labor.de> for access. **Do not distribute.**
@@ -55,7 +57,6 @@ A Streamlit demo visualizes the validation dataset overlaid with predictions and
 ```
 streamlit run demo.py -- --image-size=1024 --mode=valid --model hacking_kidney_16934_best_metric.model-384e1332.pth
 ``` 
-
 
 ![](demo_screenshot.png)
 
