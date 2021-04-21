@@ -53,12 +53,7 @@ no, 2013). The goal of this competition is the implementation of a successful an
 
 # Demo
 
-A Streamlit demo visualizes the validation dataset overlaid with predictions and annotations.
-```
-streamlit run demo.py -- --image-size=1024 --mode=valid --model hacking_kidney_16934_best_metric.model-384e1332.pth
-``` 
-
-## Running demo
+![](demo_screenshot.png)
 
 1. Download the data to `./data/hubmap-kidney-segmentation`
 2. Download the model into the project directory
