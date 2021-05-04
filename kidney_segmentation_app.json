@@ -9,7 +9,8 @@
             "type": "wsi"
         },
         "my_rectangle": {
-            "type": "rectangle"
+            "type": "rectangle",
+            "reference": "inputs.kidney_wsi"
         }
     },
     "outputs": {
