@@ -41,7 +41,7 @@ def run_app():
     )
 
     inference_runner = InferenceRunner(model_path=model_path, data_transform=kaggle_test_transform())
-    entity_extractor = EntityExtractor()  # TODO: Implement. placeholder mockup, doesn't do anything yet
+    entity_extractor = EntityExtractor()
 
     segmentation_mask = inference_runner(wsi_tile_fetcher)
     glomerulus_contours = entity_extractor.extract_contours(segmentation_mask)
