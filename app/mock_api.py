@@ -10,11 +10,8 @@ from app.data_types import WSI, Level, Rectangle, Vector3
 
 KIDNEY_WSI_ID = "37bd11b8-3995-4377-bf57-e718e797d515"
 RECT_ID = "37bd11b8-3995-4377-bf57-e718e797d516"
-APP_API = os.environ["EMPAIA_APP_API"]
-JOB_ID = os.environ["EMPAIA_JOB_ID"]
-TOKEN = os.environ["EMPAIA_TOKEN"]
 
-SAMPLE_IMAGE_FILE = "/data/hubmap-kidney-segmentation/train/54f2eec69.tiff"
+SAMPLE_IMAGE_FILE = "/empaia/data/sample_kidney.tif"
 
 
 class MockAPI:
@@ -25,7 +22,7 @@ class MockAPI:
         x, y = rectangle["upper_left"]
         width = rectangle["width"]
         height = rectangle["height"]
-        return self.image_data[:, x : x + width, y : y + height]
+        return self.image_data[x : x + width, y : y + height, :]
 
     def get_input(self, key: str):
         if key == "kidney_wsi":
@@ -48,7 +45,7 @@ class MockAPI:
         """
         data["creator_id"] = "dummy_creator_id"
         data["creator_type"] = "job"
-        with open(f"/app/outputs/{key}.json", "w+") as outfile:
+        with open(f"./outputs/{key}.json", "w+") as outfile:
             json.dump(data, outfile, indent=2)
 
     def get_wsi_tile(self, my_wsi: WSI, my_rectangle: Rectangle):

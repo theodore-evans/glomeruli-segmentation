@@ -1,57 +1,37 @@
-import argparse
-
-from app.api import get_input, get_wsi_data, get_wsi_tile, post_output, put_finalize
-from app.data_types import WSI, TileRequest
+from app.api import API
 from app.entity_extractor import EntityExtractor
 from app.inference_runner import InferenceRunner
-from data.preprocessing import kaggle_test_transform
+from app.mock_api import MockAPI
+from app.serializer import contours_to_collection
+from data.preprocessing import raw_test_transform
 from data.wsi_tile_fetcher import WSITileFetcher
 
+MODEL_PATH = "./model/hacking_kidney_16934_best_metric.model-384e1332.pth"
+inference = InferenceRunner(MODEL_PATH, data_transform=raw_test_transform())
+api = MockAPI()
 
-def run_app():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--wsi_id",
-        default="kidney_wsi",
-        type=str,
-        help="wsi_id for wsi to fetch from EMPAIA API",
-    )
-    parser.add_argument(
-        "--model",
-        default="/model/hacking_kidney_16934_best_metric.model-384e1332.pth",
-        type=str,
-        help="path to a pre-trained model (.pth)",
-    )
-    parser.add_argument("--window_size", default=1024, type=int, help="")
-    args = parser.parse_args()
-
-    model_path: str = args.model
-    wsi_id: str = args.wsi_id
-    window_size: int = args.window_size
-
-    wsi_data: WSI = get_wsi_data(wsi_id)
-    wsi_height: int = wsi_data["extent"]["y"]
-    wsi_width: int = wsi_data["extent"]["x"]
-
-    tile_request: TileRequest = lambda rect: get_wsi_tile(wsi_data, rect)
-    wsi_tile_fetcher = WSITileFetcher(
-        tile_request=tile_request,
-        window_size=window_size,
-        original_size=(wsi_height, wsi_width),
-    )
-
-    inference_runner = InferenceRunner(model_path=model_path, data_transform=kaggle_test_transform())
-    entity_extractor = EntityExtractor()
-
-    segmentation_mask = inference_runner(wsi_tile_fetcher)
-    glomerulus_contours = entity_extractor.extract_contours(segmentation_mask)
-    glomerulus_count = entity_extractor.count_entities(glomerulus_contours)
-
-    glomerulus_count = {"name": "entity count glomeruli", "value": glomerulus_count}
-
-    post_output("glomerulus_count", glomerulus_count)
-    put_finalize()
+my_rectangle = api.get_input("my_rectangle")
+kidney_wsi = api.get_input("kidney_wsi")
+upper_left = my_rectangle["upper_left"]
+size_to_process = (my_rectangle["width"], my_rectangle["height"])
 
 
-if __name__ == "__main__":
-    run_app()
+def tile_request(rect):
+    return api.get_wsi_tile(kidney_wsi, rect)
+
+
+tile_fetcher = WSITileFetcher(tile_request, my_rectangle)
+output_mask = inference(tile_fetcher)
+
+entity_extractor = EntityExtractor(upper_left=upper_left)
+contours = entity_extractor.extract_contours(output_mask)
+count = entity_extractor.count_entities(contours)
+
+count_result = {"name": "Glomerulus Count", "type": "integer", "value": count}
+api.post_output(key="glomerulus_count", data=count_result)
+
+contour_result = contours_to_collection(contours, kidney_wsi["id"], my_rectangle["id"])
+
+api.post_output(key="glomeruli_polygons", data=contour_result)
+
+api.put_finalize()
