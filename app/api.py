@@ -1,12 +1,10 @@
 import io
-import json
 import os
 
 import requests
 from PIL import Image
 
 from app.data_types import WSI, Rectangle
-from app.schema import Schema
 
 APP_API = os.environ["EMPAIA_APP_API"]
 JOB_ID = os.environ["EMPAIA_JOB_ID"]
