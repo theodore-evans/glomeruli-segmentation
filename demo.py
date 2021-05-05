@@ -1,27 +1,42 @@
-import streamlit as st
-
-import os
-import cv2
 import argparse
-import numpy as np
-import pandas as pd
+import os
 from pathlib import Path
 
+import cv2
+import numpy as np
+import pandas as pd
+import streamlit as st
 import torch
-from torchvision.transforms import Compose, ToTensor, Normalize
-from data import create_dataset, create_test_datasets, list_tiff_files, KidneyValidDataset
+from torchvision.transforms import Compose, Normalize, ToTensor
+
+from data import (
+    KidneyValidDataset,
+    create_dataset,
+    create_test_datasets,
+    list_tiff_files,
+)
 from nn import load_model
 
-st.title('Hacking Kidney Demo')
+st.title("Hacking Kidney Demo")
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--image-size', default=1024, type=int, help='crop image window size')
-parser.add_argument('--resize', default=256, type=int, help='resize image before forward')
-parser.add_argument('--data-fold', default=0, type=int, help='crop image window size')
-parser.add_argument('--data-root', default='/data/hubmap-kidney-segmentation', type=str, help='path to dataset')
-parser.add_argument('--mode', default='valid', choices=['train', 'valid', 'test'], help='path to a model')
-parser.add_argument('--model', default=None, type=str, help='path to a model')
-parser.add_argument('--submission', default=None, type=str, help='path to a submission')
+parser.add_argument("--image-size", default=1024, type=int, help="crop image window size")
+parser.add_argument("--resize", default=256, type=int, help="resize image before forward")
+parser.add_argument("--data-fold", default=0, type=int, help="crop image window size")
+parser.add_argument(
+    "--data-root",
+    default="/data/hubmap-kidney-segmentation",
+    type=str,
+    help="path to dataset",
+)
+parser.add_argument(
+    "--mode",
+    default="valid",
+    choices=["train", "valid", "test"],
+    help="path to a model",
+)
+parser.add_argument("--model", default=None, type=str, help="path to a model")
+parser.add_argument("--submission", default=None, type=str, help="path to a submission")
 args = parser.parse_args()
 print(args)
 
@@ -30,21 +45,24 @@ TORCH_VISION_STD = np.asarray([0.229, 0.224, 0.225])
 test_transform = Compose([ToTensor(), Normalize(mean=TORCH_VISION_MEAN, std=TORCH_VISION_STD)])
 
 if args.submission:
-    files = list_tiff_files(Path(os.path.join(args.data_root, 'test')))
+    files = list_tiff_files(Path(os.path.join(args.data_root, "test")))
     submission_csv = pd.read_csv(args.submission)
 
-
     def mask_encoding(f):
-        return submission_csv.loc[submission_csv['id'] == f.stem]['predicted'].values[0]
-
+        return submission_csv.loc[submission_csv["id"] == f.stem]["predicted"].values[0]
 
     datasets = [KidneyValidDataset(f, mask_encoding(f), window_size=args.image_size) for f in files]
     dataset = sum(datasets)
 else:
-    if args.mode == 'test':
-        dataset = create_test_datasets(os.path.join(args.data_root, 'test'), image_size=args.image_size)
+    if args.mode == "test":
+        dataset = create_test_datasets(os.path.join(args.data_root, "test"), image_size=args.image_size)
     else:
-        dataset = create_dataset(data_root=args.data_root, mode=args.mode, data_fold=args.data_fold, image_size=args.image_size)
+        dataset = create_dataset(
+            data_root=args.data_root,
+            mode=args.mode,
+            data_fold=args.data_fold,
+            image_size=args.image_size,
+        )
 print(dataset)
 
 model = None
@@ -64,11 +82,11 @@ def mask_to_rgb(mask):
 
 
 def get_image(entry):
-    img = np.array(entry['input'])
+    img = np.array(entry["input"])
     H, W = img.shape[:2]
     mask = np.zeros_like(img)
-    if 'mask' in entry:
-        mask[entry['mask'] > 0, -1] = 255
+    if "mask" in entry:
+        mask[entry["mask"] > 0, -1] = 255
     else:
         mask[:, :, :] = 0
     alpha = 0.5
@@ -83,8 +101,8 @@ def get_image(entry):
     return cv2.addWeighted(img, alpha, mask, (1 - alpha), 0)
 
 
-sample_id = st.sidebar.selectbox('Please select one sample', range(len(dataset)), index=149)
-if st.sidebar.button('random'):
+sample_id = st.sidebar.selectbox("Please select one sample", range(len(dataset)), index=149)
+if st.sidebar.button("random"):
     sample_id = np.random.choice(len(dataset))
 
 st.image(get_image(dataset[sample_id]), caption=f"data {sample_id}")

@@ -1,21 +1,22 @@
-import numpy as np
 from typing import List
+
+import numpy as np
 
 from app.data_types import Tile
 
 
-def combine_tiles(tiles: List[Tile],
-                  upper_left: List[int],
-                  original_height: int,
-                  original_width: int,
-                  ignore_border=0):
+def combine_tiles(
+    tiles: List[Tile],
+    upper_left: List[int],
+    original_height: int,
+    original_width: int,
+    ignore_border=0,
+):
     """
     Stitch tiles to an array of size original_height x original_width
     """
-    combined_image = np.zeros(
-        (original_height, original_width), dtype=np.float32)  # type: ignore
-    n = np.zeros((original_height, original_width),
-                 dtype=np.uint8)  # type: ignore
+    combined_image = np.zeros((original_height, original_width), dtype=np.float32)  # type: ignore
+    n = np.zeros((original_height, original_width), dtype=np.uint8)  # type: ignore
 
     for tile in tiles:
         image = tile["image"]

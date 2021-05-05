@@ -1,7 +1,9 @@
-import tifffile
-from .dataset import Dataset
-import numpy as np
 import cv2
+import numpy as np
+import tifffile
+
+from .dataset import Dataset
+
 
 class KidneyDataset(Dataset):
     def __init__(self, tiff_file, scale=None):
@@ -24,4 +26,4 @@ class KidneyDataset(Dataset):
         return self.image.shape[1]
 
     def read(self, x, y, width, height):
-        return self.image[y:y + height, x:x + width]
+        return self.image[y : y + height, x : x + width]

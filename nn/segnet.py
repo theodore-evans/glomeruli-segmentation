@@ -1,8 +1,9 @@
-import torch
-from torch import nn
-import torch.nn.functional as F
-import warnings
 import math
+import warnings
+
+import torch
+import torch.nn.functional as F
+from torch import nn
 
 
 def tta_pre_process(inputs, tta):
@@ -43,14 +44,16 @@ def sliding_window(size, window_size, stride):
 
 
 class SegNet(nn.Module):
-    MAX_PREDICT_WINDOW = float('inf')
+    MAX_PREDICT_WINDOW = float("inf")
     DIVISIBLE_PAD = 1
 
     def __init__(self, objectness=False, tta=0, scales=None, resize=None):
         super().__init__()
         if scales and resize:
             resize = None
-            warnings.warn(f"testing scales = {scales}, please make sure input matches training resize = {resize}")
+            warnings.warn(
+                f"testing scales = {scales}, please make sure input matches training resize = {resize}"
+            )
 
         self.objectness = objectness
         self.tta = tta
@@ -103,9 +106,15 @@ class SegNet(nn.Module):
         height, width = x.shape[-2:]
         probs = 0
         for scale in self.scales:
-            scaled_image = F.interpolate(x, scale_factor=scale, mode='bilinear', align_corners=False, recompute_scale_factor=True)
+            scaled_image = F.interpolate(
+                x,
+                scale_factor=scale,
+                mode="bilinear",
+                align_corners=False,
+                recompute_scale_factor=True,
+            )
             scaled_pred = self.predict_tta(scaled_image)
-            pred = F.interpolate(scaled_pred, (height, width), mode='bilinear', align_corners=False)
+            pred = F.interpolate(scaled_pred, (height, width), mode="bilinear", align_corners=False)
             probs += pred
         probs /= len(self.scales)
 
@@ -129,14 +138,14 @@ class SegNet(nn.Module):
         x = tta_pre_process(x, tta)
         y = self(x)
         if isinstance(y, dict):
-            y = y['out']
+            y = y["out"]
         y = y.softmax(1)
         y = tta_post_process(y, tta)
         return y
 
     def forward(self, x):
         if self.resize_input:
-            x = F.interpolate(x, self.resize_input, mode='bilinear', align_corners=False)
+            x = F.interpolate(x, self.resize_input, mode="bilinear", align_corners=False)
 
         pad_bottom = divisible_padding(x.shape[-2], self.DIVISIBLE_PAD)
         pad_right = divisible_padding(x.shape[-1], self.DIVISIBLE_PAD)
@@ -146,7 +155,7 @@ class SegNet(nn.Module):
         y = self._forward(x)
 
         if pad_bottom > 0 or pad_right > 0:
-            y = y[..., :y.shape[-2] - pad_bottom, :y.shape[-1] - pad_right]
+            y = y[..., : y.shape[-2] - pad_bottom, : y.shape[-1] - pad_right]
 
         if self.objectness:
             y = torch.sigmoid(y)

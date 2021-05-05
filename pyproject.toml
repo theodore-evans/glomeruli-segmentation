@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "hubmap-hacking-kidney"
+version = "0.1.0"
+description = "Kidney segmentation demo app, as per https://www.kaggle.com/c/hubmap-kidney-segmentation"
+authors = ["Theodore Evans <theodore.evans@dai-labor.de>"]
+license = "GNU General Public License v3.0"
+
+[tool.poetry.dependencies]
+python = ">=3.7.1,<4.0"
+requests = "2.25.1"
+numpy = "1.20.2"
+pandas = "1.2.4"
+Pillow = "8.2.0"
+streamlit = "0.81.0"
+tifffile = "2021.4.8"
+torch = "1.8.1"
+torchvision = "0.9.1"
+typing-extensions = "3.10.0.0"
+
+[tool.poetry.dev-dependencies]
+
+[tool.black]
+line-length = 110
+target-version = ['py37', 'py38']
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

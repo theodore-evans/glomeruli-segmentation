@@ -1,25 +1,28 @@
-from pathlib import Path
 import random
+from pathlib import Path
 
+import cv2
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn.functional as F
-import numpy as np
 from PIL import Image
-import cv2
-import pandas as pd
+
 from .dataset import Dataset
 from .rle import rle_decode
 from .tifffile_dataset import KidneyDataset
 
+
 def prob_to_mask(prob, threshold=0.5):
     return prob > threshold
 
+
 def pred_to_prob(predictions, height, width, ignore_border=0):
     """merge prediction to one prob array"""
-    prob = torch.zeros((height, width), dtype=torch.float32) #type: ignore
-    n = torch.zeros((height, width), dtype=torch.uint8) #type: ignore
+    prob = torch.zeros((height, width), dtype=torch.float32)  # type: ignore
+    n = torch.zeros((height, width), dtype=torch.uint8)  # type: ignore
     for image_id, pred in predictions:
-        x, y = [int(i) for i in image_id.split('_')]
+        x, y = [int(i) for i in image_id.split("_")]
 
         w = pred.shape[1]
         h = pred.shape[0]
@@ -52,7 +55,7 @@ def pred_to_prob(predictions, height, width, ignore_border=0):
 
 
 class KidneyTrainDataset(KidneyDataset):
-    classnames = ['background', 'glomeruli']
+    classnames = ["background", "glomeruli"]
 
     def __init__(self, tiff_file, mask_encoding, window_size=1024, image_stride=None, scale=None):
         super().__init__(tiff_file, scale=scale)
@@ -60,9 +63,15 @@ class KidneyTrainDataset(KidneyDataset):
         self.original_mask_file = None
         self.original_mask = self.mask = None
         if mask_encoding:
-            self.original_mask = self.mask = rle_decode(mask_encoding, (self.original_height, self.original_width))
+            self.original_mask = self.mask = rle_decode(
+                mask_encoding, (self.original_height, self.original_width)
+            )
             if scale:
-                self.mask = cv2.resize(self.mask, (self.width, self.height), interpolation=cv2.INTER_NEAREST)
+                self.mask = cv2.resize(
+                    self.mask,
+                    (self.width, self.height),
+                    interpolation=cv2.INTER_NEAREST,
+                )
 
         self.window_size = window_size
         self.image_stride = image_stride or window_size
@@ -74,12 +83,15 @@ class KidneyTrainDataset(KidneyDataset):
 
     def __repr__(self):
         fmt_str = super().__repr__()
-        fmt_str += (self.repr_indent + f'implementation: {KidneyDataset.__module__}\n')
-        fmt_str += (self.repr_indent + f'file: {self.tiff_file}\n')
-        fmt_str += (self.repr_indent + f'original_width x original_height: {self.original_width} x {self.original_height}\n')
-        fmt_str += (self.repr_indent + f'width x height: {self.width} x {self.height}\n')
-        fmt_str += (self.repr_indent + f'window_size: {self.window_size}\n')
-        fmt_str += (self.repr_indent + f'image_stride: {self.image_stride}\n')
+        fmt_str += self.repr_indent + f"implementation: {KidneyDataset.__module__}\n"
+        fmt_str += self.repr_indent + f"file: {self.tiff_file}\n"
+        fmt_str += (
+            self.repr_indent
+            + f"original_width x original_height: {self.original_width} x {self.original_height}\n"
+        )
+        fmt_str += self.repr_indent + f"width x height: {self.width} x {self.height}\n"
+        fmt_str += self.repr_indent + f"window_size: {self.window_size}\n"
+        fmt_str += self.repr_indent + f"image_stride: {self.image_stride}\n"
         return fmt_str
 
     def getitem(self, index):
@@ -91,16 +103,24 @@ class KidneyTrainDataset(KidneyDataset):
         return dict(input=Image.fromarray(img), mask=mask)
 
     def get_mask(self, x, y, width, height):
-        return self.mask[y:y + height, x:x + width]
+        return self.mask[y : y + height, x : x + width]
 
 
 class KidneyTestDataset(KidneyTrainDataset):
     def __init__(self, tiff_file, mask_encoding, window_size=1024, image_stride=None, scale=None):
-        super().__init__(tiff_file, mask_encoding, window_size=window_size, image_stride=image_stride, scale=scale)
+        super().__init__(
+            tiff_file,
+            mask_encoding,
+            window_size=window_size,
+            image_stride=image_stride,
+            scale=scale,
+        )
         if window_size > self.width or window_size > self.height:
-            raise RuntimeError(f"{tiff_file} window_size ({window_size}) is bigger than image size ({self.height} x {self.width})")
+            raise RuntimeError(
+                f"{tiff_file} window_size ({window_size}) is bigger than image size ({self.height} x {self.width})"
+            )
 
-        original_mask_file = tiff_file.parent / (tiff_file.stem + '_orig_mask.png')
+        original_mask_file = tiff_file.parent / (tiff_file.stem + "_orig_mask.png")
         if original_mask_file.exists():
             self.original_mask = cv2.imread(str(original_mask_file), cv2.IMREAD_UNCHANGED)
             self.original_mask_file = original_mask_file
@@ -124,8 +144,8 @@ class KidneyTestDataset(KidneyTrainDataset):
 
     def __repr__(self):
         fmt_str = super().__repr__()
-        fmt_str += (self.repr_indent + f'X x Y: {len(self.offset_x)} x {len(self.offset_y)}\n')
-        fmt_str += (self.repr_indent + f'original_mask_file: {self.original_mask_file}\n')
+        fmt_str += self.repr_indent + f"X x Y: {len(self.offset_x)} x {len(self.offset_y)}\n"
+        fmt_str += self.repr_indent + f"original_mask_file: {self.original_mask_file}\n"
         return fmt_str
 
     def get_offset(self, index):
@@ -142,19 +162,29 @@ class KidneyTestDataset(KidneyTrainDataset):
             pad_bottom = self.window_size - height
             pad_right = self.window_size - width
             padding = ((0, pad_bottom), (0, pad_right), (0, 0))
-            return np.pad(array, padding[:array.ndim])
+            return np.pad(array, padding[: array.ndim])
         return array
 
     def getitem(self, index):
         x, y = self.get_offset(index)
         img = self.read(x, y, self.window_size, self.window_size)
-        return dict(input=Image.fromarray(img), image_id=f'{x}_{y}')
+        return dict(input=Image.fromarray(img), image_id=f"{x}_{y}")
 
     def pred_to_mask(self, predictions, threshold=0.5, ignore_border=0):
-        prob = pred_to_prob(predictions, height=self.height, width=self.width, ignore_border=ignore_border)  # height x width
+        prob = pred_to_prob(
+            predictions,
+            height=self.height,
+            width=self.width,
+            ignore_border=ignore_border,
+        )  # height x width
         if self.original_height != self.height or self.original_width != self.width:
             prob = prob[None, None]  # mini-batch x channels x height x width
-            prob = F.interpolate(prob, (self.original_height, self.original_width), mode='bilinear', align_corners=False)
+            prob = F.interpolate(
+                prob,
+                (self.original_height, self.original_width),
+                mode="bilinear",
+                align_corners=False,
+            )
             prob = prob.squeeze()  # height x width
         mask = prob_to_mask(prob, threshold=threshold)
         # if self.original_height != self.height or self.original_width != self.width:
@@ -175,30 +205,62 @@ class KidneyValidDataset(KidneyTestDataset):
 
 
 def list_tiff_files(data_root):
-    tiff_files = [f for f in data_root.iterdir() if f.suffix == '.tiff']
+    tiff_files = [f for f in data_root.iterdir() if f.suffix == ".tiff"]
     return sorted(tiff_files)
 
 
-def create_dataset(data_root, mode, data_fold=0, image_size=1024, image_stride=None, scale=None, transform=None):
+def create_dataset(
+    data_root,
+    mode,
+    data_fold=0,
+    image_size=1024,
+    image_stride=None,
+    scale=None,
+    transform=None,
+):
     data_root = Path(data_root)
-    tiff_files = list_tiff_files(data_root / 'train')
+    tiff_files = list_tiff_files(data_root / "train")
 
-    train_csv = pd.read_csv(data_root / 'train.csv')
+    train_csv = pd.read_csv(data_root / "train.csv")
 
     def mask_encoding(f):
-        return train_csv.loc[train_csv['id'] == f.stem]['encoding'].values[0]
+        return train_csv.loc[train_csv["id"] == f.stem]["encoding"].values[0]
 
-    if mode == 'train':
+    if mode == "train":
         tiff_files = [f for i, f in enumerate(tiff_files) if i != data_fold]
-        datasets = [KidneyTrainDataset(f, mask_encoding(f), window_size=image_size, image_stride=image_stride, scale=scale) for f in tiff_files]
+        datasets = [
+            KidneyTrainDataset(
+                f,
+                mask_encoding(f),
+                window_size=image_size,
+                image_stride=image_stride,
+                scale=scale,
+            )
+            for f in tiff_files
+        ]
         dataset = sum(datasets)
-    elif mode in ('valid', 'test'):
-        datasetT = KidneyValidDataset if mode == 'valid' else KidneyTestDataset
+    elif mode in ("valid", "test"):
+        datasetT = KidneyValidDataset if mode == "valid" else KidneyTestDataset
         if data_fold >= 0:
             f = tiff_files[data_fold]
-            dataset = datasetT(f, mask_encoding(f), window_size=image_size, image_stride=image_stride, scale=scale)
+            dataset = datasetT(
+                f,
+                mask_encoding(f),
+                window_size=image_size,
+                image_stride=image_stride,
+                scale=scale,
+            )
         else:
-            datasets = [datasetT(f, mask_encoding(f), window_size=image_size, image_stride=image_stride, scale=scale) for f in tiff_files]
+            datasets = [
+                datasetT(
+                    f,
+                    mask_encoding(f),
+                    window_size=image_size,
+                    image_stride=image_stride,
+                    scale=scale,
+                )
+                for f in tiff_files
+            ]
             dataset = sum(datasets)
     else:
         raise NotImplementedError(mode)

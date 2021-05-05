@@ -1,17 +1,25 @@
 import torch.nn as nn
 import torchvision
+
 from .basic import Sequential, get_num_of_channels
 
 
-def create_basenet(name, pretrained,
-                   activation=None, frozen_batchnorm=False, in_channels=3, trainable_layers=None, frozen_layers=0,
-                   **kwargs):
-    if name == 'Resnet34':
+def create_basenet(
+    name,
+    pretrained,
+    activation=None,
+    frozen_batchnorm=False,
+    in_channels=3,
+    trainable_layers=None,
+    frozen_layers=0,
+    **kwargs,
+):
+    if name == "Resnet34":
         pool_in_2nd = name[0].isupper()
-        imagenet_pretrained = pretrained == 'imagenet'
+        imagenet_pretrained = pretrained == "imagenet"
 
         model = torchvision.models.resnet34(pretrained=imagenet_pretrained, **kwargs)
-        maxpool = model.maxpool if hasattr(model, 'maxpool') else model.maxpool1
+        maxpool = model.maxpool if hasattr(model, "maxpool") else model.maxpool1
         if pool_in_2nd:
             layer0 = Sequential(model.conv1, model.bn1, model.relu)
         else:
@@ -22,9 +30,9 @@ def create_basenet(name, pretrained,
         def get_out_channels_from_resnet_block(layer):
             block = layer[-1]
             block_name = block.__class__.__name__
-            if 'BasicBlock' in block_name or 'SEResNetBlock' in block_name:
+            if "BasicBlock" in block_name or "SEResNetBlock" in block_name:
                 return block.conv2.out_channels
-            elif 'Bottleneck' in block_name:
+            elif "Bottleneck" in block_name:
                 return block.conv3.out_channels
             raise RuntimeError("unknown resnet block: {}".format(block.__class__))
 

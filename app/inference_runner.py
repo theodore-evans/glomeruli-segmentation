@@ -1,19 +1,19 @@
+import asyncio
 from typing import NoReturn, Optional
+
+import cv2
+import numpy as np
 import torch
 import torch.nn as nn
-import cv2
-import asyncio
-
-import numpy as np
 from numpy import ndarray
-from torchvision.transforms import Compose
 from torch import Tensor
+from torchvision.transforms import Compose
 
+from app.data_types import Tile
+from data.postprocessing import combine_tiles
+from data.wsi_tile_fetcher import WSITileFetcher
 from nn import load_model
 from nn.segnet import SegNet
-from data.wsi_tile_fetcher import WSITileFetcher
-from data.postprocessing import combine_tiles
-from app.data_types import Tile
 
 
 class InferenceRunner:
@@ -57,26 +57,25 @@ class InferenceRunner:
         model_input = image_as_tensor.cuda().unsqueeze(0)
         model_output = self.model(model_input)
 
-        pixelwise_probabilities = nn.functional.softmax(model_output).cpu()[
-            0, 1, :, :].numpy()
+        pixelwise_probabilities = nn.functional.softmax(model_output).cpu()[0, 1, :, :].numpy()
         resized_probabilities = cv2.resize(
-            pixelwise_probabilities, (tile_height, tile_width), interpolation=cv2.INTER_LINEAR)
-        prediction_mask = (resized_probabilities *
-                           255).astype(dtype=np.uint8)  # type: ignore
+            pixelwise_probabilities,
+            (tile_height, tile_width),
+            interpolation=cv2.INTER_LINEAR,
+        )
+        prediction_mask = (resized_probabilities * 255).astype(dtype=np.uint8)  # type: ignore
         return prediction_mask
 
     def run_inference_on_tile(self, tile: Tile) -> Tile:
-        print(
-            f"\nRunning inference on tile with x: {tile['x']}, y: {tile['y']}")
+        print(f"\nRunning inference on tile with x: {tile['x']}, y: {tile['y']}")
         predicted_mask = self.run_inference_on_image(tile["image"])
-        predicted_tile: Tile = {
-            "image": predicted_mask, "x": tile["x"], "y": tile["y"]}
+        predicted_tile: Tile = {"image": predicted_mask, "x": tile["x"], "y": tile["y"]}
         print("\nDone")
         return predicted_tile
 
     def run_inference_on_dataset(self, tile_fetcher: WSITileFetcher) -> ndarray:
         """
-        Fetch and run model inference on WSI tiles and combine results into 
+        Fetch and run model inference on WSI tiles and combine results into
         a single ndarray of the same width and height as the original WSI tile
         """
         # loop = asyncio.get_event_loop()
@@ -95,11 +94,16 @@ class InferenceRunner:
 
         predicted_tiles = []
         for tile in tile_fetcher:
-            #tile["image"] = np.transpose(tile["image"], (2, 0, 1))
+            # tile["image"] = np.transpose(tile["image"], (2, 0, 1))
             predicted_tiles.append(self.run_inference_on_tile(tile))
 
         # TODO inject rather than hardcode
-        return combine_tiles(predicted_tiles, tile_fetcher.upper_left, tile_fetcher.height, tile_fetcher.width)
+        return combine_tiles(
+            predicted_tiles,
+            tile_fetcher.upper_left,
+            tile_fetcher.height,
+            tile_fetcher.width,
+        )
 
     def __call__(self, input_dataset) -> ndarray:
         return self.run_inference_on_dataset(input_dataset)

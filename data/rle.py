@@ -27,7 +27,7 @@ def rle_encoding(x, label=None):
 
     runs = np.where(pixels[1:] != pixels[:-1])[0] + offset
     runs[1::2] -= runs[::2]
-    return ' '.join(str(x) for x in runs)
+    return " ".join(str(x) for x in runs)
 
 
 # https://www.kaggle.com/paulorzp/run-length-encode-and-decode
@@ -49,7 +49,7 @@ def rle_decode(mask_rle, shape):
     return img.reshape((shape[1], shape[0])).transpose()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     mask = np.random.random((100, 100)) > 0.5
     rle_str = rle_encoding(mask)
     mask2 = rle_decode(rle_str, mask.shape)

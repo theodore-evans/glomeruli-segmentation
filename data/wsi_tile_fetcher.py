@@ -4,18 +4,19 @@ import numpy as np
 from numpy import ndarray
 from PIL import Image
 
-from data.dataset import Dataset
 from app.data_types import Rectangle, Tile, TileRequest
+from data.dataset import Dataset
 
 
 class WSITileFetcher(Dataset):
-    def __init__(self,
-                 tile_request: TileRequest,
-                 wsi_region: Rectangle,
-                 window_size: int = 1024,
-                 level: int = 0,
-                 image_stride: Optional[int] = None,
-                 ) -> None:
+    def __init__(
+        self,
+        tile_request: TileRequest,
+        wsi_region: Rectangle,
+        window_size: int = 1024,
+        level: int = 0,
+        image_stride: Optional[int] = None,
+    ) -> None:
         """
         Description:
             A WSI tile retrieving object, extending data.dataset.Dataset, \
@@ -41,14 +42,22 @@ class WSITileFetcher(Dataset):
         self.rows: int = self.height - self.window_size
 
         self.offset_x = list(
-            range(self.upper_left[0], self.upper_left[0] + self.width - self.window_size + self.image_stride, self.image_stride))
+            range(
+                self.upper_left[0],
+                self.upper_left[0] + self.width - self.window_size + self.image_stride,
+                self.image_stride,
+            )
+        )
         self.offset_y = list(
-            range(self.upper_left[1], self.upper_left[1] + self.height - self.window_size + self.image_stride, self.image_stride))
+            range(
+                self.upper_left[1],
+                self.upper_left[1] + self.height - self.window_size + self.image_stride,
+                self.image_stride,
+            )
+        )
 
-        self.offset_x[-1] = self.shift_offset_into_image(
-            self.offset_x[-1], self.upper_left[0] + self.width)
-        self.offset_y[-1] = self.shift_offset_into_image(
-            self.offset_y[-1], self.upper_left[1] + self.height)
+        self.offset_x[-1] = self.shift_offset_into_image(self.offset_x[-1], self.upper_left[0] + self.width)
+        self.offset_y[-1] = self.shift_offset_into_image(self.offset_y[-1], self.upper_left[1] + self.height)
 
     @property
     def height(self) -> int:
@@ -69,7 +78,8 @@ class WSITileFetcher(Dataset):
             "upper_left": [x, y],
             "width": width,
             "height": height,
-            "level": self.level}
+            "level": self.level,
+        }
 
         wsi_tile: Image.Image = self.tile_request(tile_rectangle)
         tile_as_array = np.asarray_chkfinite(wsi_tile).squeeze()
@@ -78,9 +88,10 @@ class WSITileFetcher(Dataset):
             tile_as_array = np.transpose(tile_as_array, (1, 2, 0))
         if tile_as_array.shape[2] != 3:
             raise ValueError(
-                f'''
+                f"""
                 Expected image data with 3 channels, instead got {tile_as_array.shape[2]}
-                ''')
+                """
+            )
 
         return tile_as_array
 

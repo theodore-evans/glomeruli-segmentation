@@ -1,26 +1,29 @@
-
 from collections.abc import Iterable
 from random import randint
+
 import torch
 import torch.utils.data as tud
 
+REPR_INDENT = " " * 2
 
-REPR_INDENT = ' ' * 2
 
 class AttributeMissingMixin(object):
-    """ A Mixin' to implement the 'method_missing' Ruby-like protocol. """
+    """A Mixin' to implement the 'method_missing' Ruby-like protocol."""
+
     def __getattribute__(self, attr):
         try:
             return object.__getattribute__(self, attr)
         except AttributeError as e:
-            if attr.startswith('__'):
+            if attr.startswith("__"):
                 raise e
 
             return self._attribute_missing(attr=attr)
 
     def _attribute_missing(self, attr):
-        """ This method should be overridden in the derived class. """
-        raise NotImplementedError(self.__class__.__name__ + " '_attribute_missing' method has not been implemented.")
+        """This method should be overridden in the derived class."""
+        raise NotImplementedError(
+            self.__class__.__name__ + " '_attribute_missing' method has not been implemented."
+        )
 
 
 class Dataset(tud.Dataset):
@@ -37,12 +40,12 @@ class Dataset(tud.Dataset):
     def __rshift__(self, other):
         """transformed_dataset = dataset >> transform"""
         if not callable(other):
-            raise RuntimeError('Dataset >> callable only!')
+            raise RuntimeError("Dataset >> callable only!")
         return TransformedDataset(dataset=self, transform=other)
 
     def __repr__(self):
-        fmt_str = self.__class__.__name__ + '\n'
-        fmt_str += (REPR_INDENT + 'len: {}\n'.format(len(self)))
+        fmt_str = self.__class__.__name__ + "\n"
+        fmt_str += REPR_INDENT + "len: {}\n".format(len(self))
         return fmt_str
 
     def __subset__(self, indices):
@@ -63,16 +66,16 @@ class ConcatDataset(Dataset, tud.ConcatDataset, AttributeMissingMixin):
         fmt_str = super().__repr__()
         for n, dataset in enumerate(self.datasets):
             if n >= 10:
-                fmt_str += (REPR_INDENT + f'... {len(self.datasets) - n} more sub datasets ...\n')
+                fmt_str += REPR_INDENT + f"... {len(self.datasets) - n} more sub datasets ...\n"
                 break
 
-            dataset_str_lines = str(dataset).split('\n')
+            dataset_str_lines = str(dataset).split("\n")
             dataset_str_lines = [s for s in dataset_str_lines if s]
-            dataset_str_lines = ['-' * len(dataset_str_lines[0])] + dataset_str_lines
+            dataset_str_lines = ["-" * len(dataset_str_lines[0])] + dataset_str_lines
             dataset_str_lines = [REPR_INDENT + s for s in dataset_str_lines if s]
-            fmt_str += '\n'.join(dataset_str_lines)
-            if fmt_str[-1] != '\n':
-                fmt_str += '\n'
+            fmt_str += "\n".join(dataset_str_lines)
+            if fmt_str[-1] != "\n":
+                fmt_str += "\n"
 
         return fmt_str
 
@@ -113,15 +116,15 @@ class ExtendDataset(Dataset, AttributeMissingMixin):
 
     def __repr__(self):
         fmt_str = super().__repr__()
-        dataset_str_lines = str(self.dataset).split('\n')
+        dataset_str_lines = str(self.dataset).split("\n")
         dataset_str_lines = [s for s in dataset_str_lines if s]
-        dataset_str_lines[0] = 'dataset: ' + dataset_str_lines[0]
+        dataset_str_lines[0] = "dataset: " + dataset_str_lines[0]
         for i in range(1, len(dataset_str_lines)):
-            dataset_str_lines[i] = ' ' * 9 + dataset_str_lines[i]
+            dataset_str_lines[i] = " " * 9 + dataset_str_lines[i]
         dataset_str_lines = [REPR_INDENT + s for s in dataset_str_lines if s]
-        fmt_str += '\n'.join(dataset_str_lines)
-        if fmt_str[-1] != '\n':
-            fmt_str += '\n'
+        fmt_str += "\n".join(dataset_str_lines)
+        if fmt_str[-1] != "\n":
+            fmt_str += "\n"
 
         return fmt_str
 
@@ -146,6 +149,7 @@ class Subset(tud.Subset, ExtendDataset):
     """
     https://github.com/pytorch/vision/issues/369
     """
+
     def __init__(self, dataset, indices):
         if isinstance(indices, slice):
             indices = range(len(dataset))[indices]
@@ -170,7 +174,7 @@ class RollSplitSet(Subset):
         if self.get_count == len(self):
             self.i_split += 1
             self.i_split %= self.n_split
-            #print("RollSplitSet roll to next {}".format(self.i_split))
+            # print("RollSplitSet roll to next {}".format(self.i_split))
             indices = slice(self.i_split, self.end_split, self.n_split)
             self.indices = range(len(self.dataset))[indices]
             self.get_count = 0
@@ -217,6 +221,7 @@ class EchoingDataset(ExtendDataset):
     Faster Neural Network Training with Data Echoing
     https://arxiv.org/pdf/1907.05550.pdf
     """
+
     def __init__(self, dataset, buffer_size, echo_ratio=2):
         super().__init__(dataset)
         self.buffer_size = buffer_size
@@ -247,6 +252,6 @@ class TransformedDataset(ExtendDataset):
 
     def __repr__(self):
         fmt_str = super().__repr__()
-        tmp = '\n    Transforms: '
-        fmt_str += '{0}{1}\n'.format(tmp, self.transform.__str__().replace('\n', '\n' + ' ' * (len(tmp)-1)))
+        tmp = "\n    Transforms: "
+        fmt_str += "{0}{1}\n".format(tmp, self.transform.__str__().replace("\n", "\n" + " " * (len(tmp) - 1)))
         return fmt_str

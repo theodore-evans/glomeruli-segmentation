@@ -1,16 +1,18 @@
-from app.schema import Schema
-import os
 import io
+import json
+import os
+
 import requests
 from PIL import Image
-import json
 
-from app.data_types import Rectangle, WSI
+from app.data_types import WSI, Rectangle
+from app.schema import Schema
 
 APP_API = os.environ["EMPAIA_APP_API"]
 JOB_ID = os.environ["EMPAIA_JOB_ID"]
 TOKEN = os.environ["EMPAIA_TOKEN"]
 HEADERS = {"Authorization": f"Bearer {TOKEN}"}
+
 
 class API:
     def put_finalize(self):
@@ -54,13 +56,12 @@ class API:
         width = rectangle_to_fetch["width"]
         height = rectangle_to_fetch["height"]
         level = rectangle_to_fetch["level"]
-        
+
         wsi_id = wsi["id"]
-    
+
         tile_url = f"{APP_API}/v0/{JOB_ID}/regions/{wsi_id}/level/{level}/start/{x}/{y}/size/{width}/{height}"
 
         r = requests.get(tile_url, headers=HEADERS)
         r.raise_for_status()
 
         return Image.open(io.BytesIO(r.content))
-

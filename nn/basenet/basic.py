@@ -1,29 +1,77 @@
 from collections import OrderedDict
+
 import torch.nn as nn
-from .tf_like import MaxPool2dSame, Conv2dSame
+
+from .tf_like import Conv2dSame, MaxPool2dSame
 
 
-def Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros'):
-    if padding == 'same':
-        if padding_mode != 'zeros':
+def Conv2d(
+    in_channels,
+    out_channels,
+    kernel_size,
+    stride=1,
+    padding=0,
+    dilation=1,
+    groups=1,
+    bias=True,
+    padding_mode="zeros",
+):
+    if padding == "same":
+        if padding_mode != "zeros":
             raise NotImplementedError(f"padding_mode {padding_mode} for same padding")
-        return Conv2dSame(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size,
-                          stride=stride, dilation=dilation, groups=groups, bias=bias)
-    return nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size,
-                     stride=stride, padding=padding, dilation=dilation, groups=groups, bias=bias, padding_mode=padding_mode)
+        return Conv2dSame(
+            in_channels=in_channels,
+            out_channels=out_channels,
+            kernel_size=kernel_size,
+            stride=stride,
+            dilation=dilation,
+            groups=groups,
+            bias=bias,
+        )
+    return nn.Conv2d(
+        in_channels=in_channels,
+        out_channels=out_channels,
+        kernel_size=kernel_size,
+        stride=stride,
+        padding=padding,
+        dilation=dilation,
+        groups=groups,
+        bias=bias,
+        padding_mode=padding_mode,
+    )
 
 
-def MaxPool2d(kernel_size, stride=None, padding=0, dilation=1, return_indices=False, ceil_mode=False):
-    if padding == 'same':
-        return MaxPool2dSame(kernel_size=kernel_size, stride=stride, dilation=dilation, return_indices=return_indices, ceil_mode=ceil_mode)
-    return nn.MaxPool2d(kernel_size=kernel_size, stride=stride, padding=padding, dilation=dilation, return_indices=return_indices, ceil_mode=ceil_mode)
+def MaxPool2d(
+    kernel_size,
+    stride=None,
+    padding=0,
+    dilation=1,
+    return_indices=False,
+    ceil_mode=False,
+):
+    if padding == "same":
+        return MaxPool2dSame(
+            kernel_size=kernel_size,
+            stride=stride,
+            dilation=dilation,
+            return_indices=return_indices,
+            ceil_mode=ceil_mode,
+        )
+    return nn.MaxPool2d(
+        kernel_size=kernel_size,
+        stride=stride,
+        padding=padding,
+        dilation=dilation,
+        return_indices=return_indices,
+        ceil_mode=ceil_mode,
+    )
 
 
 def conv(*args, **kwargs):
     return lambda last_layer: Conv2d(get_num_of_channels(last_layer), *args, **kwargs)
 
 
-def get_num_of_channels(layers, channle_name='out_channels'):
+def get_num_of_channels(layers, channle_name="out_channels"):
     """access out_channels from last layer of nn.Sequential/list"""
     if hasattr(layers, channle_name):
         return getattr(layers, channle_name)
@@ -43,7 +91,7 @@ def get_num_of_channels(layers, channle_name='out_channels'):
 
 def Sequential(*args):
     f = nn.Sequential(*args)
-    f.in_channels = get_num_of_channels(f, 'in_channels')
+    f.in_channels = get_num_of_channels(f, "in_channels")
     f.out_channels = get_num_of_channels(f)
     return f
 
@@ -70,8 +118,7 @@ def sequential(*args):
 def ConvBn(*args, **kwargs):
     """drop in block for Conv2d with BatchNorm and ReLU"""
     c = Conv2d(*args, **kwargs)
-    return Sequential(c,
-                      nn.BatchNorm2d(c.out_channels))
+    return Sequential(c, nn.BatchNorm2d(c.out_channels))
 
 
 def conv_bn(*args, **kwargs):
@@ -81,9 +128,7 @@ def conv_bn(*args, **kwargs):
 def ConvBnRelu(*args, **kwargs):
     """drop in block for Conv2d with BatchNorm and ReLU"""
     c = Conv2d(*args, **kwargs)
-    return Sequential(c,
-                      nn.BatchNorm2d(c.out_channels),
-                      nn.ReLU(inplace=True))
+    return Sequential(c, nn.BatchNorm2d(c.out_channels), nn.ReLU(inplace=True))
 
 
 def conv_bn_relu(*args, **kwargs):
@@ -93,9 +138,7 @@ def conv_bn_relu(*args, **kwargs):
 def ConvBnRelu6(*args, **kwargs):
     """drop in block for Conv2d with BatchNorm and ReLU6"""
     c = Conv2d(*args, **kwargs)
-    return Sequential(c,
-                      nn.BatchNorm2d(c.out_channels),
-                      nn.ReLU(inplace=True))
+    return Sequential(c, nn.BatchNorm2d(c.out_channels), nn.ReLU(inplace=True))
 
 
 def conv_bn_relu6(*args, **kwargs):
@@ -103,8 +146,7 @@ def conv_bn_relu6(*args, **kwargs):
 
 
 def ConvRelu(*args, **kwargs):
-    return Sequential(Conv2d(*args, **kwargs),
-                      nn.ReLU(inplace=True))
+    return Sequential(Conv2d(*args, **kwargs), nn.ReLU(inplace=True))
 
 
 def conv_relu(*args, **kwargs):
@@ -112,8 +154,7 @@ def conv_relu(*args, **kwargs):
 
 
 def ConvRelu6(*args, **kwargs):
-    return Sequential(Conv2d(*args, **kwargs),
-                      nn.ReLU6(inplace=True))
+    return Sequential(Conv2d(*args, **kwargs), nn.ReLU6(inplace=True))
 
 
 def conv_relu6(*args, **kwargs):
@@ -121,8 +162,7 @@ def conv_relu6(*args, **kwargs):
 
 
 def ReluConv(*args, **kwargs):
-    return Sequential(nn.ReLU(inplace=True),
-                      Conv2d(*args, **kwargs))
+    return Sequential(nn.ReLU(inplace=True), Conv2d(*args, **kwargs))
 
 
 def relu_conv(*args, **kwargs):
@@ -132,9 +172,7 @@ def relu_conv(*args, **kwargs):
 def BnReluConv(*args, **kwargs):
     """drop in block for Conv2d with BatchNorm and ReLU"""
     c = Conv2d(*args, **kwargs)
-    return Sequential(nn.BatchNorm2d(c.in_channels),
-                      nn.ReLU(inplace=True),
-                      c)
+    return Sequential(nn.BatchNorm2d(c.in_channels), nn.ReLU(inplace=True), c)
 
 
 def bn_relu_conv(*args, **kwargs):

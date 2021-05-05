@@ -1,9 +1,11 @@
 import functools
+
 import torch
-from torch import nn
 import torch.nn.functional as F
+from torch import nn
+
 from .basenet import create_basenet
-from .basenet.basic import ConvBnRelu, ConvBn, ConvRelu
+from .basenet.basic import ConvBn, ConvBnRelu, ConvRelu
 from .basenet.scse import SCSEBlock
 from .segnet import SegNet
 
@@ -16,7 +18,7 @@ class UpsamplingBilinear(nn.Module):
     def forward(self, input):
         if self.scale_factor == 1:
             return input
-        return F.interpolate(input, scale_factor=self.scale_factor, mode='bilinear', align_corners=False)
+        return F.interpolate(input, scale_factor=self.scale_factor, mode="bilinear", align_corners=False)
 
 
 class DecoderBase(nn.Module):
@@ -43,7 +45,7 @@ class DecoderSimple(DecoderBase):
             ConvBnRelu(in_channels, middle_channels, kernel_size=3, padding=1),
             UpsamplingBilinear(scale_factor),
             ConvBn(middle_channels, out_channels, kernel_size=3, padding=1),
-            nn.ReLU()
+            nn.ReLU(),
         )
 
 
@@ -57,7 +59,7 @@ class DecoderSimpleNBN(DecoderBase):
             ConvRelu(in_channels, middle_channels, kernel_size=3, padding=1),
             UpsamplingBilinear(scale_factor),
             nn.Conv2d(middle_channels, out_channels, kernel_size=3, padding=1),
-            nn.ReLU()
+            nn.ReLU(),
         )
 
 
@@ -84,30 +86,53 @@ class DecoderSCSE(DecoderBase):
             ConvBnRelu(in_channels, middle_channels, kernel_size=3, padding=1, bias=False),
             ConvBnRelu(middle_channels, out_channels, kernel_size=3, padding=1, bias=False),
             SCSEBlock(out_channels),
-            UpsamplingBilinear(scale_factor)
+            UpsamplingBilinear(scale_factor),
         )
 
 
 class UNet(SegNet):
     MAX_PREDICT_WINDOW = 1024
 
-    def __init__(self, backbone='Resnet50', num_filters=16, n_classes=1, pretrained='imagenet', activation=None,
-                 frozen_layers=0, objectness=False, tta=0, scales=None, resize=None,
-                 ocnet=False, align_corners=False, decoder='simple', dropout=0.1, num_head_features=None,
-                 cat_features=False, deep_supervision=False, frozen_batchnorm=False, refine=False,
-                 image_classification=False):
+    def __init__(
+        self,
+        backbone="Resnet50",
+        num_filters=16,
+        n_classes=1,
+        pretrained="imagenet",
+        activation=None,
+        frozen_layers=0,
+        objectness=False,
+        tta=0,
+        scales=None,
+        resize=None,
+        ocnet=False,
+        align_corners=False,
+        decoder="simple",
+        dropout=0.1,
+        num_head_features=None,
+        cat_features=False,
+        deep_supervision=False,
+        frozen_batchnorm=False,
+        refine=False,
+        image_classification=False,
+    ):
         super().__init__(objectness=objectness, tta=tta, scales=scales, resize=resize)
-        Decoder = dict(simple=DecoderSimple,
-                       noBN=DecoderSimpleNBN,
-                       deconv=DecoderDeConv,
-                       scse=DecoderSCSE
-                       )[decoder]
+        Decoder = dict(
+            simple=DecoderSimple,
+            noBN=DecoderSimpleNBN,
+            deconv=DecoderDeConv,
+            scse=DecoderSCSE,
+        )[decoder]
         self.align_corners = align_corners
 
-        net, _, _ = create_basenet(backbone, activation=activation, pretrained=pretrained,
-                                   frozen_batchnorm=frozen_batchnorm, frozen_layers=frozen_layers,
-                                   # replace_stride_with_dilation=[False, True, True]
-                                   )
+        net, _, _ = create_basenet(
+            backbone,
+            activation=activation,
+            pretrained=pretrained,
+            frozen_batchnorm=frozen_batchnorm,
+            frozen_layers=frozen_layers,
+            # replace_stride_with_dilation=[False, True, True]
+        )
 
         self.encoder1 = nn.Sequential(net[0], nn.MaxPool2d(kernel_size=3, stride=2, padding=1))  # 64  64
         self.encoder2 = nn.Sequential(net[1][1])  # 64  256
@@ -119,31 +144,76 @@ class UNet(SegNet):
         self.center = nn.Sequential(
             nn.Conv2d(self.encoder5.out_channels, context_channels, 3, padding=1, bias=False),
             nn.BatchNorm2d(context_channels),
-            nn.ReLU()
+            nn.ReLU(),
         )
 
-        self.decoder5 = Decoder(self.encoder5.out_channels + context_channels, num_filters * 16, num_filters * 16)
-        self.decoder4 = Decoder(self.encoder4.out_channels + self.decoder5.out_channels, num_filters * 8, num_filters * 8)
-        self.decoder3 = Decoder(self.encoder3.out_channels + self.decoder4.out_channels, num_filters * 4, num_filters * 4)
-        self.decoder2 = Decoder(net[1].out_channels + self.decoder3.out_channels, num_filters * 2, num_filters * 2, scale_factor=1)
-        self.decoder1 = Decoder(net[0].out_channels + self.decoder2.out_channels, num_filters, num_filters, scale_factor=1)
+        self.decoder5 = Decoder(
+            self.encoder5.out_channels + context_channels,
+            num_filters * 16,
+            num_filters * 16,
+        )
+        self.decoder4 = Decoder(
+            self.encoder4.out_channels + self.decoder5.out_channels,
+            num_filters * 8,
+            num_filters * 8,
+        )
+        self.decoder3 = Decoder(
+            self.encoder3.out_channels + self.decoder4.out_channels,
+            num_filters * 4,
+            num_filters * 4,
+        )
+        self.decoder2 = Decoder(
+            net[1].out_channels + self.decoder3.out_channels,
+            num_filters * 2,
+            num_filters * 2,
+            scale_factor=1,
+        )
+        self.decoder1 = Decoder(
+            net[0].out_channels + self.decoder2.out_channels,
+            num_filters,
+            num_filters,
+            scale_factor=1,
+        )
 
         self.dropout = nn.Dropout2d(p=dropout, inplace=True)
         self.num_classes = n_classes
 
         self.cat_features = cat_features
-        feature_channels = (self.decoder1.out_channels, self.decoder2.out_channels, self.decoder3.out_channels,
-                            self.decoder4.out_channels, self.decoder5.out_channels)
+        feature_channels = (
+            self.decoder1.out_channels,
+            self.decoder2.out_channels,
+            self.decoder3.out_channels,
+            self.decoder4.out_channels,
+            self.decoder5.out_channels,
+        )
         neck_in_channels = sum(feature_channels) if cat_features else self.decoder1.out_channels
-        self.neck = nn.Sequential(nn.Conv2d(neck_in_channels, num_head_features, kernel_size=3, padding=1, bias=False),
-                                  nn.BatchNorm2d(num_head_features),
-                                  nn.ReLU())
+        self.neck = nn.Sequential(
+            nn.Conv2d(
+                neck_in_channels,
+                num_head_features,
+                kernel_size=3,
+                padding=1,
+                bias=False,
+            ),
+            nn.BatchNorm2d(num_head_features),
+            nn.ReLU(),
+        )
         self.mask_head = nn.Conv2d(num_head_features, n_classes, kernel_size=3, padding=1)
 
         self.deep_supervision_heads = None
         if deep_supervision:
-            self.deep_supervision_heads = nn.ModuleList([nn.Conv2d(d.out_channels, n_classes, kernel_size=3, padding=1)
-                                                         for d in [self.decoder5, self.decoder4, self.decoder3, self.decoder2, self.decoder1]])
+            self.deep_supervision_heads = nn.ModuleList(
+                [
+                    nn.Conv2d(d.out_channels, n_classes, kernel_size=3, padding=1)
+                    for d in [
+                        self.decoder5,
+                        self.decoder4,
+                        self.decoder3,
+                        self.decoder2,
+                        self.decoder1,
+                    ]
+                ]
+            )
 
     def _forward(self, x):
         e1 = self.encoder1(x)  # ; print('e1', e1.size())
@@ -162,7 +232,12 @@ class UNet(SegNet):
 
         if self.cat_features:
             d1_size = d1.size()[2:]
-            upsampler = functools.partial(F.interpolate, size=d1_size, mode='bilinear', align_corners=self.align_corners)
+            upsampler = functools.partial(
+                F.interpolate,
+                size=d1_size,
+                mode="bilinear",
+                align_corners=self.align_corners,
+            )
             us = [upsampler(d) for d in (d5, d4, d3, d2)] + [d1]
             # ds = [self.dropout(u) for u in us]
             # d = torch.cat(ds, 1)
@@ -179,7 +254,7 @@ class UNet(SegNet):
             if self.deep_supervision_heads:
                 features = (d5, d4, d3, d2, d1)
                 for i, (m, f) in enumerate(zip(self.deep_supervision_heads, features)):
-                    outputs['aux' + str(i)] = m(f)
+                    outputs["aux" + str(i)] = m(f)
 
             if len(outputs) > 1:
                 return outputs
@@ -187,8 +262,8 @@ class UNet(SegNet):
         return mask
 
 
-if __name__ == '__main__':
-    net = UNet(backbone='Resnet50', pretrained=False)
+if __name__ == "__main__":
+    net = UNet(backbone="Resnet50", pretrained=False)
     img = torch.zeros((3, 256, 256))
     # target = torch.zeros((1, net.image_size[0], net.image_size[1]), dtype=torch.long)
     outputs = net.predict(img)
