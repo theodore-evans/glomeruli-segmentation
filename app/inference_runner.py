@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 from numpy import ndarray
 from torch import Tensor
+from torch.cuda import is_available
 from torchvision.transforms import Compose
 
 from app.data_types import Tile
@@ -39,8 +40,9 @@ class InferenceRunner:
         """
         torch.set_grad_enabled(False)
         model = load_model(model_path)
-        model = model.cuda().eval()
-        return model
+        if torch.cuda.is_available():
+            model = model.cuda()
+        return model.eval()
 
     def run_inference_on_image(self, image: ndarray) -> ndarray:
         """
@@ -54,7 +56,10 @@ class InferenceRunner:
         tile_height = image_as_tensor.shape[1]
         tile_width = image_as_tensor.shape[2]
 
-        model_input = image_as_tensor.cuda().unsqueeze(0)
+        if torch.cuda.is_available():
+            model_input = image_as_tensor.cuda()
+
+        model_input = model_input.unsqueeze(0)
         model_output = self.model(model_input)
 
         pixelwise_probabilities = nn.functional.softmax(model_output).cpu()[0, 1, :, :].numpy()
@@ -78,19 +83,6 @@ class InferenceRunner:
         Fetch and run model inference on WSI tiles and combine results into
         a single ndarray of the same width and height as the original WSI tile
         """
-        # loop = asyncio.get_event_loop()
-        # tile_inference_tasks = (self.run_inference_on_tile(tile) for tile in tile_fetcher)
-
-        # inference_results = loop.run_until_complete(asyncio.gather(tile_inference_tasks, return_exceptions=True))
-        # # TODO: Implement async tqdm.gather for inference tasks, currently having an issue with tqdm version
-
-        # predicted_tiles = []
-        # for result in inference_results:
-        #     if isinstance(result, Exception):
-        #         print(f"{result}")
-        #         # TODO implement better error handling (e.g. which tile failed?) for failed runs
-        #     elif isinstance(result, Tile):
-        #         predicted_tiles.append(result)
 
         predicted_tiles = []
         for tile in tile_fetcher:
