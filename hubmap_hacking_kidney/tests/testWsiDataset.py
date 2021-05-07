@@ -1,13 +1,12 @@
 import unittest
 
 import tifffile
-from numpy import ndarray
-from PIL import Image
-
 from app.data_types import Rectangle
 from app.mock_api import MockAPI
 from data.postprocessing import combine_tiles
 from data.wsi_tile_fetcher import WSITileFetcher
+from numpy import ndarray
+from PIL import Image
 
 
 class TestWSIDataset(unittest.TestCase):

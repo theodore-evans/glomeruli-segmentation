@@ -7,8 +7,6 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 import torch
-from torchvision.transforms import Compose, Normalize, ToTensor
-
 from data import (
     KidneyValidDataset,
     create_dataset,
@@ -16,6 +14,7 @@ from data import (
     list_tiff_files,
 )
 from nn import load_model
+from torchvision.transforms import Compose, Normalize, ToTensor
 
 st.title("Hacking Kidney Demo")
 

@@ -1,11 +1,10 @@
 from typing import Optional, Tuple
 
 import numpy as np
-from numpy import ndarray
-from PIL import Image
-
 from app.data_types import Rectangle, Tile, TileRequest
 from data.dataset import Dataset
+from numpy import ndarray
+from PIL import Image
 
 
 class WSITileFetcher(Dataset):

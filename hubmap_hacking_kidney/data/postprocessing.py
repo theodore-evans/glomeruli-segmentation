@@ -1,7 +1,6 @@
 from typing import List
 
 import numpy as np
-
 from app.data_types import Tile
 
 

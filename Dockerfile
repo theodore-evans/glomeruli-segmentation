@@ -1,15 +1,40 @@
-FROM nvcr.io/nvidia/pytorch:21.02-py3
+FROM nvidia/cuda:11.3.0-cudnn8-devel-ubuntu20.04
 
 WORKDIR /app
 
-COPY . /app
+RUN apt-get update -y 
 
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    curl \
+    git \
+    build-essential \
+    python3-dev \
+    python3-pip \
+    python3-venv \
+    python3-setuptools \
+    libgl1-mesa-glx \
+    libglib2.0-0
 
 ENV PATH /root/.local/bin:/root/.poetry/bin:${PATH}
 
-RUN poetry install
+RUN mkdir -p /root/.local/bin \ 
+    && ln -s $(which python3) /root/.local/bin/python \
+    && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
+WORKDIR /app
+
+COPY pyproject.toml poetry.lock /app/
+
+RUN poetry export --without-hashes -f requirements.txt > /tmp/requirements.txt
+
+ENV VIRTUAL_ENV /opt/venv
+ENV PATH ${VIRTUAL_ENV}/bin:${PATH}
+RUN python3 -m venv $VIRTUAL_ENV
+RUN pip3 install -r /tmp/requirements.txt
+
+COPY ./hubmap_hacking_kidney /app
+
+# Download model weights
 RUN mkdir -p /app/model && curl -OJ https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy/download && mv hacking_kidney_16934_best_metric.model-384e1332.pth /app/model
 
-ENTRYPOINT poetry run python3 /app/main.py
+ENTRYPOINT python3 main.py

@@ -3,9 +3,8 @@ import logging
 import os
 
 import requests
-from PIL import Image
-
 from app.data_types import WSI, Rectangle
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 

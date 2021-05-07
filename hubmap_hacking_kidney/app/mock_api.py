@@ -5,13 +5,13 @@ from typing import Tuple
 import numpy as np
 import PIL.Image as Image
 import tifffile
-
 from app.data_types import WSI, Level, Rectangle, Vector3
 
 KIDNEY_WSI_ID = "37bd11b8-3995-4377-bf57-e718e797d515"
 RECT_ID = "37bd11b8-3995-4377-bf57-e718e797d516"
 
 SAMPLE_IMAGE_FILE = "/data/sample_kidney.tif"
+OUTPUT_DIRECTORY = "/outputs"
 
 
 class MockAPI:
@@ -45,8 +45,13 @@ class MockAPI:
         """
         data["creator_id"] = "dummy_creator_id"
         data["creator_type"] = "job"
-        with open(f"./outputs/{key}.json", "w+") as outfile:
+
+        os.makedirs(OUTPUT_DIRECTORY, exist_ok=True)
+
+        with open(f"{OUTPUT_DIRECTORY}/{key}.json", "w+") as outfile:
             json.dump(data, outfile, indent=2)
+
+        return data
 
     def get_wsi_tile(self, my_wsi: WSI, my_rectangle: Rectangle):
         if my_wsi["id"] == KIDNEY_WSI_ID:

@@ -2,7 +2,6 @@ import os
 import unittest
 
 import numpy as np
-
 from app.inference_runner import InferenceRunner
 from app.mock_api import MockAPI
 from data.wsi_tile_fetcher import WSITileFetcher
