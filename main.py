@@ -1,14 +1,29 @@
-from app.api import API
+import argparse
+import logging
+
+logger = logging.getLogger(__name__)
+
+try:
+    from app.api import API
+except KeyError:
+    logger.warning("No EMPAIA API available, using mock API")
+    from app.mock_api import MockAPI as API
+
 from app.entity_extractor import EntityExtractor
 from app.inference_runner import InferenceRunner
-from app.mock_api import MockAPI
 from app.serializer import contours_to_collection
 from data.preprocessing import raw_test_transform
 from data.wsi_tile_fetcher import WSITileFetcher
 
-MODEL_PATH = "./model/hacking_kidney_16934_best_metric.model-384e1332.pth"
-inference = InferenceRunner(MODEL_PATH, data_transform=raw_test_transform())
-api = MockAPI()
+DEFAULT_MODEL_PATH = "./model/hacking_kidney_16934_best_metric.model-384e1332.pth"
+
+
+parser = argparse.ArgumentParser(description="Detect glomeruli on kidney wsi")
+parser.add_argument("--model", dest="model_path", default=DEFAULT_MODEL_PATH)
+args = parser.parse_args()
+
+inference = InferenceRunner(args.model_path, data_transform=raw_test_transform())
+api = API()
 
 my_rectangle = api.get_input("my_rectangle")
 kidney_wsi = api.get_input("kidney_wsi")

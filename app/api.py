@@ -1,4 +1,5 @@
 import io
+import logging
 import os
 
 import requests
@@ -6,10 +7,16 @@ from PIL import Image
 
 from app.data_types import WSI, Rectangle
 
-APP_API = os.environ["EMPAIA_APP_API"]
-JOB_ID = os.environ["EMPAIA_JOB_ID"]
-TOKEN = os.environ["EMPAIA_TOKEN"]
-HEADERS = {"Authorization": f"Bearer {TOKEN}"}
+logger = logging.getLogger(__name__)
+
+try:
+    APP_API = os.environ["EMPAIA_APP_API"]
+    JOB_ID = os.environ["EMPAIA_JOB_ID"]
+    TOKEN = os.environ["EMPAIA_TOKEN"]
+    HEADERS = {"Authorization": f"Bearer {TOKEN}"}
+except KeyError:
+    logger.warning("No EMPAIA API environment variables set")
+    raise
 
 
 class API:
