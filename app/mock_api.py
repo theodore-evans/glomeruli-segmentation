@@ -11,7 +11,7 @@ from app.data_types import WSI, Level, Rectangle, Vector3
 KIDNEY_WSI_ID = "37bd11b8-3995-4377-bf57-e718e797d515"
 RECT_ID = "37bd11b8-3995-4377-bf57-e718e797d516"
 
-SAMPLE_IMAGE_FILE = "/empaia/data/sample_kidney.tif"
+SAMPLE_IMAGE_FILE = "/data/sample_kidney.tif"
 
 
 class MockAPI:
