@@ -1,4 +1,5 @@
 import io
+import json
 import logging
 import os
 from typing import Optional
@@ -24,9 +25,13 @@ class API:
         """
         finalize job, such that no more data can be added and to inform EMPAIA infrastructure about job state
         """
-        url = f"{APP_API}/v0/{JOB_ID}/finalize"
-        r = requests.put(url, headers=HEADERS)
-        r.raise_for_status()
+        try:
+            url = f"{APP_API}/v0/{JOB_ID}/finalize"
+            r = requests.put(url, headers=HEADERS)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print("Error while finalizing job")
+            raise e
 
     def get_input(self, key: str) -> dict:
         """
@@ -38,7 +43,7 @@ class API:
         r.raise_for_status()
         return r.json()
 
-    def post_output(self, key: str, data: dict) -> Optional[dict]:
+    def post_output(self, key: str, data: dict) -> dict:
         """
         post output data by key as defined in EAD
         """
@@ -49,8 +54,15 @@ class API:
             r.raise_for_status()
             return r.json()
         except requests.exceptions.HTTPError as e:
-            print(e.response.text)
-            return None
+            print("Error while posting output:")
+            error_text = e.response.text
+            try:
+                parsed_error = json.loads(error_text)
+                print(json.dumps(parsed_error, indent=4, sort_keys=True))
+            except:
+                print(error_text)
+            finally:
+                raise e
 
     def get_wsi_tile(self, wsi: WSI, rectangle_to_fetch: Rectangle) -> Image.Image:
         """
