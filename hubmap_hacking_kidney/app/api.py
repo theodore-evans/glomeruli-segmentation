@@ -1,6 +1,7 @@
 import io
 import logging
 import os
+from typing import Optional
 
 import requests
 from app.data_types import WSI, Rectangle
@@ -33,20 +34,23 @@ class API:
         """
         url = f"{APP_API}/v0/{JOB_ID}/inputs/{key}"
         r = requests.get(url, headers=HEADERS)
+
         r.raise_for_status()
         return r.json()
 
-    def post_output(self, key: str, data: dict) -> dict:
+    def post_output(self, key: str, data: dict) -> Optional[dict]:
         """
         post output data by key as defined in EAD
         """
         try:
             url = f"{APP_API}/v0/{JOB_ID}/outputs/{key}"
             r = requests.post(url, json=data, headers=HEADERS)
+
             r.raise_for_status()
             return r.json()
         except requests.exceptions.HTTPError as e:
             print(e.response.text)
+            return None
 
     def get_wsi_tile(self, wsi: WSI, rectangle_to_fetch: Rectangle) -> Image.Image:
         """

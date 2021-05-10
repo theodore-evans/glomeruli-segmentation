@@ -10,8 +10,8 @@ from app.data_types import WSI, Level, Rectangle, Vector3
 KIDNEY_WSI_ID = "37bd11b8-3995-4377-bf57-e718e797d515"
 RECT_ID = "37bd11b8-3995-4377-bf57-e718e797d516"
 
-SAMPLE_IMAGE_FILE = "/data/sample_kidney.tif"
-OUTPUT_DIRECTORY = "/outputs"
+SAMPLE_IMAGE_FILE = "/empaia/data/real_kidney.tif"
+OUTPUT_DIRECTORY = "./outputs"
 
 
 class MockAPI:
@@ -37,7 +37,7 @@ class MockAPI:
                 levels=[Level(extent=extent, downsample_factor=1, generated=False)],
             )
         elif key == "my_rectangle":
-            return Rectangle(id=RECT_ID, upper_left=[15000, 7000], width=4096, height=4096)
+            return Rectangle(id=RECT_ID, upper_left=[15000, 7000], width=2048, height=2048)
 
     def post_output(self, key: str, data: dict) -> dict:
         """
