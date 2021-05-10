@@ -15,7 +15,7 @@ from app.serializer import contours_to_collection
 from data.preprocessing import raw_test_transform
 from data.wsi_tile_fetcher import WSITileFetcher
 
-DEFAULT_MODEL_PATH = "./model/hacking_kidney_16934_best_metric.model-384e1332.pth"
+DEFAULT_MODEL_PATH = "/model/hacking_kidney_16934_best_metric.model-384e1332.pth"
 
 
 parser = argparse.ArgumentParser(description="Detect glomeruli on kidney wsi")
