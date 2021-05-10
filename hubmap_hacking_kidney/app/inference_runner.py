@@ -30,13 +30,13 @@ class InferenceRunner:
             data_transform: Optional transform of type torchvision.transforms.Compose to apply before inference
 
         """
-        self.model: nn.Module = self.load_model(model_path)
-        self.transform: Optional[Compose] = data_transform
-
         self.device = torch.device("cuda" if cuda.is_available() else "cpu")
 
         if not cuda.is_available():
             print("CUDA unavailable, using CPU")
+
+        self.model: nn.Module = self.load_model(model_path)
+        self.transform: Optional[Compose] = data_transform
 
     def load_model(self, model_path: str) -> SegNet:
         """
