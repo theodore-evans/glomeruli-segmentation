@@ -1,6 +1,4 @@
 FROM pytorch/pytorch:1.8.0-cuda11.1-cudnn8-devel
-LABEL maintainer="Theodore Evans <theodore.evans@dai-labor.de>" \
-      version="0.1.0"
 
 WORKDIR /app
 
@@ -41,4 +39,7 @@ COPY ./hubmap_hacking_kidney /app
 # Download model weights
 RUN mkdir -p /model && curl -OJ https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy/download && mv hacking_kidney_16934_best_metric.model-384e1332.pth /model
 
+LABEL maintainer="Theodore Evans <theodore.evans@dai-labor.de>" \
+      version="0.1.0"
+      
 CMD ["python3", "main.py"]

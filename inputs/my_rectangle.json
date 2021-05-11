@@ -1,12 +1,9 @@
 {
-    "type": "rectangle",
-    "upper_left": [
-        15000,
-        7000
-    ],
-    "width": 2048,
-    "height": 2048,
-    "reference_id": "1845099f-0f35-4ad8-aa19-524f601a8ab3",
-    "reference_type": "wsi",
-    "npp_created": 256000
+  "type": "rectangle",
+  "upper_left": [15000, 7000],
+  "width": 4048,
+  "height": 4048,
+  "reference_id": "a7df6b17-3747-4820-bc3b-87a4b6151526",
+  "reference_type": "wsi",
+  "npp_created": 256000
 }
