@@ -43,7 +43,9 @@ contours = entity_extractor.extract_contours(output_mask)
 count = entity_extractor.count_entities(contours)
 
 count_result = {"name": "Glomerulus Count", "type": "integer", "value": count}
+
 api.post_output(key="glomerulus_count", data=count_result)
+
 
 contour_result = contours_to_collection(contours, kidney_wsi["id"], my_rectangle["id"])
 
