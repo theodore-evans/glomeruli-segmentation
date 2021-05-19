@@ -50,7 +50,7 @@ no, 2013). The goal of this competition is the implementation of a successful an
       --data-aug-clahe-p=0.2 \
       --data-aug-distort-p=0.7
   ```
-
+<!-- 
 # Demo
 
 ![](assets/demo_screenshot.png)
@@ -66,4 +66,4 @@ no, 2013). The goal of this competition is the implementation of a successful an
   ```bash
   streamlit run demo.py -- --image-size=1024 --mode=valid --model hacking_kidney_16934_best_metric.model-384e1332.pth
   ```
-5. Access the UI on `http://localhost:8501/`
+5. Access the UI on `http://localhost:8501/` -->
