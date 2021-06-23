@@ -44,14 +44,7 @@ class Conv2dSame(nn.Conv2d):
     """Tensorflow like 'SAME' convolution wrapper for 2D convolutions"""
 
     def __init__(
-        self,
-        in_channels,
-        out_channels,
-        kernel_size,
-        stride=1,
-        dilation=1,
-        groups=1,
-        bias=True,
+        self, in_channels, out_channels, kernel_size, stride=1, dilation=1, groups=1, bias=True,
     ):
         super(Conv2dSame, self).__init__(
             in_channels, out_channels, kernel_size, stride, 0, dilation, groups, bias
@@ -62,11 +55,7 @@ class Conv2dSame(nn.Conv2d):
 
 
 def avg_pool2d_same(
-    x,
-    kernel_size: List[int],
-    stride: List[int],
-    ceil_mode: bool = False,
-    count_include_pad: bool = True,
+    x, kernel_size: List[int], stride: List[int], ceil_mode: bool = False, count_include_pad: bool = True,
 ):
     x = pad_same(x, kernel_size, stride)
     return F.avg_pool2d(x, kernel_size, stride, (0, 0), ceil_mode, count_include_pad)
@@ -85,13 +74,7 @@ class AvgPool2dSame(nn.AvgPool2d):
 def max_pool2d_same(x, kernel_size, stride=None, dilation=1, ceil_mode=False, return_indices=False):
     x = pad_same(x, kernel_size, stride)
     return F.max_pool2d(
-        x,
-        kernel_size,
-        stride,
-        (0, 0),
-        dilation=dilation,
-        ceil_mode=ceil_mode,
-        return_indices=return_indices,
+        x, kernel_size, stride, (0, 0), dilation=dilation, ceil_mode=ceil_mode, return_indices=return_indices,
     )
 
 
@@ -99,20 +82,10 @@ class MaxPool2dSame(nn.MaxPool2d):
     """Tensorflow like 'SAME' wrapper for 2D average pooling"""
 
     def __init__(
-        self,
-        kernel_size,
-        stride=None,
-        dilation=1,
-        return_indices=False,
-        ceil_mode=False,
+        self, kernel_size, stride=None, dilation=1, return_indices=False, ceil_mode=False,
     ):
         super(MaxPool2dSame, self).__init__(
-            kernel_size,
-            stride,
-            0,
-            dilation=dilation,
-            return_indices=return_indices,
-            ceil_mode=ceil_mode,
+            kernel_size, stride, 0, dilation=dilation, return_indices=return_indices, ceil_mode=ceil_mode,
         )
 
     def forward(self, x):

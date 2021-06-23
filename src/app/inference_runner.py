@@ -66,9 +66,7 @@ class InferenceRunner:
 
         pixelwise_probabilities = nn.functional.softmax(model_output).cpu()[0, 1, :, :].numpy()
         resized_probabilities = cv2.resize(
-            pixelwise_probabilities,
-            (tile_height, tile_width),
-            interpolation=cv2.INTER_LINEAR,
+            pixelwise_probabilities, (tile_height, tile_width), interpolation=cv2.INTER_LINEAR,
         )
         prediction_mask = (resized_probabilities * 255).astype(dtype=np.uint8)  # type: ignore
         return prediction_mask
@@ -93,10 +91,7 @@ class InferenceRunner:
 
         # TODO inject rather than hardcode
         return combine_tiles(
-            predicted_tiles,
-            tile_fetcher.upper_left,
-            tile_fetcher.height,
-            tile_fetcher.width,
+            predicted_tiles, tile_fetcher.upper_left, tile_fetcher.height, tile_fetcher.width,
         )
 
     def __call__(self, input_dataset) -> ndarray:

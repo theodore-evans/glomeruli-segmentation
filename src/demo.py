@@ -23,16 +23,10 @@ parser.add_argument("--image-size", default=1024, type=int, help="crop image win
 parser.add_argument("--resize", default=256, type=int, help="resize image before forward")
 parser.add_argument("--data-fold", default=0, type=int, help="crop image window size")
 parser.add_argument(
-    "--data-root",
-    default="/data/hubmap-kidney-segmentation",
-    type=str,
-    help="path to dataset",
+    "--data-root", default="/data/hubmap-kidney-segmentation", type=str, help="path to dataset",
 )
 parser.add_argument(
-    "--mode",
-    default="valid",
-    choices=["train", "valid", "test"],
-    help="path to a model",
+    "--mode", default="valid", choices=["train", "valid", "test"], help="path to a model",
 )
 parser.add_argument("--model", default=None, type=str, help="path to a model")
 parser.add_argument("--submission", default=None, type=str, help="path to a submission")
@@ -57,10 +51,7 @@ else:
         dataset = create_test_datasets(os.path.join(args.data_root, "test"), image_size=args.image_size)
     else:
         dataset = create_dataset(
-            data_root=args.data_root,
-            mode=args.mode,
-            data_fold=args.data_fold,
-            image_size=args.image_size,
+            data_root=args.data_root, mode=args.mode, data_fold=args.data_fold, image_size=args.image_size,
         )
 print(dataset)
 

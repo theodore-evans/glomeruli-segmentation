@@ -67,11 +67,7 @@ class KidneyTrainDataset(KidneyDataset):
                 mask_encoding, (self.original_height, self.original_width)
             )
             if scale:
-                self.mask = cv2.resize(
-                    self.mask,
-                    (self.width, self.height),
-                    interpolation=cv2.INTER_NEAREST,
-                )
+                self.mask = cv2.resize(self.mask, (self.width, self.height), interpolation=cv2.INTER_NEAREST,)
 
         self.window_size = window_size
         self.image_stride = image_stride or window_size
@@ -109,11 +105,7 @@ class KidneyTrainDataset(KidneyDataset):
 class KidneyTestDataset(KidneyTrainDataset):
     def __init__(self, tiff_file, mask_encoding, window_size=1024, image_stride=None, scale=None):
         super().__init__(
-            tiff_file,
-            mask_encoding,
-            window_size=window_size,
-            image_stride=image_stride,
-            scale=scale,
+            tiff_file, mask_encoding, window_size=window_size, image_stride=image_stride, scale=scale,
         )
         if window_size > self.width or window_size > self.height:
             raise RuntimeError(
@@ -172,18 +164,12 @@ class KidneyTestDataset(KidneyTrainDataset):
 
     def pred_to_mask(self, predictions, threshold=0.5, ignore_border=0):
         prob = pred_to_prob(
-            predictions,
-            height=self.height,
-            width=self.width,
-            ignore_border=ignore_border,
+            predictions, height=self.height, width=self.width, ignore_border=ignore_border,
         )  # height x width
         if self.original_height != self.height or self.original_width != self.width:
             prob = prob[None, None]  # mini-batch x channels x height x width
             prob = F.interpolate(
-                prob,
-                (self.original_height, self.original_width),
-                mode="bilinear",
-                align_corners=False,
+                prob, (self.original_height, self.original_width), mode="bilinear", align_corners=False,
             )
             prob = prob.squeeze()  # height x width
         mask = prob_to_mask(prob, threshold=threshold)
@@ -210,13 +196,7 @@ def list_tiff_files(data_root):
 
 
 def create_dataset(
-    data_root,
-    mode,
-    data_fold=0,
-    image_size=1024,
-    image_stride=None,
-    scale=None,
-    transform=None,
+    data_root, mode, data_fold=0, image_size=1024, image_stride=None, scale=None, transform=None,
 ):
     data_root = Path(data_root)
     tiff_files = list_tiff_files(data_root / "train")
@@ -230,11 +210,7 @@ def create_dataset(
         tiff_files = [f for i, f in enumerate(tiff_files) if i != data_fold]
         datasets = [
             KidneyTrainDataset(
-                f,
-                mask_encoding(f),
-                window_size=image_size,
-                image_stride=image_stride,
-                scale=scale,
+                f, mask_encoding(f), window_size=image_size, image_stride=image_stride, scale=scale,
             )
             for f in tiff_files
         ]
@@ -244,21 +220,11 @@ def create_dataset(
         if data_fold >= 0:
             f = tiff_files[data_fold]
             dataset = datasetT(
-                f,
-                mask_encoding(f),
-                window_size=image_size,
-                image_stride=image_stride,
-                scale=scale,
+                f, mask_encoding(f), window_size=image_size, image_stride=image_stride, scale=scale,
             )
         else:
             datasets = [
-                datasetT(
-                    f,
-                    mask_encoding(f),
-                    window_size=image_size,
-                    image_stride=image_stride,
-                    scale=scale,
-                )
+                datasetT(f, mask_encoding(f), window_size=image_size, image_stride=image_stride, scale=scale,)
                 for f in tiff_files
             ]
             dataset = sum(datasets)

@@ -5,11 +5,7 @@ from app.data_types import Tile
 
 
 def combine_tiles(
-    tiles: List[Tile],
-    upper_left: List[int],
-    original_height: int,
-    original_width: int,
-    ignore_border=0,
+    tiles: List[Tile], upper_left: List[int], original_height: int, original_width: int, ignore_border=0,
 ):
     """
     Stitch tiles to an array of size original_height x original_width
