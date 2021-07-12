@@ -107,7 +107,11 @@ class SegNet(nn.Module):
         probs = 0
         for scale in self.scales:
             scaled_image = F.interpolate(
-                x, scale_factor=scale, mode="bilinear", align_corners=False, recompute_scale_factor=True,
+                x,
+                scale_factor=scale,
+                mode="bilinear",
+                align_corners=False,
+                recompute_scale_factor=True,
             )
             scaled_pred = self.predict_tta(scaled_image)
             pred = F.interpolate(scaled_pred, (height, width), mode="bilinear", align_corners=False)

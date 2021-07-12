@@ -1,13 +1,17 @@
 import asyncio
-from typing import NoReturn, Optional
+from typing import NoReturn, Optional, Type
 
 import cv2
 import numpy as np
+from numpy.core.fromnumeric import ndim, shape
+from numpy.core.shape_base import stack
 import torch
+from torch._C import device, dtype
 import torch.cuda as cuda
 import torch.nn as nn
 from app.data_types import Tile
-from data.postprocessing import combine_tiles
+from data.preprocessing import batch_tiles
+from data.postprocessing import combine_tiles, unbatch_predictions
 from data.wsi_tile_fetcher import WSITileFetcher
 from nn import load_model
 from nn.segnet import SegNet
@@ -53,32 +57,48 @@ class InferenceRunner:
         Run model inference on a single image from a dataset
         """
         if self.transform is not None:
-            image_as_tensor = self.transform(image)
+            image_as_tensor = (
+                self.transform(image)
+                if image.ndim < 4
+                else torch.stack(
+                    list(map(self.transform, image))
+                )
+            ) 
         else:
             image_as_tensor = Tensor(image)
 
-        tile_height = image_as_tensor.shape[1]
-        tile_width = image_as_tensor.shape[2]
+        tile_height, tile_width = image_as_tensor.shape[-2:]
+        
 
-        model_input = image_as_tensor.unsqueeze(0).to(self.device)
+        model_input = (
+            image_as_tensor.unsqueeze(0).to(self.device) 
+            if image_as_tensor.ndim < 4 
+            else image_as_tensor.to(self.device)
+        )
 
+        if model_input.dtype != torch.float32:
+            model_input = model_input.float()
         model_output = self.model(model_input)
-
-        pixelwise_probabilities = nn.functional.softmax(model_output).cpu()[0, 1, :, :].numpy()
+        
+        #a.transpose(0, 3).transpose(0,2).transpose(0,1).shape
+        pixelwise_probabilities = nn.functional.softmax(model_output).cpu()[:, 1, :, :].numpy()
+        pixelwise_probabilities = pixelwise_probabilities.transpose(1, 2, 0)
         resized_probabilities = cv2.resize(
-            pixelwise_probabilities, (tile_height, tile_width), interpolation=cv2.INTER_LINEAR,
+            pixelwise_probabilities,
+            (tile_height, tile_width),
+            interpolation=cv2.INTER_LINEAR,
         )
         prediction_mask = (resized_probabilities * 255).astype(dtype=np.uint8)  # type: ignore
         return prediction_mask
 
     def run_inference_on_tile(self, tile: Tile) -> Tile:
-        print(f"\nRunning inference on tile with x: {tile['x']}, y: {tile['y']}")
+        # print(f"\nRunning inference on tile with x: {tile['x']}, y: {tile['y']}")
         predicted_mask = self.run_inference_on_image(tile["image"])
         predicted_tile: Tile = {"image": predicted_mask, "x": tile["x"], "y": tile["y"]}
-        print("\nDone")
+        # print("\nDone")
         return predicted_tile
 
-    def run_inference_on_dataset(self, tile_fetcher: WSITileFetcher) -> ndarray:
+    def run_inference_on_dataset(self, tile_fetcher: Type[WSITileFetcher]) -> ndarray:
         """
         Fetch and run model inference on WSI tiles and combine results into
         a single ndarray of the same width and height as the original WSI tile
@@ -91,8 +111,22 @@ class InferenceRunner:
 
         # TODO inject rather than hardcode
         return combine_tiles(
-            predicted_tiles, tile_fetcher.upper_left, tile_fetcher.height, tile_fetcher.width,
+            predicted_tiles,
+            tile_fetcher.upper_left,
+            tile_fetcher.height,
+            tile_fetcher.width,
         )
 
     def __call__(self, input_dataset) -> ndarray:
         return self.run_inference_on_dataset(input_dataset)
+
+    def run_batched_inference_on_dataset(self, tile_fetcher: Type[WSITileFetcher]):
+        img_batch, coords = batch_tiles(tile_fetcher)
+        pred_masks = self.run_inference_on_image(img_batch)
+        predicted_tiles = unbatch_predictions(pred_masks, coords)
+        return combine_tiles(
+            predicted_tiles,
+            tile_fetcher.upper_left,
+            tile_fetcher.height,
+            tile_fetcher.width,
+        )

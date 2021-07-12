@@ -15,8 +15,8 @@ from app.output_serializer import result_to_collection
 from data.preprocessing import raw_test_transform
 from data.wsi_tile_fetcher import WSITileFetcher
 
-DEFAULT_MODEL_PATH = "../model/hacking_kidney_16934_best_metric.model-384e1332.pth"
 
+DEFAULT_MODEL_PATH = "data_empaia/hacking_kidney_16934_best_metric.model-384e1332.pth"
 
 parser = argparse.ArgumentParser(description="Detect glomeruli on kidney wsi")
 parser.add_argument("--model", dest="model_path", default=DEFAULT_MODEL_PATH)

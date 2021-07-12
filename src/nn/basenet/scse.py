@@ -32,7 +32,8 @@ class SCSEBlock(nn.Module):
         )
 
         self.spatial_se = nn.Sequential(
-            nn.Conv2d(channel, 1, kernel_size=1, stride=1, padding=0, bias=False), nn.Sigmoid(),
+            nn.Conv2d(channel, 1, kernel_size=1, stride=1, padding=0, bias=False),
+            nn.Sigmoid(),
         )
 
     def forward(self, x):
