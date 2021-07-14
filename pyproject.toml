@@ -6,23 +6,28 @@ authors = ["Theodore Evans <theodore.evans@dai-labor.de>", "Emirhan Karagül <em
 license = "GNU General Public License v3.0"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7.1"
 torch = "^1.8.0"
 torchvision = "^0.9.1"
 opencv_python = "^4.5.1.48"
 requests = "2.25.1"
-numpy = "1.20.2"
+numpy = "^1.19.0"
 pandas = "1.2.4"
 Pillow = "8.2.0"
 streamlit = "0.81.1"
 tifffile = "2020.9.3"
 typing-extensions = "3.7.4.3"
 imagecodecs = "^2021.4.28"
+nptyping = "^1.4.2"
+scipy = "^1.5"
+matplotlib = "^3.4.2"
+numba = "0.50.1"
+empaia-xai-cem = {path = "../constrastive-explaination-prototype", develop = true}
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.5b0", allow-prereleases = true}
 isort = "5.8.0"
-openslide-python = "^1.1.2"
+
 
 [tool.black]
 line-length = 110

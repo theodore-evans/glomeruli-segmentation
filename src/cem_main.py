@@ -5,6 +5,7 @@ from app.inference_runner import InferenceRunner
 from data.preprocessing import raw_test_transform
 
 from cem import *
+from cem.app.quantizer import CEMQuantizer, EntityMethod, RelativeSumMethod
 
 def main():
     api = API()
@@ -19,7 +20,8 @@ def main():
         return api.get_wsi_tile(kidney_wsi, rect)
 
     tile_fetcher = CEMTileFetcher(tile_request, api.get_input("my_rectangle"))
-    quantizer = CEMQuantizer(sum)
+    # quantizer = EntityMethod(sum)
+    quantizer: CEMQuantizer = RelativeSumMethod(scale=20.0)
     infer_wrapper = CEMInferenceWrapper(inference, tile_fetcher, quantizer)
 
     cem = CEM(
@@ -29,15 +31,16 @@ def main():
         org_img=tile_fetcher._orig_region,
         c=1,
         beta=1e-1,
-        l1=0.0001,
-        l2=0.0001,
+        l1=0.000001,
+        l2=0.000001,
         gamma=0,
-        K=2.0,
-        mu=None,
-        max_iter=50,
+        K=30.0,
+        mu=80000,
+        max_iter=20,
     )
 
     res = cem.run()
+    res
 
 
 if __name__ == "__main__":

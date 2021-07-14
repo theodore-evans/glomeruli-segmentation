@@ -117,10 +117,7 @@ class InferenceRunner:
             tile_fetcher.width,
         )
 
-    def __call__(self, input_dataset) -> ndarray:
-        return self.run_inference_on_dataset(input_dataset)
-
-    def run_batched_inference_on_dataset(self, tile_fetcher: Type[WSITileFetcher]):
+    def run_batched_inference_on_dataset(self, tile_fetcher: Type[WSITileFetcher]) -> ndarray:
         img_batch, coords = batch_tiles(tile_fetcher)
         pred_masks = self.run_inference_on_image(img_batch)
         predicted_tiles = unbatch_predictions(pred_masks, coords)
@@ -130,3 +127,8 @@ class InferenceRunner:
             tile_fetcher.height,
             tile_fetcher.width,
         )
+
+    def __call__(self, input_dataset) -> ndarray:
+        return self.run_inference_on_dataset(input_dataset)
+
+    
