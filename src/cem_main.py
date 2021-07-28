@@ -1,28 +1,30 @@
-from math import gamma
+from typing import Type
+
 from app.mock_api import MockAPI as API
 from app.inference_runner import InferenceRunner
+from app.model_api import ModelAPI
+from data.tile_fetcher import TileFetcher
 
 from data.preprocessing import raw_test_transform
 
 from cem import *
-from cem.app.quantizer import CEMQuantizer, EntityMethod, RelativeSumMethod
 
 def main():
     api = API()
-    inference = InferenceRunner(
-        "data_empaia/hacking_kidney_16934_best_metric.model-384e1332.pth", data_transform=raw_test_transform()
-    )
-
-    # tile fetcher for defined rectangle, write cem tile fetcher
     kidney_wsi = api.get_input("kidney_wsi")
 
     def tile_request(rect):
         return api.get_wsi_tile(kidney_wsi, rect)
 
-    tile_fetcher = CEMTileFetcher(tile_request, api.get_input("my_rectangle"))
-    # quantizer = EntityMethod(sum)
-    quantizer: CEMQuantizer = RelativeSumMethod(scale=20.0)
-    infer_wrapper = CEMInferenceWrapper(inference, tile_fetcher, quantizer)
+    inference = InferenceRunner(
+        "data_empaia/hacking_kidney_16934_best_metric.model-384e1332.pth", data_transform=raw_test_transform()
+    )
+    tile_fetcher = TileFetcher(tile_request, api.get_input("my_rectangle"))
+    model_api = ModelAPI(inference, tile_fetcher)
+
+
+    quantizer: Type[CEMQuantizer] = RelativeSumMethod(scale=20.0)
+    infer_wrapper = CEMInferenceWrapper(model_api, quantizer)
 
     cem = CEM(
         mode="PP",

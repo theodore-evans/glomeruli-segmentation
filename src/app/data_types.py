@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Union
 
 from numpy import ndarray
 from PIL.Image import Image
@@ -36,8 +36,8 @@ class Rectangle(TypedDict):
 
 TileRequest = Callable[[Rectangle], Image]
 
-
 class Tile(TypedDict):
     image: ndarray
     x: int
     y: int
+

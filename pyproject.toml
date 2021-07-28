@@ -23,6 +23,8 @@ scipy = "^1.5"
 matplotlib = "^3.4.2"
 numba = "0.50.1"
 empaia-xai-cem = {path = "../constrastive-explaination-prototype", develop = true}
+pdoc3 = "^0.9.2"
+tensorflow = "^2.5.0"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.5b0", allow-prereleases = true}
