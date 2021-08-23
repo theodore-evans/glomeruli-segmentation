@@ -13,8 +13,8 @@ RECT_ID = "37bd11b8-3995-4377-bf57-e718e797d516"
 SAMPLE_IMAGE_FILE = "data_empaia/new_converted_kidney_bigtiles.tif"
 OUTPUT_DIRECTORY = "../outputs"
 
-RECT_WIDTH = 2048
-RECT_HEIGHT = 2048
+RECT_WIDTH = 1024
+RECT_HEIGHT = 1024
 
 
 class MockAPI:
@@ -40,7 +40,7 @@ class MockAPI:
                 levels=[Level(extent=extent, downsample_factor=1, generated=False)],
             )
         elif key == "my_rectangle":
-            return Rectangle(id=RECT_ID, upper_left=[15000, 7000], width=RECT_WIDTH, height=RECT_HEIGHT)
+            return Rectangle(id=RECT_ID, upper_left=[15500, 8000], width=RECT_WIDTH, height=RECT_HEIGHT)
 
     def post_output(self, key: str, data: dict) -> dict:
         """

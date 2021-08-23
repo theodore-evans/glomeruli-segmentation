@@ -65,10 +65,10 @@ class InferenceRunner:
                 )
             ) 
         else:
-            image_as_tensor = Tensor(image)
+            # channels first, [batch size, channels, width, height]
+            image_as_tensor = Tensor(np.moveaxis(image, -1, 1))
 
         tile_height, tile_width = image_as_tensor.shape[-2:]
-        
 
         model_input = (
             image_as_tensor.unsqueeze(0).to(self.device) 

@@ -1,5 +1,7 @@
 from typing import Type
 
+from cem.lib import quantizer
+
 from app.mock_api import MockAPI as API
 from app.inference_runner import InferenceRunner
 from app.model_api import ModelAPI
@@ -23,8 +25,9 @@ def main():
     model_api = ModelAPI(inference, tile_fetcher)
 
 
-    quantizer: Type[CEMQuantizer] = RelativeSumMethod(scale=20.0)
-    infer_wrapper = CEMInferenceWrapper(model_api, quantizer)
+    # quantizer: Type[InferenceQuantizer] = RelativeSumMethod(scale=20.0)
+    quantizer: Type[InferenceQuantizer] = EntityMethod()
+    infer_wrapper = InferenceWrapper(model_api, quantizer)
 
     cem = CEM(
         mode="PP",
@@ -32,12 +35,11 @@ def main():
         AE=None,
         org_img=tile_fetcher._orig_region,
         c=1,
-        beta=1e-1,
         l1=0.000001,
         l2=0.000001,
         gamma=0,
         K=30.0,
-        mu=80000,
+        mu=None,
         max_iter=20,
     )
 

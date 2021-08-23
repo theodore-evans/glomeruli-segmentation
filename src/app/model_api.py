@@ -11,3 +11,6 @@ class ModelAPI():
     def __call__(self, image: np.ndarray, *args, **kwds) -> np.ndarray: 
         self.tile_fetcher.region = image
         return self.inference_runner.run_batched_inference_on_dataset(self.tile_fetcher)
+
+    def infer(self, image: np.ndarray, *args, **kwds) -> np.ndarray:
+        return self.inference_runner.run_inference_on_image(image)
