@@ -10,7 +10,7 @@ from app.data_types import WSI, Level, Rectangle, Vector3
 KIDNEY_WSI_ID = "37bd11b8-3995-4377-bf57-e718e797d515"
 RECT_ID = "37bd11b8-3995-4377-bf57-e718e797d516"
 
-SAMPLE_IMAGE_FILE = "data_empaia/new_converted_kidney_bigtiles.tif"
+SAMPLE_IMAGE_FILE = "/home/users/anhtuanromanle9/dai/data_empaia/new_converted_kidney_bigtiles.tif"
 OUTPUT_DIRECTORY = "../outputs"
 
 RECT_WIDTH = 1024
