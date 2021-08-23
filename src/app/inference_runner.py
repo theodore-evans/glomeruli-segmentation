@@ -65,10 +65,10 @@ class InferenceRunner:
                 )
             ) 
         else:
-            image_as_tensor = Tensor(image)
+            # channels first, [batch size, channels, width, height]
+            image_as_tensor = Tensor(np.moveaxis(image, -1, 1))
 
         tile_height, tile_width = image_as_tensor.shape[-2:]
-        
 
         model_input = (
             image_as_tensor.unsqueeze(0).to(self.device) 
@@ -81,7 +81,7 @@ class InferenceRunner:
         model_output = self.model(model_input)
         
         #a.transpose(0, 3).transpose(0,2).transpose(0,1).shape
-        pixelwise_probabilities = nn.functional.softmax(model_output).cpu()[:, 1, :, :].numpy()
+        pixelwise_probabilities = nn.functional.softmax(model_output).cpu()[:, 1, :, :].detach().numpy()
         pixelwise_probabilities = pixelwise_probabilities.transpose(1, 2, 0)
         resized_probabilities = cv2.resize(
             pixelwise_probabilities,
