@@ -5,6 +5,11 @@ A demonstrator app derived from an inference model developed by Tuguldur Erdene-
 > [The] challenge is to detect functional tissue units (FTUs) across different tissue preparation pipelines. An FTU is defined as a “three-dimensional block of cells centered around a capillary, such that each cell in this block is within diffusion distance from any other cell in the same block” (de Bo
 no, 2013). The goal of this competition is the implementation of a successful and robust glomeruli FTU detector. &mdash; <cite>“HuBMAP - Hacking the Kidney.” Accessed February 28, 2021. https://kaggle.com/c/hubmap-kidney-segmentation.</cite>
 
+## Building the app image
+
+- Clone the project
+- In the project directory, `docker build <optional arguments> .` (requires internet access to download pre-trained model weights)
+
 ## App outputs in EATS web client
 
 ![](assets/app_screenshot.png)
