@@ -34,7 +34,7 @@ RUN python3 -m venv $VIRTUAL_ENV
 RUN /opt/venv/bin/python3 -m pip install --upgrade pip
 RUN pip3 install -r /tmp/requirements.txt
 
-COPY ./hubmap_hacking_kidney /app
+COPY ./src /app
 
 # Download model weights
 RUN mkdir -p /model && curl -OJ https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy/download && mv hacking_kidney_16934_best_metric.model-384e1332.pth /model
