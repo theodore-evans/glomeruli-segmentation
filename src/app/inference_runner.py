@@ -64,7 +64,7 @@ class InferenceRunner:
 
         model_output = self.model(model_input)
 
-        pixelwise_probabilities = nn.functional.softmax(model_output).cpu()[0, 1, :, :].numpy()
+        pixelwise_probabilities = nn.functional.softmax(model_output).to(self.device)[0, 1, :, :].numpy()
         resized_probabilities = cv2.resize(
             pixelwise_probabilities,
             (tile_height, tile_width),
