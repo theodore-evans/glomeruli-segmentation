@@ -1,3 +1,4 @@
+import enum
 from typing import List
 
 import numpy as np
@@ -49,3 +50,18 @@ def combine_tiles(
 
     combined_image /= n
     return combined_image.astype(np.uint8)
+
+
+def unbatch_predictions(pred_masks: np.ndarray, coords: dict) -> List[Tile]:
+    if pred_masks.ndim > 2:
+        pred_masks = pred_masks.transpose(2, 0, 1)
+        predicted_tiles = [None] * pred_masks.shape[0]
+        for idx, pred in enumerate(pred_masks):
+            predicted_tiles[idx] = Tile(
+                image=pred, x=coords[idx]["x"], y=coords[idx]["y"]
+            )
+    else:
+        predicted_tiles = [
+            Tile(image=pred_masks, x=coords[0]["x"], y=coords[0]["y"]
+        )]
+    return predicted_tiles
