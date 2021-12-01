@@ -151,6 +151,8 @@ notepad.py
 
 # Output files
 outputs/
+job-outputs/
 
 # EATS job files
 job.env
+app.env
