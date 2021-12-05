@@ -1,6 +1,6 @@
 # HuBMAP Kidney Segmentation App
 
-A demonstrator app derived from an inference model developed by Tuguldur Erdene-Ochir (TU-Berlin) and Yuan Xu (TU-Berlin) for submission to the Kaggle challenge [**HuBMAP: Hacking the Kidney** - Identify glomeruli in human kidney tissue images](https://www.kaggle.com/c/hubmap-kidney-segmentation). 
+A demonstrator app for the EMPAIA App Test Suite, wrapping an inference model developed by Tuguldur Erdene-Ochir and Yuan Xu (TU-Berlin) for the Kaggle challenge [**HuBMAP: Hacking the Kidney** - Identify glomeruli in human kidney tissue images](https://www.kaggle.com/c/hubmap-kidney-segmentation). 
 
 > [The] challenge is to detect functional tissue units (FTUs) across different tissue preparation pipelines. An FTU is defined as a “three-dimensional block of cells centered around a capillary, such that each cell in this block is within diffusion distance from any other cell in the same block” (de Bo
 no, 2013). The goal of this competition is the implementation of a successful and robust glomeruli FTU detector. &mdash; <cite>“HuBMAP - Hacking the Kidney.” Accessed February 28, 2021. https://kaggle.com/c/hubmap-kidney-segmentation.</cite>
