@@ -8,7 +8,7 @@ no, 2013). The goal of this competition is the implementation of a successful an
 ## Building the app image
 
 - Clone the project
-- In the project directory, `docker build <optional arguments> .` (requires internet access to download pre-trained model weights)
+- In the project directory, `docker build <build arguments> .`
 
 ## App outputs in EATS web client
 
@@ -19,7 +19,7 @@ no, 2013). The goal of this competition is the implementation of a successful an
  > [...] The HuBMAP data used in this hackathon includes 11 fresh frozen and 9 Formalin Fixed Paraffin Embedded (FFPE) PAS kidney images. Glomeruli FTU annotations exist for all 20 tissue samples; some of these will be shared for training, and others will be used to judge submissions.
 > There are over 600,000 glomeruli in each human kidney (Nyengaard, 1992). Normal glomeruli typically range from 100-350μm in diameter with a roughly spherical shape (Kannan, 2019).  &mdash; <cite>“HuBMAP - Hacking the Kidney.” Accessed February 28, 2021. https://kaggle.com/c/hubmap-kidney-segmentation/data.</cite>
 
-  **Download from** [**Kaggle**](https://www.kaggle.com/c/hubmap-kidney-segmentation/data) and ensure that the directory contains the following files:
+  Available from [**Kaggle**](https://www.kaggle.com/c/hubmap-kidney-segmentation/data):
 
   ```
   tree -L 1 /data/hubmap-kidney-segmentation
