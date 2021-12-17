@@ -34,7 +34,6 @@ no, 2013). The goal of this competition is the implementation of a successful an
 * The model was trained on 13 TIFF files of 500MB - 5GB each, with metadata and annotations in polygon and RLE formats
 
 ## Model
-  **Download from** [**NextCloud**](https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy). Email <theodore.evans@dai-labor.de> for access. **Do not distribute.**
 * `hacking_kidney_16934_best_metric.model-384e1332.pth`
   * single fold/model kaggle LB: 0.873
   * input patch 1024x1024
