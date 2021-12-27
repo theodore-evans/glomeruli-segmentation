@@ -14,7 +14,6 @@ from numpy import ndarray
 from torch import Tensor
 from torchvision.transforms import Compose
 
-
 class InferenceRunner:
     def __init__(self, model_path: str, data_transform: Optional[Compose] = None) -> None:
         """
@@ -29,6 +28,7 @@ class InferenceRunner:
             data_transform: Optional transform of type torchvision.transforms.Compose to apply before inference
 
         """
+        
         self.device = torch.device("cuda" if cuda.is_available() else "cpu")
 
         print(f"Using {model_path} on {self.device.type.upper()}")
