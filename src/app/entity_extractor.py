@@ -16,9 +16,9 @@ class ExtractedEntities:
 
 
 class EntityExtractor:
-    def __init__(self, upper_left: List[int], threshold: float = 0.5):
+    def __init__(self, origin: List[int], threshold: float = 0.5):
         self.threshold = threshold
-        self.upper_left = upper_left
+        self.origin = origin
 
     def threshold_mask(self, segmentation_mask: ndarray) -> ndarray:
         threshold_value = int(self.threshold * 255)
@@ -35,7 +35,7 @@ class EntityExtractor:
         mean_pixel_confidence = np.mean(pixel_confidences) / 255.0
         return mean_pixel_confidence
 
-    def extract_entities(self, segmentation_mask: ndarray) -> ExtractedEntities:
+    def extract_from_mask(self, segmentation_mask: ndarray) -> ExtractedEntities:
         """
         Extract coutours and confidences from segmentation mask
         """
@@ -45,6 +45,6 @@ class EntityExtractor:
             self.get_contour_confidence(segmentation_mask, thresholded_mask, contour) for contour in contours
         ]
 
-        contours = [(contour.squeeze() + self.upper_left).tolist() for contour in contours]
+        contours = [(contour.squeeze() + self.origin).tolist() for contour in contours]
 
         return ExtractedEntities(contours, confidences)
