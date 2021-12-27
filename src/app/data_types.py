@@ -1,5 +1,4 @@
-from dataclasses import dataclass
-from typing import Callable, List, Tuple
+from typing import Callable, List
 
 from numpy import ndarray
 from PIL.Image import Image

@@ -1,5 +1,4 @@
-import asyncio
-from typing import NoReturn, Optional
+from typing import Optional
 
 import cv2
 import numpy as np

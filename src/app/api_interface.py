@@ -1,17 +1,14 @@
-import logging
-
 from io import BytesIO
 
 import requests
 from PIL import Image
 from request_hooks import check_for_errors_hook, response_logging_hook
-from logging_tools import get_logger
+from logging_tools import get_logger, get_log_level
 
 
 class ApiInterface:
     def __init__(self, verbosity: int, parameters: dict):
-        log_level = max(logging.WARN - 10 * verbosity, logging.DEBUG)
-        self.logger = get_logger(__name__, log_level)
+        self.logger = get_logger(__name__, get_log_level(verbosity))
         
         try:
             self.api_url = parameters["EMPAIA_APP_API"]
