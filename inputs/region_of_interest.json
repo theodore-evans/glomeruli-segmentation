@@ -1,5 +1,5 @@
 {
-  "name": "my_rectangle",
+  "name": "region_of_interest",
   "type": "rectangle",
   "upper_left": [10000, 3000],
   "width": 2048,
