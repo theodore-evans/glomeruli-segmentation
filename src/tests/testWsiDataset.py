@@ -1,32 +1,46 @@
 import unittest
 
-import tifffile
-from app.data_types import Rectangle
-from app.mock_api import MockAPI
-from data.postprocessing import combine_tiles
-from data.wsi_tile_fetcher import WSITileFetcher
-from numpy import ndarray
 from PIL import Image
+from app.data_types import TileRequest
+
+from app.tile_loader import TileLoader
+from data.postprocessing import combine_tiles
+from numpy import ndarray
+import numpy as np
+
+from tests.mock_api import MockAPI
 
 
 class TestWSIDataset(unittest.TestCase):
     def setUp(self):
-        self.image_size = (2048, 2048)
-        sample_image_file = "/data/hubmap-kidney-segmentation/test/26dc41664.tiff"
-        self.mock_api = MockAPI(sample_image_file)
-        self.wsi_tile_fetcher = WSITileFetcher(self.mock_api.mock_tile_request, self.image_size)
+        self.tile_size = (1024, 1024)
+        fake_image_data = np.full((2000,3000,3), 255)
+        api = MockAPI(fake_image_data)
 
-    def test_that_tile_fetcher_provides_a_tile_on_getitem(self):
-        first_tile = self.wsi_tile_fetcher[0]["image"]
+        slide = api.get_input("slide")
+        self.roi = api.get_input("region_of_interest")
+        self.roi_origin = self.roi["upper_left"]
+        self.roi_width = self.roi["width"]
+        self.roi_height = self.roi["height"]
+
+        tile_request: TileRequest = lambda x: api.get_wsi_tile(slide, x)
+
+        self.tile_loader = TileLoader(tile_request, self.roi)
+        self.roi_image: ndarray = np.asarray(tile_request(self.roi))
+
+    def test_that_tile_loader_provides_a_tile(self):
+        first_tile = self.tile_loader[0]["image"]
         self.assertIsInstance(first_tile, ndarray)
-        self.assertEqual(first_tile.shape, (1024, 1024, 3))
+        self.assertEqual(first_tile.shape, (*self.tile_size, 3))
 
     def test_that_combine_tiles_combines_tiles(self):
         tiles = []
-        for tile in self.wsi_tile_fetcher:
+        for tile in self.tile_loader:
             tile["image"] = tile["image"][:, :, 0]
             tiles.append(tile)
 
-        combined_tiles = combine_tiles(tiles, *self.image_size)
-        self.assertEqual(combined_tiles.shape, self.image_size)
-        self.assertEqual(len(tiles), 4)
+        combined_tiles = combine_tiles(tiles, self.roi_origin, self.roi_width, self.roi_height)
+
+        self.assertEqual(len(tiles), 6)
+        self.assertEqual(combined_tiles.shape, (self.roi_height, self.roi_width))
+        self.assertTrue(np.equal(combined_tiles, self.roi_image))

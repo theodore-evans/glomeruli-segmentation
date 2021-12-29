@@ -1,13 +1,15 @@
+from logging import Logger
 from typing import Optional, Tuple
 
 import numpy as np
 from app.data_types import Rectangle, Tile, TileRequest
+from app.logging_tools import get_logger
 from data.dataset import Dataset
 from numpy import ndarray
 from PIL import Image
 
 
-class WSITileFetcher(Dataset):
+class TileLoader(Dataset):
     def __init__(
         self,
         tile_request: TileRequest,
@@ -15,6 +17,7 @@ class WSITileFetcher(Dataset):
         window_size: int = 1024,
         level: int = 0,
         image_stride: Optional[int] = None,
+        logger: Logger = get_logger(),
     ) -> None:
         """
         Description:
@@ -33,90 +36,44 @@ class WSITileFetcher(Dataset):
         self.window_size = window_size
         self.level = level
         self.image_stride = image_stride if image_stride is not None else window_size
+        self.logger = logger
+        self.wsi_region = wsi_region
 
-        self.upper_left = wsi_region["upper_left"]
-        self.original_size = (wsi_region["width"], wsi_region["height"])
-
-        self.cols: int = self.width - self.window_size
-        self.rows: int = self.height - self.window_size
+        # self.cols: int = self.width - self.window_size
+        # self.rows: int = self.height - self.window_size
 
         self.offset_x = list(
             range(
-                self.upper_left[0],
-                self.upper_left[0] + self.width - self.window_size + self.image_stride,
+                self.origin[0],
+                self.origin[0] + self.width - self.window_size + self.image_stride,
                 self.image_stride,
             )
         )
         self.offset_y = list(
             range(
-                self.upper_left[1],
-                self.upper_left[1] + self.height - self.window_size + self.image_stride,
+                self.origin[1],
+                self.origin[1] + self.height - self.window_size + self.image_stride,
                 self.image_stride,
             )
         )
 
-        self.offset_x[-1] = self.shift_offset_into_image(self.offset_x[-1], self.upper_left[0] + self.width)
-        self.offset_y[-1] = self.shift_offset_into_image(self.offset_y[-1], self.upper_left[1] + self.height)
+        self.offset_x[-1] = self.shift_offset_into_image(self.offset_x[-1], self.origin[0] + self.width)
+        self.offset_y[-1] = self.shift_offset_into_image(self.offset_y[-1], self.origin[1] + self.height)
+
+    @property
+    def origin(self) -> Tuple[int, int]:
+        """Wsi region origin (upper left in wsi coordinates"""
+        return self.wsi_region["upper_left"]
 
     @property
     def height(self) -> int:
         """Original wsi image height"""
-        return self.original_size[1]
+        return self.wsi_region["height"]
 
     @property
     def width(self) -> int:
         """Original wsi image width"""
-        return self.original_size[0]
-
-    def fetch_tile(self, x: int, y: int, width: int, height: int) -> ndarray:
-        """
-        Fetch a tile of image data from y:y + height, x:x + width from the
-        EMPAIA API using the tile_request call provided in the constructor
-        """
-        tile_rectangle: Rectangle = {
-            "upper_left": [x, y],
-            "width": width,
-            "height": height,
-            "level": self.level,
-        }
-
-        wsi_tile: Image.Image = self.tile_request(tile_rectangle)
-        tile_as_array = np.asarray_chkfinite(wsi_tile).squeeze()
-
-        if tile_as_array.shape[0] == 3:
-            tile_as_array = np.transpose(tile_as_array, (1, 2, 0))
-        if tile_as_array.shape[2] != 3:
-            raise ValueError(
-                f"""
-                Expected image data with 3 channels, instead got {tile_as_array.shape[2]}
-                """
-            )
-
-        return tile_as_array
-
-    def shift_offset_into_image(self, x: int, max_x: int) -> int:
-        """
-        Shift offset to make entire window lie within the image
-        """
-        if x + self.window_size > max_x:
-            x = max_x - self.window_size
-        return x
-
-    def getitem(self, index: int) -> Tile:
-        """
-        Retrieve a dictionary containing image data and x and y
-        coordinates for the position of the bottom left corner of the tile
-        """
-        x, y = self.get_offset(index)
-        image = self.fetch_tile(x, y, self.window_size, self.window_size)
-        tile: Tile = {"image": image, "x": x, "y": y}
-        return tile
-
-    def __len__(self) -> int:
-        return len(self.offset_x) * len(self.offset_y)
-
-    def __getitem__(self, index: int) -> Tile:
-        return self.getitem(index)
+        return self.wsi_region["width"]
 
     def get_offset(self, index: int) -> Tuple[int, int]:
         """
@@ -128,3 +85,47 @@ class WSITileFetcher(Dataset):
         x = self.offset_x[x_i]
         y = self.offset_y[y_i]
         return x, y
+
+    def shift_offset_into_image(self, x: int, max_x: int) -> int:
+        """
+        Shift offset to make entire window lie within the image
+        """
+        if x + self.window_size > max_x:
+            x = max_x - self.window_size
+        return x
+
+    def __getitem__(self, index: int) -> Tile:
+        return self.getitem(index)
+
+    def getitem(self, index: int) -> Tile:
+        """
+        Retrieve a dictionary containing image data and x and y
+        coordinates for the position of the bottom left corner of the tile
+        """
+        x, y = self.get_offset(index)
+
+        tile_rectangle: Rectangle = {
+            "upper_left": [x, y],
+            "width": self.window_size,
+            "height": self.window_size,
+            "level": self.level,
+        }
+
+        wsi_tile: Image.Image = self.tile_request(tile_rectangle)
+        tile_as_array: np.ndarray = np.asarray_chkfinite(wsi_tile).squeeze()
+
+        # try:
+        #     tile_as_array = np.transpose(tile_as_array, (1, 2, 0))
+        # except ValueError as e:
+        #     self.logger.error(
+        #         f"""
+        #         Expected image data with 3 channels, instead got {tile_as_array.shape[2]}
+        #         """
+        #     )
+        #     raise e
+
+        tile: Tile = {"image": tile_as_array, "x": x, "y": y}
+        return tile
+
+    def __len__(self) -> int:
+        return len(self.offset_x) * len(self.offset_y)

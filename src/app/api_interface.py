@@ -1,28 +1,25 @@
 from io import BytesIO
+from logging import Logger
 
 import requests
+from app.logging_tools import get_logger
 from PIL import Image
 from request_hooks import check_for_errors_hook, response_logging_hook
-from logging_tools import get_logger, get_log_level
 
 
 class ApiInterface:
-    def __init__(self, verbosity: int, parameters: dict):
-        self.logger = get_logger(__name__, get_log_level(verbosity))
-        
-        try:
-            self.api_url = parameters["EMPAIA_APP_API"]
-            self.job_id = parameters["EMPAIA_JOB_ID"]
-            self.headers = parameters["HEADERS"]
-        except KeyError as e:
-            self.logger.error("Missing EMPAIA API query parameters")
-            raise e
+    def __init__(self, api_url: str, job_id: str, headers: str, logger: Logger = get_logger()):
+
+        self.logger = logger
+        self.api_url = api_url
+        self.job_id = job_id
+        self.headers = headers
 
         self.logger.info(f"{self.api_url=} {self.job_id=}")
 
         self.session = requests.Session()
-        hooks = [check_for_errors_hook, response_logging_hook]
-        self.session.hooks["response"] = [hook(self.logger) for hook in hooks]
+        request_hooks = [check_for_errors_hook, response_logging_hook]
+        self.session.hooks["response"] = [hook(self.logger) for hook in request_hooks]
 
     def get_input(self, key: str) -> dict:
         """

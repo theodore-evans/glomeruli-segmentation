@@ -2,64 +2,61 @@ import argparse
 import os
 
 from app.api_interface import ApiInterface
+from app.data_types import TileRequest
 from app.entity_extractor import EntityExtractor
-from app.inference_runner import InferenceRunner
-from app.output_serializer import result_to_collection
-from data.preprocessing import raw_test_transform
-from data.wsi_tile_fetcher import WSITileFetcher
-from app.logging_tools import get_logger, get_log_level
+from app.inference import InferenceRunner
+from app.logging_tools import get_log_level, get_logger
+from app.serialization import result_to_collection
+from app.tile_loader import TileLoader
 
 DEFAULT_MODEL_PATH = "../model/hacking_kidney_16934_best_metric.model-384e1332.pth"
 
+
 def main(model_path: str, verbosity: int):
-    logger = get_logger(__name__, get_log_level(verbosity))
-    query_parameters = dict()
+    app_log_level = get_log_level(verbosity)
+    logger = get_logger("main", app_log_level)
 
     try:
-        query_parameters.api_url = os.environ["EMPAIA_APP_API"]
-        query_parameters.job_id = os.environ["EMPAIA_JOB_ID"]
-        query_parameters.headers = {"Authorization": f"Bearer {os.environ['EMPAIA_TOKEN']}"}
+        api_url = os.environ["EMPAIA_APP_API"]
+        job_id = os.environ["EMPAIA_JOB_ID"]
+        headers = {"Authorization": f"Bearer {os.environ['EMPAIA_TOKEN']}"}
     except KeyError as e:
         logger.error("Missing EMPAIA API environment variables")
         raise e
 
-    api = ApiInterface(verbosity, query_parameters)
+    api = ApiInterface(verbosity, api_url, job_id, headers, logger=get_logger("api", app_log_level))
 
-    inference_runner = InferenceRunner(model_path, data_transform=raw_test_transform())
-
-
-    my_rectangle = api.get_input("region_of_interest")
+    roi = api.get_input("region_of_interest")
     slide = api.get_input("kidney_wsi")
-    upper_left = my_rectangle["upper_left"]
-    size_to_process = (my_rectangle["width"], my_rectangle["height"])
+    roi_origin = roi["upper_left"]
+    # size_to_process = (roi["width"], roi["height"])
 
+    tile_request: TileRequest = lambda x: api.get_wsi_tile(slide, x)
+    tile_loader = TileLoader(tile_request, roi, logger=get_logger("tile_loader", app_log_level))
 
-    def tile_request(rect):
-        return api.get_wsi_tile(slide, rect)
+    inference_runner = InferenceRunner(model_path, logger=get_logger("inference", app_log_level))
+    output_mask = inference_runner(tile_loader)
 
-
-    tile_fetcher = WSITileFetcher(tile_request, my_rectangle)
-    output_mask = inference_runner(tile_fetcher)
-
-    entity_extractor = EntityExtractor(origin=upper_left)
+    entity_extractor = EntityExtractor(origin=roi_origin)
     extracted_entities = entity_extractor.extract_from_mask(output_mask)
 
     count_result = {"name": "Glomerulus Count", "type": "integer", "value": extracted_entities.count()}
 
     api.post_output(key="glomerulus_count", data=count_result)
 
-    contour_result = result_to_collection(extracted_entities, slide["id"], my_rectangle["id"])
+    contour_result = result_to_collection(extracted_entities, slide["id"], roi["id"])
 
     api.post_output(key="glomeruli_polygons", data=contour_result)
 
     api.put_finalize()
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Detect glomeruli on kidney wsi")
-    
+
     parser.add_argument("--model", dest="model_path", default=DEFAULT_MODEL_PATH)
     parser.add_argument("-v", "--verbose", help="increase logging verbosity", action="count", default=0)
 
     args = parser.parse_args()
-    
+
     main(args.model, args.verbose)

@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import Callable, List, Tuple
 
 from numpy import ndarray
 from PIL.Image import Image
@@ -27,7 +27,7 @@ class WSI(TypedDict):
 
 
 class Rectangle(TypedDict):
-    upper_left: List[int]
+    upper_left: Tuple[int, int]
     width: int
     height: int
     level: int
