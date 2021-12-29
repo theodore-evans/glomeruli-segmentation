@@ -31,12 +31,11 @@ class Rectangle(TypedDict):
     width: int
     height: int
     level: int
-
+    
 
 TileRequest = Callable[[Rectangle], Image]
 
 
 class Tile(TypedDict):
     image: ndarray
-    x: int
-    y: int
+    rect: Rectangle

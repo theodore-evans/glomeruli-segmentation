@@ -124,7 +124,7 @@ class TileLoader(Dataset):
         #     )
         #     raise e
 
-        tile: Tile = {"image": tile_as_array, "x": x, "y": y}
+        tile: Tile = {"image": tile_as_array, "rect": tile_rectangle}
         return tile
 
     def __len__(self) -> int:

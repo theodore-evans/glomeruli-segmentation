@@ -4,7 +4,7 @@ from PIL import Image
 from app.data_types import TileRequest
 
 from app.tile_loader import TileLoader
-from data.postprocessing import combine_tiles
+from util.combine_tiles import combine_tiles
 from numpy import ndarray
 import numpy as np
 
@@ -14,7 +14,7 @@ from tests.mock_api import MockAPI
 class TestWSIDataset(unittest.TestCase):
     def setUp(self):
         self.tile_size = (1024, 1024)
-        fake_image_data = np.full((2000,3000,3), 255)
+        fake_image_data = np.full((2000, 3000, 3), 255)
         api = MockAPI(fake_image_data)
 
         slide = api.get_input("slide")

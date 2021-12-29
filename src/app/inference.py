@@ -9,7 +9,7 @@ import torch.nn as nn
 from app.data_types import Tile
 from app.logging_tools import get_logger
 from app.tile_loader import TileLoader
-from data.postprocessing import combine_tiles
+from util.combine_tiles import combine_tiles
 from data.preprocessing import raw_test_transform
 from nn import load_model
 from nn.segnet import SegNet
@@ -79,7 +79,7 @@ class InferenceRunner:
     def run_inference_on_tile(self, tile: Tile) -> Tile:
         self.logger.info(f"\nRunning inference on tile with x: {tile['x']}, y: {tile['y']}")
         predicted_mask = self.run_inference_on_image(tile["image"])
-        predicted_tile: Tile = {"image": predicted_mask, "x": tile["x"], "y": tile["y"]}
+        predicted_tile: Tile = {"image": predicted_mask, "rect": tile["rect"]}
         self.logger.info("\nDone")
         return predicted_tile
 
@@ -97,6 +97,7 @@ class InferenceRunner:
 
         region = tile_loader.wsi_region
 
+        # TODO: fix this with changes to combine_tiles
         combined_mask = combine_tiles(
             predicted_tiles,
             region_upper_left=region["upper_left"],
@@ -104,7 +105,7 @@ class InferenceRunner:
             original_width=region["width"],
         )
 
-        return combined_mask
+        return combined_mask["image"]
 
     def __call__(self, input_dataset) -> ndarray:
         return self.run_inference_on_dataset(input_dataset)
