@@ -8,7 +8,8 @@ from data.dataset import Dataset
 from numpy import ndarray
 from PIL import Image
 
-
+# TODO: take Tile as parameter
+# TODO: reimplement from scratch
 class TileLoader(Dataset):
     def __init__(
         self,

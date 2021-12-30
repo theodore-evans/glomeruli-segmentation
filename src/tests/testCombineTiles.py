@@ -41,8 +41,7 @@ def test_combine_four_square_tiles():
 
 
 def test_recombine_square_tiles():
-    elements = [i for i in range(0, 20 * 20)]
-    original = np.reshape(elements, (20, 20))
+    original = np.arange(20*20).reshape(20, 20)
     tiles = _split_image_into_tiles(original, non_overlapping_squares)
 
     combined = combine_tiles(tiles)
@@ -50,8 +49,7 @@ def test_recombine_square_tiles():
 
 
 def test_recombine_non_square_tiles():
-    elements = [i for i in range(0, 20 * 30)]
-    original = np.reshape(elements, (20, 30))
+    original = np.arange(20*30).reshape(20, 30)
     rectangles = [
         Rectangle(upper_left=(0, 0), width=10, height=30, level=0),
         Rectangle(upper_left=(10, 0), width=10, height=30, level=0),
@@ -64,8 +62,7 @@ def test_recombine_non_square_tiles():
 
 
 def test_combine_one_single_tile():
-    elements = [i for i in range(0, 20 * 30)]
-    original = np.reshape(elements, (20, 30))
+    original = np.arange(20*30).reshape(20, 30)
     rectangle = Rectangle(upper_left=(0, 0), width=20, height=30, level=0)
 
     combined = combine_tiles([Tile(image=original, rect=rectangle)])
@@ -74,8 +71,7 @@ def test_combine_one_single_tile():
 
 
 def test_recombine_with_non_zero_origin():
-    elements = [i for i in range(0, 20 * 20)]
-    original = np.reshape(elements, (20, 20))
+    original = np.arange(20*20).reshape(20, 20)
     tiles = _split_image_into_tiles(original, non_overlapping_squares)
 
     for tile in tiles:
@@ -88,8 +84,7 @@ def test_recombine_with_non_zero_origin():
 
 def test_recombined_with_overlapping_tiles():
     shape = (15, 15)
-    elements = [i for i in range(0, shape[0] * shape[1])]
-    original = np.reshape(elements, shape)
+    original = np.arange(shape[0]*shape[1]).reshape(shape)
 
     rectangles = [
         Rectangle(upper_left=(0, 0), width=10, height=10, level=0),

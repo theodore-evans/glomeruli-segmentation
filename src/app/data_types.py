@@ -25,7 +25,7 @@ class WSI(TypedDict):
     tile_extent: Vector3
     levels: List[Level]
 
-
+# TODO: refactor into a dataclass
 class Rectangle(TypedDict):
     upper_left: Tuple[int, int]
     width: int

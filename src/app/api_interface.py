@@ -39,6 +39,7 @@ class ApiInterface:
 
         return r.json()
 
+    # TODO: have this actually return a Tile with image from content and rect from rectangle
     def get_wsi_tile(self, wsi_slide: dict, rectangle: dict) -> Image.Image:
         """
         get a WSI tile on level 0
@@ -52,7 +53,7 @@ class ApiInterface:
         height = rectangle["height"]
 
         wsi_id = wsi_slide["id"]
-        level = 0
+        level = rectangle["level"]
 
         tile_url = f"{self.api_url}/v0/{self.job_id}/regions/{wsi_id}/level/{level}/start/{x}/{y}/size/{width}/{height}"
 
