@@ -1,14 +1,13 @@
 import unittest
 
-from PIL import Image
-from app.data_types import TileRequest
-
-from app.tile_loader import TileLoader
-from util.combine_tiles import combine_tiles
-from numpy import ndarray
 import numpy as np
+from app.data_types import TileGetter
+from app.tile_loader import TileLoader
+from numpy import ndarray
+from PIL import Image
 
 from tests.mock_api import MockAPI
+from util.combine_tiles import combine_tiles
 
 
 class TestWSIDataset(unittest.TestCase):
@@ -23,7 +22,7 @@ class TestWSIDataset(unittest.TestCase):
         self.roi_width = self.roi["width"]
         self.roi_height = self.roi["height"]
 
-        tile_request: TileRequest = lambda x: api.get_wsi_tile(slide, x)
+        tile_request: TileGetter = lambda x: api.get_wsi_tile(slide, x)
 
         self.tile_loader = TileLoader(tile_request, self.roi)
         self.roi_image: ndarray = np.asarray(tile_request(self.roi))

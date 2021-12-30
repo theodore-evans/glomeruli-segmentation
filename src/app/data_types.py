@@ -11,6 +11,14 @@ class Vector3(TypedDict):
     z: int
 
 
+class Vector2:
+    x: int
+    y: int
+
+    def __init__(self, value: Tuple[int, int]):
+        x, y = value
+
+
 class Level(TypedDict):
     extent: Vector3
     downsample_factor: int
@@ -25,17 +33,18 @@ class WSI(TypedDict):
     tile_extent: Vector3
     levels: List[Level]
 
+
 # TODO: refactor into a dataclass
 class Rectangle(TypedDict):
     upper_left: Tuple[int, int]
     width: int
     height: int
     level: int
-    
-
-TileRequest = Callable[[Rectangle], Image]
 
 
 class Tile(TypedDict):
     image: ndarray
     rect: Rectangle
+
+
+TileGetter = Callable[[Rectangle], Tile]

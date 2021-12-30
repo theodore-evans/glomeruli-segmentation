@@ -2,12 +2,12 @@ import argparse
 import os
 
 from app.api_interface import ApiInterface
-from app.data_types import TileRequest
+from app.data_types import TileGetter
 from app.entity_extractor import EntityExtractor
 from app.inference import InferenceRunner
 from app.logging_tools import get_log_level, get_logger
 from app.serialization import result_to_collection
-from app.tile_loader import TileLoader
+from app.tile_loader import TileLoader, get_tile_loader
 
 DEFAULT_MODEL_PATH = "../model/hacking_kidney_16934_best_metric.model-384e1332.pth"
 
@@ -29,11 +29,10 @@ def main(model_path: str, verbosity: int):
     roi = api.get_input("region_of_interest")
     slide = api.get_input("kidney_wsi")
     roi_origin = roi["upper_left"]
-    # size_to_process = (roi["width"], roi["height"])
 
-    tile_request: TileRequest = lambda x: api.get_wsi_tile(slide, x)
-    tile_loader = TileLoader(tile_request, roi, logger=get_logger("tile_loader", app_log_level))
-
+    tile_request: TileGetter = lambda x: api.get_wsi_tile(slide, x)
+    tile_loader = get_tile_loader(tile_request, roi, window=(1024,1024))
+                                  
     inference_runner = InferenceRunner(model_path, logger=get_logger("inference", app_log_level))
     output_mask = inference_runner(tile_loader)
 

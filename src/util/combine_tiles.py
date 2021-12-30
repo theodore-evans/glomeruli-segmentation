@@ -1,10 +1,11 @@
-from typing import Collection
 from sys import maxsize
+from typing import Collection
+
 import numpy as np
 from app.data_types import Rectangle, Tile
 
 
-def find_bounds(
+def get_bounds(
     rectangles: Collection[Rectangle],
 ) -> Rectangle:
     """
@@ -34,10 +35,10 @@ def combine_tiles(
     """
     rectangles = [tile["rect"] for tile in tiles]
 
-    bounds = find_bounds(rectangles)
+    bounds = get_bounds(rectangles)
     x_min, y_min = bounds["upper_left"]
     combined_shape = (bounds["width"], bounds["height"])
-    
+
     combined = np.zeros(combined_shape)
     normalization = np.zeros_like(combined)
 
@@ -52,5 +53,5 @@ def combine_tiles(
         normalization[x_start:x_end, y_start:y_end] += 1
 
     combined /= normalization
-    
+
     return Tile(image=combined, rect=bounds)

@@ -3,9 +3,10 @@ import unittest
 
 import numpy as np
 from app.inference import InferenceRunner
-from tests.mock_api import MockAPI
 from app.tile_loader import TileLoader
 from nn import UNet
+
+from tests.mock_api import MockAPI
 
 
 class TestInferenceRunner(unittest.TestCase):

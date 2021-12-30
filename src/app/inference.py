@@ -1,5 +1,5 @@
 from logging import Logger
-from typing import Optional
+from typing import Iterator, Optional
 
 import cv2
 import numpy as np
@@ -9,13 +9,14 @@ import torch.nn as nn
 from app.data_types import Tile
 from app.logging_tools import get_logger
 from app.tile_loader import TileLoader
-from util.combine_tiles import combine_tiles
 from data.preprocessing import raw_test_transform
 from nn import load_model
 from nn.segnet import SegNet
 from numpy import ndarray
 from torch import Tensor
 from torchvision.transforms import Compose
+
+from util.combine_tiles import combine_tiles
 
 
 class InferenceRunner:
@@ -28,8 +29,7 @@ class InferenceRunner:
         """
         Description:
             An inference runner for the pre-trained segmentation model (.pth extension) \
-        located at <model_path>. When called with a WSITileFetcher, fetches \
-        WSI tiles and runs segmentation using the provided model, returning an combined numpy.ndarray \
+        located at <model_path>. Runs segmentation using the provided model, returning an combined numpy.ndarray \
         of the results.
 
         Arguments:
@@ -83,29 +83,20 @@ class InferenceRunner:
         self.logger.info("\nDone")
         return predicted_tile
 
-    def run_inference_on_dataset(self, tile_loader: TileLoader) -> ndarray:
+    def run_inference_on_dataset(self, tile_loader: Iterator[Tile]) -> ndarray:
         """
         Fetch and run model inference on WSI tiles and combine results into
         a single ndarray of the same width and height as the original WSI tile
         """
 
+        # TODO: add batching here
         predicted_tiles = []
         for tile in tile_loader:
             # tile["image"] = np.transpose(tile["image"], (2, 0, 1))
             predicted_tiles.append(self.run_inference_on_tile(tile))
-            # TODO: add batching here
-
-        region = tile_loader.wsi_region
-
-        # TODO: fix this with changes to combine_tiles
-        combined_mask = combine_tiles(
-            predicted_tiles,
-            region_upper_left=region["upper_left"],
-            original_height=region["height"],
-            original_width=region["width"],
-        )
-
-        return combined_mask["image"]
+            
+            
+        return combine_tiles(predicted_tiles)["image"]
 
     def __call__(self, input_dataset) -> ndarray:
         return self.run_inference_on_dataset(input_dataset)
