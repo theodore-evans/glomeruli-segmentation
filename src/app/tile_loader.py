@@ -1,39 +1,45 @@
-from typing import Iterable, Optional, Tuple
+from typing import Callable, Iterable, Optional, Tuple, Union
 
-from app.data_types import Rectangle, Tile, TileGetter
+from app.data_classes import Rectangle, Tile, Vector2
+
+WindowShape = Union[Tuple, int]
 
 
 def get_tile_loader(
-    get_tile: TileGetter, region: Rectangle, window: Tuple[int, int], stride: Optional[Tuple[int, int]] = None
+    get_tile: Callable[[Rectangle], Tile],
+    region: Rectangle,
+    window: Tuple[int, int],
+    stride: Optional[Tuple[int, int]] = None,
 ) -> Iterable[Tile]:
 
-    stride = stride if stride else window
+    window = Vector2(*window)
+    stride = Vector2(*stride) if stride else window
 
-    start_x, start_y = region["upper_left"]
-    region_shape = region["width"], region["height"]
-    effective_shape = tuple(side - window[dim] + stride[dim] for dim, side in enumerate(region_shape))
+    start_x, start_y = (region.upper_left.x, region.upper_left.y)
+    region_shape = Vector2(region.width, region.height)
+    effective_shape = Vector2(region.width - window.x + stride.x, region.height - window.y + stride.y)
 
-    whole_columns = effective_shape[0] // stride[0]
-    columns_remainder = effective_shape[0] % stride[0]
+    whole_columns = effective_shape.x // stride.x
+    columns_remainder = effective_shape.x % stride.x
 
-    whole_rows = effective_shape[1] // stride[1]
-    rows_remainder = effective_shape[1] % stride[1]
+    whole_rows = effective_shape.y // stride.y
+    rows_remainder = effective_shape.y % stride.y
 
     corners = []
 
     for j in range(whole_rows + (rows_remainder > 0)):
         for i in range(whole_columns + (columns_remainder > 0)):
-            x, y = (start_x + i * stride[0], start_y + j * stride[1])
+            x, y = (start_x + i * stride.x, start_y + j * stride.y)
 
             if i - whole_columns >= 0:
-                x = region_shape[0] - window[0]
+                x = region_shape.x - window.x
             if j - whole_rows >= 0:
-                y = region_shape[1] - window[1]
+                y = region_shape.y - window.y
 
             corners.append((x, y))
 
     rectangles = [
-        Rectangle(upper_left=corner, width=window[0], height=window[1], level=region["level"])
+        Rectangle(upper_left=corner, width=window.x, height=window.y, level=region.level)
         for corner in corners
     ]
 

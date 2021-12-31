@@ -2,7 +2,7 @@ import argparse
 import os
 
 from app.api_interface import ApiInterface
-from app.data_types import TileGetter
+from app.data_classes import Rectangle, TileGetter, Wsi
 from app.entity_extractor import EntityExtractor
 from app.inference import InferenceRunner
 from app.logging_tools import get_log_level, get_logger
@@ -26,17 +26,18 @@ def main(model_path: str, verbosity: int):
 
     api = ApiInterface(verbosity, api_url, job_id, headers, logger=get_logger("api", app_log_level))
 
-    roi = api.get_input("region_of_interest")
-    slide = api.get_input("kidney_wsi")
+    roi = api.get_input("region_of_interest", Rectangle)
+    slide = api.get_input("kidney_wsi", Wsi)
+
     roi_origin = roi["upper_left"]
 
-    tile_request: TileGetter = lambda x: api.get_wsi_tile(slide, x)
-    tile_loader = get_tile_loader(tile_request, roi, window=(1024,1024))
-    
+    tile_request = lambda x: api.get_wsi_tile(slide, x)
+    tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))
+
     # TODO: make this a function that returns a tile
     inference_runner = InferenceRunner(model_path, logger=get_logger("inference", app_log_level))
     output_mask = inference_runner(tile_loader)
-    
+
     # TODO: make this a function
     entity_extractor = EntityExtractor(origin=roi_origin)
     extracted_entities = entity_extractor.extract_from_mask(output_mask)

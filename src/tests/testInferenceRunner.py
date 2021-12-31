@@ -8,6 +8,7 @@ from nn import UNet
 
 from tests.mock_api import MockAPI
 
+
 class TestInferenceRunner(unittest.TestCase):
     def setUp(self):
         self.model_path = "/model/hacking_kidney_16934_best_metric.model-384e1332.pth"

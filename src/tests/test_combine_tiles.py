@@ -1,7 +1,7 @@
-from typing import List
+from typing import Collection, List
 
 import numpy as np
-from app.data_types import Rectangle, Tile
+from app.data_classes import Rectangle, Tile
 
 from util.combine_tiles import combine_tiles
 
@@ -15,30 +15,30 @@ non_overlapping_squares = [rect1, rect2, rect3, rect4]
 square_tile = lambda rect: Tile(image=square, rect=rect)
 
 
-def _split_image_into_tiles(original: np.ndarray, rectangles: List[Rectangle]):
+def _split_image_into_tiles(original: np.ndarray, rectangles: List[Rectangle]) -> Collection[Tile]:
     tiles = []
     for rect in rectangles:
-        x_start = rect["upper_left"][0]
-        x_end = x_start + rect["width"]
-        y_start = rect["upper_left"][1]
-        y_end = y_start + rect["height"]
+        x_start = rect.upper_left.x
+        x_end = x_start + rect.width
+        y_start = rect.upper_left.y
+        y_end = y_start + rect.height
         tiles.append(Tile(image=original.copy()[x_start:x_end, y_start:y_end], rect=rect))
     return tiles
 
 
 def test_combine_two_square_tiles_horizontally():
     combined = combine_tiles((square_tile(rect1), square_tile(rect2)))
-    assert combined["image"].shape == (20, 10)
+    assert combined.image.shape == (20, 10)
 
 
 def test_combine_two_square_tiles_vertically():
     combined = combine_tiles((square_tile(rect1), square_tile(rect3)))
-    assert combined["image"].shape == (10, 20)
+    assert combined.image.shape == (10, 20)
 
 
 def test_combine_four_square_tiles():
     combined = combine_tiles((square_tile(rect1), square_tile(rect2), square_tile(rect3), square_tile(rect4)))
-    assert combined["image"].shape == (20, 20)
+    assert combined.image.shape == (20, 20)
 
 
 def test_recombine_square_tiles():
@@ -46,7 +46,7 @@ def test_recombine_square_tiles():
     tiles = _split_image_into_tiles(original, non_overlapping_squares)
 
     combined = combine_tiles(tiles)
-    assert np.array_equal(combined["image"], original)
+    assert np.array_equal(combined.image, original)
 
 
 def test_recombine_non_square_tiles():
@@ -58,8 +58,8 @@ def test_recombine_non_square_tiles():
     tiles = _split_image_into_tiles(original, rectangles)
 
     combined = combine_tiles(tiles)
-    assert np.array_equal(combined["image"], original)
-    assert combined["rect"] == Rectangle(upper_left=(0, 0), width=20, height=30, level=0)
+    assert np.array_equal(combined.image, original)
+    assert combined.rect == Rectangle(upper_left=(0, 0), width=20, height=30, level=0)
 
 
 def test_combine_one_single_tile():
@@ -67,8 +67,8 @@ def test_combine_one_single_tile():
     rectangle = Rectangle(upper_left=(0, 0), width=20, height=30, level=0)
 
     combined = combine_tiles([Tile(image=original, rect=rectangle)])
-    assert np.array_equal(combined["image"], original)
-    assert combined["rect"] == rectangle
+    assert np.array_equal(combined.image, original)
+    assert combined.rect == rectangle
 
 
 def test_recombine_with_non_zero_origin():
@@ -76,11 +76,11 @@ def test_recombine_with_non_zero_origin():
     tiles = _split_image_into_tiles(original, non_overlapping_squares)
 
     for tile in tiles:
-        tile["rect"]["upper_left"] = tuple(x + 5 for x in tile["rect"]["upper_left"])
+        tile.rect.upper_left = tuple(x + 5 for x in tile.rect.upper_left)
 
     combined = combine_tiles(tiles)
-    assert np.array_equal(combined["image"], original)
-    assert combined["rect"] == Rectangle(upper_left=(5, 5), width=20, height=20, level=0)
+    assert np.array_equal(combined.image, original)
+    assert combined.rect == Rectangle(upper_left=(5, 5), width=20, height=20, level=0)
 
 
 def test_recombined_with_overlapping_tiles():
@@ -96,8 +96,8 @@ def test_recombined_with_overlapping_tiles():
     tiles = _split_image_into_tiles(original, rectangles)
 
     combined = combine_tiles(tiles)
-    assert np.array_equal(combined["image"], original)
-    assert combined["rect"] == Rectangle(upper_left=(0, 0), width=shape[0], height=shape[1], level=0)
+    assert np.array_equal(combined.image, original)
+    assert combined.rect == Rectangle(upper_left=(0, 0), width=shape[0], height=shape[1], level=0)
 
 
 def test_recombined_with_averaged_overlaps():
@@ -109,9 +109,8 @@ def test_recombined_with_averaged_overlaps():
         Rectangle(upper_left=(5, 0), width=10, height=10, level=0),
     ]
     tiles = _split_image_into_tiles(original, rectangles)
-    tiles[0]["image"] += 100
-    print(tiles)
+    tiles[0].image += 100
     combined = combine_tiles(tiles)
     original_blended = np.concatenate([np.full((5, 10), 100), np.full((5, 10), 50), np.full((5, 10), 0)])
-    assert np.array_equal(combined["image"], original_blended)
-    assert combined["rect"] == original_rect
+    assert np.array_equal(combined.image, original_blended)
+    assert combined.rect == original_rect

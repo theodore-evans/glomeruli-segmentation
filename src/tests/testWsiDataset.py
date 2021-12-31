@@ -1,7 +1,7 @@
 import unittest
 
 import numpy as np
-from app.data_types import TileGetter
+from app.data_classes import TileGetter
 from app.tile_loader import TileLoader
 from numpy import ndarray
 from PIL import Image
@@ -22,7 +22,7 @@ class TestWSIDataset(unittest.TestCase):
         self.roi_width = self.roi["width"]
         self.roi_height = self.roi["height"]
 
-        tile_request: TileGetter = lambda x: api.get_wsi_tile(slide, x)
+        tile_request = lambda x: api.get_wsi_tile(slide, x)
 
         self.tile_loader = TileLoader(tile_request, self.roi)
         self.roi_image: ndarray = np.asarray(tile_request(self.roi))

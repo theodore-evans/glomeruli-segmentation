@@ -6,7 +6,7 @@ import numpy as np
 import torch
 import torch.cuda as cuda
 import torch.nn as nn
-from app.data_types import Tile
+from app.data_classes import Tile
 from app.logging_tools import get_logger
 from app.tile_loader import TileLoader
 from data.preprocessing import raw_test_transform
@@ -94,8 +94,7 @@ class InferenceRunner:
         for tile in tile_loader:
             # tile["image"] = np.transpose(tile["image"], (2, 0, 1))
             predicted_tiles.append(self.run_inference_on_tile(tile))
-            
-            
+
         return combine_tiles(predicted_tiles)["image"]
 
     def __call__(self, input_dataset) -> ndarray:

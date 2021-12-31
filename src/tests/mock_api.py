@@ -2,7 +2,7 @@ import json
 import os
 
 import numpy as np
-from app.data_types import WSI, Level, Rectangle, Vector3
+from app.data_classes import Wsi, Level, Rectangle, Vector3
 
 KIDNEY_WSI_ID = "37bd11b8-3995-4377-bf57-e718e797d515"
 RECT_ID = "37bd11b8-3995-4377-bf57-e718e797d516"
@@ -18,7 +18,7 @@ class MockAPI:
         if key == "slide":
             extent = Vector3(x=self.image_data.shape[0], y=self.image_data.shape[1], z=1)
             pixel_size = Vector3(x=500, y=500, z=1)
-            return WSI(
+            return Wsi(
                 id=KIDNEY_WSI_ID,
                 extent=extent,
                 num_levels=1,
@@ -44,7 +44,7 @@ class MockAPI:
         print(data)
         return data
 
-    def get_wsi_tile(self, slide: WSI, rectangle: Rectangle):
+    def get_wsi_tile(self, slide: Wsi, rectangle: Rectangle):
         if slide["id"] == KIDNEY_WSI_ID:
             x, y = rectangle["upper_left"]
             width = rectangle["width"]
