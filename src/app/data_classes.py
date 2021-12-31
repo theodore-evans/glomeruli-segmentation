@@ -1,7 +1,7 @@
-from typing import List, Optional, Tuple, Union
-
-from numpy import ndarray
 from dataclasses import dataclass
+from typing import List
+
+from numpy import ndarray, array_equal
 
 
 @dataclass
@@ -15,10 +15,13 @@ class Vector3:
 class Vector2:
     x: int
     y: int
+
     def __getitem__(self, key):
-        return (self.x,self.y)[key]
+        return (self.x, self.y)[key]
+
     def __iter__(self):
         return (value for value in (self.x, self.y))
+
 
 # TODO: refactor below into dataclasses and then refactor tests and methods
 @dataclass
@@ -55,3 +58,9 @@ class Rectangle:
 class Tile:
     image: ndarray
     rect: Rectangle
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return array_equal(self.image, other.image) and self.rect == other.rect
+        else:
+            return False
