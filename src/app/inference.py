@@ -8,14 +8,13 @@ import torch.cuda as cuda
 import torch.nn as nn
 from app.data_classes import Tile
 from app.logging_tools import get_logger
-from app.tile_loader import TileLoader
 from data.preprocessing import raw_test_transform
-from nn import load_model
-from nn.segnet import SegNet
 from numpy import ndarray
 from torch import Tensor
 from torchvision.transforms import Compose
 
+from model import load_model
+from model.segnet import SegNet
 from util.combine_tiles import combine_tiles
 
 

@@ -112,5 +112,6 @@ def test_recombined_with_averaged_overlaps():
     tiles[0].image += 100
     combined = combine_tiles(tiles)
     original_blended = np.concatenate([np.full((5, 10), 100), np.full((5, 10), 50), np.full((5, 10), 0)])
+
     assert np.array_equal(combined.image, original_blended)
     assert combined.rect == original_rect

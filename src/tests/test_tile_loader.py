@@ -31,9 +31,8 @@ def test_returns_one_tile():
     rect = Rectangle(upper_left=(0, 0), width=10, height=10, level=0)
     tile = _make_tile(rect)
     tiles = get_tile_loader(get_tile=_make_tile, region=rect, window=(10, 10))
-    first = next(tiles)
-    assert np.array_equal(first.image, tile.image)
-    assert first.rect == rect
+
+    assert next(tiles) == tile
     with pytest.raises(StopIteration):
         next(tiles)
 
@@ -46,15 +45,8 @@ def test_returns_two_tiles():
     combined_tile = combine_tiles([left_tile, right_tile])
     tiles = get_tile_loader(get_tile=_make_tile, region=combined_tile.rect, window=(10, 10))
 
-    first = next(tiles)
-    print(f"{first.image.shape=}, {left_tile.image.shape=}")
-    assert first.image.shape == left_tile.image.shape
-    assert first.rect == left_rect
-    assert np.array_equal(first.image, left_tile.image)
-
-    second = next(tiles)
-    assert second.rect == right_rect
-    assert np.array_equal(second.image, right_tile.image)
+    for tile in left_tile, right_tile:
+        assert next(tiles) == tile
     with pytest.raises(StopIteration):
         next(tiles)
 
@@ -66,10 +58,7 @@ def test_returns_four_identical_tiles():
     upper_lefts = [(0, 0), (10, 0), (0, 10), (10, 10)]
     rects = [Rectangle(upper_left=upper_left, width=10, height=10, level=0) for upper_left in upper_lefts]
     for rect in rects:
-        desired_tile = _make_tile(rect)
-        next_tile = next(tiles)
-        assert next_tile.rect == desired_tile.rect
-        assert np.array_equal(next_tile.image, desired_tile.image)
+        assert next(tiles) == _make_tile(rect)
     with pytest.raises(StopIteration):
         next(tiles)
 
@@ -83,11 +72,9 @@ def test_returns_four_non_identical_tiles():
 
     upper_lefts = [(0, 0), (10, 0), (0, 10), (10, 10)]
     rects = [Rectangle(upper_left=upper_left, width=10, height=10, level=0) for upper_left in upper_lefts]
+
     for rect in rects:
-        desired_tile = tile_getter(rect)
-        next_tile = next(tiles)
-        assert next_tile.rect == desired_tile.rect
-        assert np.array_equal(next_tile.image, desired_tile.image)
+        assert next(tiles) == tile_getter(rect)
     with pytest.raises(StopIteration):
         next(tiles)
 
@@ -101,11 +88,9 @@ def test_returns_overlapping_tiles_when_window_does_not_exactly_divide_region():
 
     upper_lefts = [(0, 0), (6, 0), (0, 8), (6, 8)]
     rects = [Rectangle(upper_left=upper_left, width=10, height=10, level=0) for upper_left in upper_lefts]
+
     for rect in rects:
-        desired_tile = tile_getter(rect)
-        next_tile = next(tiles)
-        assert next_tile.rect == desired_tile.rect
-        assert np.array_equal(next_tile.image, desired_tile.image)
+        assert next(tiles) == tile_getter(rect)
     with pytest.raises(StopIteration):
         next(tiles)
 
@@ -120,12 +105,9 @@ def test_returns_tiles_with_stride_no_equal_to_window_size():
     upper_lefts = [(0, 0), (6, 0), (8, 0), (0, 6), (6, 6), (8, 6)]
     rects = [Rectangle(upper_left=upper_left, width=10, height=10, level=0) for upper_left in upper_lefts]
     print(rects)
+
     for rect in rects:
-        desired_tile = tile_getter(rect)
-        next_tile = next(tiles)
-        print(next_tile.rect.upper_left)
-        assert next_tile.rect == desired_tile.rect
-        assert np.array_equal(next_tile.image, desired_tile.image)
+        assert next(tiles) == tile_getter(rect)
     with pytest.raises(StopIteration):
         next(tiles)
 

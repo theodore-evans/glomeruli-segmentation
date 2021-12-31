@@ -2,7 +2,7 @@ import json
 import os
 
 import numpy as np
-from app.data_classes import Wsi, Level, Rectangle, Vector3
+from app.data_classes import Level, Rectangle, Vector3, Wsi
 
 KIDNEY_WSI_ID = "37bd11b8-3995-4377-bf57-e718e797d515"
 RECT_ID = "37bd11b8-3995-4377-bf57-e718e797d516"

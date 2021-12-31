@@ -2,14 +2,14 @@ from io import BytesIO
 from logging import Logger
 from typing import Type
 
+import desert
 import requests
-from requests.models import Response
-from app.data_classes import Wsi, Rectangle, Tile
+from app.data_classes import Rectangle, Tile, Wsi
 from app.logging_tools import get_logger
+from marshmallow import EXCLUDE
 from PIL import Image
 from request_hooks import check_for_errors_hook, response_logging_hook
-from marshmallow import EXCLUDE
-import desert
+from requests.models import Response
 
 
 class ApiInterface:

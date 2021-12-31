@@ -4,8 +4,8 @@ import unittest
 import numpy as np
 from app.inference import InferenceRunner
 from app.tile_loader import TileLoader
-from nn import UNet
 
+from model import UNet
 from tests.mock_api import MockAPI
 
 
