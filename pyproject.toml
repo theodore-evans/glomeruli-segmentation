@@ -18,11 +18,20 @@ streamlit = "0.81.1"
 tifffile = "2020.9.3"
 typing-extensions = "3.7.4.3"
 imagecodecs = "^2021.4.28"
+marshmallow = "^3.14.1"
+desert = "^2020.11.18"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.5b0", allow-prereleases = true}
 isort = "5.8.0"
 openslide-python = "^1.1.2"
+coverage = "4.5.2"
+pytest = "5.2.0"
+pytest-cov = "2.6.1"
+pytest-flakes = "2.0.0"
+pytest-pep8 = "^1.0.6"
+pytest-pythonpath = "^0.7.3"
+docker = "^5.0.3"
 
 [tool.black]
 line-length = 110
