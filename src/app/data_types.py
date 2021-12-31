@@ -34,7 +34,7 @@ class WSI(TypedDict):
     levels: List[Level]
 
 
-# TODO: refactor into a dataclass
+# TODO: refactor this (these two?) into dataclass(es) and then refactor tests and methods
 class Rectangle(TypedDict):
     upper_left: Tuple[int, int]
     width: int

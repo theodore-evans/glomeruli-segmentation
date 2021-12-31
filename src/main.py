@@ -32,10 +32,12 @@ def main(model_path: str, verbosity: int):
 
     tile_request: TileGetter = lambda x: api.get_wsi_tile(slide, x)
     tile_loader = get_tile_loader(tile_request, roi, window=(1024,1024))
-                                  
+    
+    # TODO: make this a function that returns a tile
     inference_runner = InferenceRunner(model_path, logger=get_logger("inference", app_log_level))
     output_mask = inference_runner(tile_loader)
-
+    
+    # TODO: make this a function
     entity_extractor = EntityExtractor(origin=roi_origin)
     extracted_entities = entity_extractor.extract_from_mask(output_mask)
 
