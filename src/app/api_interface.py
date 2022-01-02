@@ -1,6 +1,5 @@
 from io import BytesIO
 from logging import Logger
-from typing import Type
 
 import desert
 import requests
@@ -26,14 +25,23 @@ class ApiInterface:
         request_hooks = [check_for_errors_hook, response_logging_hook]
         self.session.hooks["response"] = [hook(self.logger) for hook in request_hooks]
 
-    def get_input(self, key: str, input_type: Type) -> Wsi:
+    def get_input(self, key: str) -> dict:
         """
         get slide input data by key as defined in EAD
         """
         url = f"{self.api_url}/v0/{self.job_id}/inputs/{key}"
         resp = self.session.get(url, headers=self.headers)
-
-        schema = desert.schema(input_type, meta={"unknown": EXCLUDE})
+        
+        return resp
+    
+    def get_rectangle(self, key: str) -> Rectangle:
+        resp = self.get_input(key)
+        schema = desert.schema(Rectangle, meta={"unknown": EXCLUDE})
+        return schema.load(resp)
+    
+    def get_wsi(self, key: str) -> Wsi:
+        resp = self.get_input(key)
+        schema = desert.schema(Wsi, meta={"unknown": EXCLUDE})
         return schema.load(resp)
 
     def post_output(self, key: str, data: dict) -> Response:
@@ -45,7 +53,6 @@ class ApiInterface:
 
         return resp
 
-    # TODO: have this actually return a Tile with image from content and rect from rectangle
     def get_wsi_tile(self, slide: Wsi, rect: Rectangle) -> Tile:
         """
         get a WSI tile on level 0

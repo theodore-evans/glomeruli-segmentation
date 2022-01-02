@@ -1,4 +1,5 @@
 import argparse
+import functools
 import os
 
 from app.api_interface import ApiInterface
@@ -26,20 +27,17 @@ def main(model_path: str, verbosity: int):
 
     api = ApiInterface(verbosity, api_url, job_id, headers, logger=get_logger("api", app_log_level))
 
-    roi = api.get_input("region_of_interest", Rectangle)
-    slide = api.get_input("kidney_wsi", Wsi)
+    roi = api.get_rectangle("region_of_interest")
+    slide = api.get_wsi("kidney_wsi")
 
-    roi_origin = roi["upper_left"]
-
-    tile_request = lambda x: api.get_wsi_tile(slide, x)
+    tile_request = functools.partial(api.get_wsi_tile, slide=slide)
     tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))
 
-    # TODO: make this a function that returns a tile
     inference_runner = InferenceRunner(model_path, logger=get_logger("inference", app_log_level))
     output_mask = inference_runner(tile_loader)
 
     # TODO: make this a function
-    entity_extractor = EntityExtractor(origin=roi_origin)
+    entity_extractor = EntityExtractor(origin=roi.upper_left)
     extracted_entities = entity_extractor.extract_from_mask(output_mask)
 
     count_result = {"name": "Glomerulus Count", "type": "integer", "value": extracted_entities.count()}
