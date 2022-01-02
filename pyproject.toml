@@ -6,7 +6,7 @@ authors = ["Theodore Evans <theodore.evans@dai-labor.de>", "Emirhan Karagül <em
 license = "GNU General Public License v3.0"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8.1"
 torch = "^1.8.0"
 torchvision = "^0.9.1"
 opencv_python = "^4.5.1.48"
