@@ -5,10 +5,10 @@ import desert
 import requests
 from app.data_classes import Rectangle, Tile, Wsi
 from app.logging_tools import get_logger
+from app.request_hooks import check_for_errors_hook, response_logging_hook
 from marshmallow import EXCLUDE
 from PIL import Image
-from request_hooks import check_for_errors_hook, response_logging_hook
-from requests.models import Response
+from requests import Response
 
 
 class ApiInterface:
@@ -31,14 +31,14 @@ class ApiInterface:
         """
         url = f"{self.api_url}/v0/{self.job_id}/inputs/{key}"
         resp = self.session.get(url, headers=self.headers)
-        
+
         return resp
-    
+
     def get_rectangle(self, key: str) -> Rectangle:
         resp = self.get_input(key)
         schema = desert.schema(Rectangle, meta={"unknown": EXCLUDE})
         return schema.load(resp)
-    
+
     def get_wsi(self, key: str) -> Wsi:
         resp = self.get_input(key)
         schema = desert.schema(Wsi, meta={"unknown": EXCLUDE})

@@ -38,11 +38,12 @@ def _resize_image(
         interpolation=interpolation,
     )
 
+
 def run_inference(tiles: Iterable[Tile], model: nn.Module, batch_size: int = 1) -> Tile:
     device = torch.device("cuda" if cuda.is_available() else "cpu")
     model = model.to(device).eval()
     torch.set_grad_enabled(False)
-    
+
     mask_tiles = []
 
     while True:

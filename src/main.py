@@ -1,20 +1,18 @@
 import argparse
 import functools
 import os
-import torch
 
+import torch
+import torch.nn as nn
 from app.api_interface import ApiInterface
-from app.data_classes import Rectangle, TileGetter, Wsi
 from app.entity_extractor import EntityExtractor
-from app.inference import InferenceRunner, run_inference
+from app.inference import run_inference
 from app.logging_tools import get_log_level, get_logger
 from app.serialization import result_to_collection
-from app.tile_loader import TileLoader, get_tile_loader
-
-DEFAULT_MODEL_PATH = "../model/hacking_kidney_16934_best_metric.model-384e1332.pth"
+from app.tile_loader import get_tile_loader
 
 
-def main(model_path: str, verbosity: int):
+def main(verbosity: int):
     app_log_level = get_log_level(verbosity)
     logger = get_logger("main", app_log_level)
 
@@ -22,6 +20,7 @@ def main(model_path: str, verbosity: int):
         api_url = os.environ["EMPAIA_APP_API"]
         job_id = os.environ["EMPAIA_JOB_ID"]
         headers = {"Authorization": f"Bearer {os.environ['EMPAIA_TOKEN']}"}
+        model_path = os.environ["MODEL_PATH"]
     except KeyError as e:
         logger.error("Missing EMPAIA API environment variables")
         raise e
@@ -34,7 +33,7 @@ def main(model_path: str, verbosity: int):
     tile_request = functools.partial(api.get_wsi_tile, slide=slide)
     tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))
 
-    model = torch.load(model_path)
+    model = nn.Sequential(torch.load(model_path, map_location="cpu"), nn.Softmax(dim=1))
     output_mask = run_inference(tile_loader, model, batch_size=16)
 
     # TODO: make this a function
@@ -55,9 +54,8 @@ def main(model_path: str, verbosity: int):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Detect glomeruli on kidney wsi")
 
-    parser.add_argument("--model", dest="model_path", default=DEFAULT_MODEL_PATH)
     parser.add_argument("-v", "--verbose", help="increase logging verbosity", action="count", default=0)
 
     args = parser.parse_args()
 
-    main(args.model, args.verbose)
+    main(args.verbose)
