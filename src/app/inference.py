@@ -10,6 +10,7 @@ import torch.cuda as cuda
 import torch.nn as nn
 from app.data_classes import Tile
 from torch import Tensor
+from app.tile_loader import WindowShape
 
 from util.combine_masks import combine_masks
 
@@ -18,23 +19,22 @@ from util.combine_masks import combine_masks
 
 def _ndarray_to_torch_tensor(array: np.ndarray):
     tensor_view = torch.from_numpy(np.atleast_3d(array))
-    torch_tensor = tensor_view.permute(2, 0, 1).unsqueeze(0)
+    torch_tensor = tensor_view.permute(2, 0, 1)
     return torch_tensor
 
 
 def _torch_tensor_to_ndarray(torch_tensor: Tensor):
-    numpy_format = torch_tensor.squeeze(0).permute(1, 2, 0)
+    numpy_format = torch_tensor.permute(1, 2, 0)
     array = np.array(numpy_format)
     return array
 
 
-def _scale_image_to_fit_tile(tile: Tile, interpolation: int = cv2.INTER_LINEAR) -> Tile:
-    resized = cv2.resize(
-        tile.image,
-        tile.rect.shape,
+def _resize_image(image: np.ndarray, target_shape: WindowShape, interpolation: int = cv2.INTER_LINEAR) -> np.ndarray:
+    return cv2.resize(
+        image,
+        target_shape,
         interpolation=interpolation,
     )
-    return Tile(image=resized, rect=tile.rect)
 
 
 def run_inference(tiles: Iterable[Tile], model: nn.Module, batch_size: int=1) -> Tile:
@@ -42,15 +42,28 @@ def run_inference(tiles: Iterable[Tile], model: nn.Module, batch_size: int=1) ->
     model = model.to(device).eval()
 
     mask_tiles = []
-    for tile in tiles:
-        tensor = _ndarray_to_torch_tensor(tile.image)
-        output = model(tensor)
-        mask = _torch_tensor_to_ndarray(output).squeeze()
-        mask_tile = _scale_image_to_fit_tile(Tile(image=mask, rect=tile.rect))
-        mask_tiles.append(mask_tile)
+    
+    while True:
+        try:
+            tensors = []
+            rects = []
+            for _ in range(batch_size):
+                tile: Tile = next(tiles)
+                tensors.append(_ndarray_to_torch_tensor(tile.image))
+                rects.append(tile.rect)
+        except StopIteration:
+            break
+        finally:
+            if len(tensors) == 0:
+                break
+            input_batch = torch.stack(tensors, dim=0)
+            output_batch: Tensor = model(input_batch)
+            for output, rect in zip(output_batch, rects):
+                mask = _torch_tensor_to_ndarray(output).squeeze()
+                resized_mask = _resize_image(mask, tile.rect.shape)
+                mask_tiles.append(Tile(image=resized_mask, rect=rect))
 
     return combine_masks(mask_tiles)
-
 
 # class InferenceRunner:
 #     def __init__(
