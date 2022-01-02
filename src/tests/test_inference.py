@@ -1,5 +1,6 @@
 import numpy as np
 import torch.nn as nn
+from torch import load
 from app.data_classes import Rectangle, Tile
 from app.inference import run_inference
 from app.tile_loader import get_tile_loader
@@ -91,7 +92,7 @@ def test_applies_real_model():
     tile_loader = get_tile_loader(_make_tile_getter(input_tile), input_tile.rect, window=(1024, 1024))
     
     model = nn.Sequential(
-        load_model(MODEL_PATH),
+        load(MODEL_PATH, map_location="cpu"),
         nn.Softmax(dim=1),
         OneChannelPassthrough()
     )

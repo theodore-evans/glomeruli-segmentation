@@ -1,11 +1,12 @@
 import argparse
 import functools
 import os
+import torch
 
 from app.api_interface import ApiInterface
 from app.data_classes import Rectangle, TileGetter, Wsi
 from app.entity_extractor import EntityExtractor
-from app.inference import InferenceRunner
+from app.inference import InferenceRunner, run_inference
 from app.logging_tools import get_log_level, get_logger
 from app.serialization import result_to_collection
 from app.tile_loader import TileLoader, get_tile_loader
@@ -33,8 +34,8 @@ def main(model_path: str, verbosity: int):
     tile_request = functools.partial(api.get_wsi_tile, slide=slide)
     tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))
 
-    inference_runner = InferenceRunner(model_path, logger=get_logger("inference", app_log_level))
-    output_mask = inference_runner(tile_loader)
+    model = torch.load(model_path)
+    output_mask = run_inference(tile_loader, model, batch_size=16)
 
     # TODO: make this a function
     entity_extractor = EntityExtractor(origin=roi.upper_left)
