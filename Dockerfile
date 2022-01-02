@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:1.8.0-cuda11.1-cudnn8-devel
+FROM pytorch/pytorch:1.8.1-cuda10.2-cudnn7-runtime
 
 WORKDIR /app
 
@@ -37,9 +37,10 @@ RUN pip3 install -r /tmp/requirements.txt
 COPY ./src /app
 
 # Download model weights
-RUN mkdir -p /model && curl -OJ https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy/download && mv hacking_kidney_16934_best_metric.model-384e1332.pth /model
+RUN mkdir -p /model && curl -OJ https://nx9836.your-storageshare.de/s/J6tt8g7qPrF2nGq/download && mv hacking_kidney_16934_best_metric_full.model-384e1332.pth /model
+ENV MODEL_PATH /model/hacking_kidney_16934_best_metric_full.model-384e1332.pth
 
 LABEL maintainer="Theodore Evans <theodore.evans@dai-labor.de>" \
       version="0.1.0"
       
-CMD ["python3", "main.py"]
+CMD ["python3", "main.py", "-v"]
