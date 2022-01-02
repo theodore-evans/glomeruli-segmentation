@@ -23,7 +23,6 @@ class Vector2:
         return (value for value in (self.x, self.y))
 
 
-# TODO: refactor below into dataclasses and then refactor tests and methods
 @dataclass
 class Level:
     extent: Vector3
@@ -48,6 +47,7 @@ class Rectangle:
     width: int
     height: int
     level: int = 0
+    id: str = None
     # add additional non-required fields
 
     def __post_init__(self):

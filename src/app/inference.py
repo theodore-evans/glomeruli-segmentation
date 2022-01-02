@@ -9,8 +9,8 @@ import torch
 import torch.cuda as cuda
 import torch.nn as nn
 from app.data_classes import Tile
-from torch import Tensor
 from app.tile_loader import WindowShape
+from torch import Tensor
 
 from util.combine_masks import combine_masks
 
@@ -29,20 +29,22 @@ def _torch_tensor_to_ndarray(torch_tensor: Tensor):
     return array
 
 
-def _resize_image(image: np.ndarray, target_shape: WindowShape, interpolation: int = cv2.INTER_LINEAR) -> np.ndarray:
+def _resize_image(
+    image: np.ndarray, target_shape: WindowShape, interpolation: int = cv2.INTER_LINEAR
+) -> np.ndarray:
     return cv2.resize(
         image,
         target_shape,
         interpolation=interpolation,
     )
 
-
-def run_inference(tiles: Iterable[Tile], model: nn.Module, batch_size: int=1) -> Tile:
+def run_inference(tiles: Iterable[Tile], model: nn.Module, batch_size: int = 1) -> Tile:
     device = torch.device("cuda" if cuda.is_available() else "cpu")
     model = model.to(device).eval()
-
-    mask_tiles = []
+    torch.set_grad_enabled(False)
     
+    mask_tiles = []
+
     while True:
         try:
             tensors = []
@@ -64,6 +66,7 @@ def run_inference(tiles: Iterable[Tile], model: nn.Module, batch_size: int=1) ->
                 mask_tiles.append(Tile(image=resized_mask, rect=rect))
 
     return combine_masks(mask_tiles)
+
 
 # class InferenceRunner:
 #     def __init__(
