@@ -7,7 +7,7 @@ from app import tile_loader
 from app.data_classes import Rectangle, Tile
 from app.tile_loader import get_tile_loader
 
-from util.combine_tiles import combine_tiles, get_bounds
+from util.combine_masks import combine_masks, get_bounds
 
 
 def _make_tile(rect: Rectangle):
@@ -42,7 +42,7 @@ def test_returns_two_tiles():
     right_rect = Rectangle(upper_left=(10, 0), width=10, height=10, level=0)
     left_tile = _make_tile(left_rect)
     right_tile = _make_tile(right_rect)
-    combined_tile = combine_tiles([left_tile, right_tile])
+    combined_tile = combine_masks([left_tile, right_tile])
     tiles = get_tile_loader(get_tile=_make_tile, region=combined_tile.rect, window=(10, 10))
 
     for tile in left_tile, right_tile:

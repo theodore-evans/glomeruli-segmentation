@@ -7,7 +7,7 @@ from numpy import ndarray
 from PIL import Image
 
 from tests.mock_api import MockAPI
-from util.combine_tiles import combine_tiles
+from util.combine_masks import combine_masks
 
 
 class TestWSIDataset(unittest.TestCase):
@@ -38,7 +38,7 @@ class TestWSIDataset(unittest.TestCase):
             tile["image"] = tile["image"][:, :, 0]
             tiles.append(tile)
 
-        combined_tiles = combine_tiles(tiles, self.roi_origin, self.roi_width, self.roi_height)
+        combined_tiles = combine_masks(tiles, self.roi_origin, self.roi_width, self.roi_height)
 
         self.assertEqual(len(tiles), 6)
         self.assertEqual(combined_tiles.shape, (self.roi_height, self.roi_width))

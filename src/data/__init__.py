@@ -8,7 +8,6 @@ import torch
 import torch.nn.functional as F
 from PIL import Image
 
-from .dataset import Dataset
 from .rle import rle_decode
 from .tifffile_dataset import KidneyDataset
 

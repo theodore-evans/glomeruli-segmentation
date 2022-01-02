@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple
 
-from numpy import ndarray, array_equal
+from numpy import array_equal, ndarray
 
 
 @dataclass
@@ -47,11 +47,15 @@ class Rectangle:
     upper_left: Vector2
     width: int
     height: int
-    level: int
+    level: int = 0
     # add additional non-required fields
 
     def __post_init__(self):
         self.upper_left = Vector2(*self.upper_left)
+
+    @property
+    def shape(self) -> Tuple:
+        return (self.width, self.height)
 
 
 @dataclass
