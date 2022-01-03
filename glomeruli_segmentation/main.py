@@ -4,12 +4,13 @@ import os
 
 import torch
 import torch.nn as nn
-from app.api_interface import ApiInterface
-from app.entity_extractor import EntityExtractor
-from app.inference import run_inference
-from app.logging_tools import get_log_level, get_logger
-from app.serialization import result_to_collection
-from app.tile_loader import get_tile_loader
+
+from glomeruli_segmentation.api_interface import ApiInterface
+from glomeruli_segmentation.entity_extractor import EntityExtractor
+from glomeruli_segmentation.inference import run_inference
+from glomeruli_segmentation.logging_tools import get_log_level, get_logger
+from glomeruli_segmentation.serialization import result_to_collection
+from glomeruli_segmentation.tile_loader import get_tile_loader
 
 
 def main(verbosity: int):

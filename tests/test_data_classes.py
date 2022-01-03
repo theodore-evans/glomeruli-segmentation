@@ -1,4 +1,4 @@
-from app.data_classes import Rectangle, Vector2
+from glomeruli_segmentation.data_classes import Rectangle, Vector2
 
 
 def test_vector2_subscriptable():

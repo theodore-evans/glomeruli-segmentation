@@ -1,6 +1,6 @@
 from typing import List
 
-from app.entity_extractor import ExtractedEntities
+from glomeruli_segmentation.entity_extractor import ExtractedEntities
 
 
 def result_to_collection(result: ExtractedEntities, wsi_id: str, rectangle_id: str):

@@ -1,13 +1,9 @@
-from itertools import product
-from typing import Tuple
-
 import numpy as np
 import pytest
-from app import tile_loader
-from app.data_classes import Rectangle, Tile
-from app.tile_loader import get_tile_loader
 
-from util.combine_masks import combine_masks, get_bounds
+from glomeruli_segmentation.data_classes import Rectangle, Tile
+from glomeruli_segmentation.tile_loader import get_tile_loader
+from glomeruli_segmentation.util.combine_masks import combine_masks, get_bounds
 
 
 def _make_tile(rect: Rectangle):

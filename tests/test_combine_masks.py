@@ -1,9 +1,9 @@
 from typing import Collection, List
 
 import numpy as np
-from app.data_classes import Rectangle, Tile
 
-from util.combine_masks import combine_masks
+from glomeruli_segmentation.data_classes import Rectangle, Tile
+from glomeruli_segmentation.util.combine_masks import combine_masks
 
 square = np.ones((10, 10))
 rect1 = Rectangle(upper_left=(0, 0), width=10, height=10)

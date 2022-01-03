@@ -2,7 +2,8 @@ from sys import maxsize
 from typing import Collection, Iterable
 
 import numpy as np
-from app.data_classes import Rectangle, Tile
+
+from glomeruli_segmentation.data_classes import Rectangle, Tile
 
 
 def get_bounds(

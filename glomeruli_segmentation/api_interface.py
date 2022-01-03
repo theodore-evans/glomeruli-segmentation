@@ -3,12 +3,13 @@ from logging import Logger
 
 import desert
 import requests
-from app.data_classes import Rectangle, Tile, Wsi
-from app.logging_tools import get_logger
-from app.request_hooks import check_for_errors_hook, response_logging_hook
 from marshmallow import EXCLUDE
 from PIL import Image
 from requests import Response
+
+from glomeruli_segmentation.data_classes import Rectangle, Tile, Wsi
+from glomeruli_segmentation.logging_tools import get_logger
+from glomeruli_segmentation.request_hooks import check_for_errors_hook, response_logging_hook
 
 
 class ApiInterface:

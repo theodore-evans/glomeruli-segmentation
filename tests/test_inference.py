@@ -1,9 +1,10 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from app.data_classes import Rectangle, Tile
-from app.inference import run_inference
-from app.tile_loader import get_tile_loader
+
+from glomeruli_segmentation.data_classes import Rectangle, Tile
+from glomeruli_segmentation.inference import run_inference
+from glomeruli_segmentation.tile_loader import get_tile_loader
 
 
 def _make_tile(rect: Rectangle):

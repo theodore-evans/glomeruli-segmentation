@@ -1,9 +1,12 @@
 [tool.poetry]
-name = "hubmap-hacking-kidney"
-version = "0.1.0"
+name = "glomeruli-segmentation"
+version = "0.2.0"
 description = "Kidney segmentation demo app, as per https://www.kaggle.com/c/hubmap-kidney-segmentation, developed for integration with the EMPAIA platform"
 authors = ["Theodore Evans <theodore.evans@dai-labor.de>", "Emirhan Karagül <emirhan.karaguel@tu-berlin.de>"]
-license = "GNU General Public License v3.0"
+license = "GPL-3.0-or-later"
+packages = [
+    { include = "glomeruli_segmentation" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.8.1"
@@ -32,6 +35,9 @@ docker = "^5.0.3"
 [tool.black]
 line-length = 110
 target-version = ['py38']
+
+[tool.portray]
+modules = ["src"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
