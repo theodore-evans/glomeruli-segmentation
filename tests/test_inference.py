@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 from glomeruli_segmentation.data_classes import Rectangle, Tile
-from glomeruli_segmentation.inference import run_inference
+from glomeruli_segmentation.inference import run_inference, load_unet
 from glomeruli_segmentation.tile_loader import get_tile_loader
 
 
@@ -88,7 +88,7 @@ def test_applies_a_model_with_one_big_batch():
     assert mask.rect == rect
 
 
-MODEL_PATH = "tests/hacking_kidney_16934_best_metric_full.model-384e1332.pth"
+MODEL_PATH = "hacking_kidney_16934_best_metric.model-384e1332.pth"
 
 
 def test_applies_real_model():
@@ -96,9 +96,7 @@ def test_applies_real_model():
     input_tile = _make_tile(rect)
     tile_loader = get_tile_loader(_make_tile_getter(input_tile), input_tile.rect, window=(1024, 1024))
 
-    model = nn.Sequential(
-        torch.load(MODEL_PATH, map_location="cpu"), nn.Softmax(dim=1), OneChannelPassthrough()
-    )
+    model = nn.Sequential(load_unet(MODEL_PATH), nn.Softmax(dim=1), OneChannelPassthrough(channel=1))
 
     mask = run_inference(tile_loader, model)
     assert mask.image.shape == input_tile.image.shape[:2]

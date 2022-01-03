@@ -2,12 +2,11 @@ import argparse
 import functools
 import os
 
-import torch
 import torch.nn as nn
 
 from glomeruli_segmentation.api_interface import ApiInterface
 from glomeruli_segmentation.entity_extractor import EntityExtractor
-from glomeruli_segmentation.inference import run_inference
+from glomeruli_segmentation.inference import load_unet, run_inference
 from glomeruli_segmentation.logging_tools import get_log_level, get_logger
 from glomeruli_segmentation.serialization import result_to_collection
 from glomeruli_segmentation.tile_loader import get_tile_loader
@@ -29,15 +28,15 @@ def main(verbosity: int):
     api = ApiInterface(verbosity, api_url, job_id, headers, logger=get_logger("api", app_log_level))
 
     roi = api.get_rectangle("region_of_interest")
-    slide = api.get_wsi("kidney_wsi")
+    slide = api.get_wsi("slide")
 
     tile_request = functools.partial(api.get_wsi_tile, slide=slide)
     tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))
 
-    model = nn.Sequential(torch.load(model_path, map_location="cpu"), nn.Softmax(dim=1))
+    model = nn.Sequential(load_unet(model_path), nn.Softmax(dim=1))
+
     output_mask = run_inference(tile_loader, model, batch_size=16)
 
-    # TODO: make this a function
     entity_extractor = EntityExtractor(origin=roi.upper_left)
     extracted_entities = entity_extractor.extract_from_mask(output_mask)
 

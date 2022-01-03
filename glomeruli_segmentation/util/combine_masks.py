@@ -3,7 +3,7 @@ from typing import Collection, Iterable
 
 import numpy as np
 
-from glomeruli_segmentation.data_classes import Rectangle, Tile
+from glomeruli_segmentation.data_classes import Rectangle, Tile, Vector2
 
 
 def get_bounds(
@@ -23,7 +23,7 @@ def get_bounds(
         y_max = max(y + rect.height, y_max)
         level = rect.level
 
-    return Rectangle(upper_left=(x_min, y_min), width=x_max - x_min, height=y_max - y_min, level=level)
+    return Rectangle(upper_left=Vector2(x_min, y_min), width=x_max - x_min, height=y_max - y_min, level=level)
 
 
 def combine_masks(

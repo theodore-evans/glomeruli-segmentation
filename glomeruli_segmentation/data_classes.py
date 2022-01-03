@@ -47,9 +47,8 @@ class Rectangle:
     width: int
     height: int
     level: int = 0
-    id: str = None
-    # add additional non-required fields
-
+    id: str = ""
+    
     def __post_init__(self):
         self.upper_left = Vector2(*self.upper_left)
 

@@ -23,23 +23,7 @@ def create(
         arch_split = arch.split("_")
         decoder = arch_split[1] if len(arch_split) > 1 else "simple"
         image_classification = arch_split[2] == "c" if len(arch_split) > 2 else False
-        model = UNet(
-            backbone,
-            pretrained=pretrained,
-            n_classes=n_classes,
-            activation=activation,
-            frozen_layers=frozen_layers,
-            objectness=objectness,
-            tta=tta,
-            scales=scales,
-            resize=resize,
-            num_head_features=16 * n_classes,
-            cat_features=True,
-            ocnet=False,
-            decoder=decoder,
-            image_classification=image_classification,
-            frozen_batchnorm=frozen_batchnorm,
-        )
+        model = UNet()
     else:
         raise NotImplementedError(arch)
     model.load = load_model

@@ -1,5 +1,5 @@
 import numpy as np
-import pytest
+from pytest import raises
 
 from glomeruli_segmentation.data_classes import Rectangle, Tile
 from glomeruli_segmentation.tile_loader import get_tile_loader
@@ -29,7 +29,7 @@ def test_returns_one_tile():
     tiles = get_tile_loader(get_tile=_make_tile, region=rect, window=(10, 10))
 
     assert next(tiles) == tile
-    with pytest.raises(StopIteration):
+    with raises(StopIteration):
         next(tiles)
 
 
@@ -43,7 +43,7 @@ def test_returns_two_tiles():
 
     for tile in left_tile, right_tile:
         assert next(tiles) == tile
-    with pytest.raises(StopIteration):
+    with raises(StopIteration):
         next(tiles)
 
 
@@ -55,7 +55,7 @@ def test_returns_four_identical_tiles():
     rects = [Rectangle(upper_left=upper_left, width=10, height=10, level=0) for upper_left in upper_lefts]
     for rect in rects:
         assert next(tiles) == _make_tile(rect)
-    with pytest.raises(StopIteration):
+    with raises(StopIteration):
         next(tiles)
 
 
@@ -71,7 +71,7 @@ def test_returns_four_non_identical_tiles():
 
     for rect in rects:
         assert next(tiles) == tile_getter(rect)
-    with pytest.raises(StopIteration):
+    with raises(StopIteration):
         next(tiles)
 
 
@@ -87,7 +87,7 @@ def test_returns_overlapping_tiles_when_window_does_not_exactly_divide_region():
 
     for rect in rects:
         assert next(tiles) == tile_getter(rect)
-    with pytest.raises(StopIteration):
+    with raises(StopIteration):
         next(tiles)
 
 
@@ -104,7 +104,7 @@ def test_returns_tiles_with_stride_no_equal_to_window_size():
 
     for rect in rects:
         assert next(tiles) == tile_getter(rect)
-    with pytest.raises(StopIteration):
+    with raises(StopIteration):
         next(tiles)
 
 
