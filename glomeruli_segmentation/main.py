@@ -5,10 +5,10 @@ import os
 import torch.nn as nn
 
 from glomeruli_segmentation.api_interface import ApiInterface
-from glomeruli_segmentation.entity_extractor import EntityExtractor
+from glomeruli_segmentation.entity_extractor import EntityExtractor, get_contours_from_mask
 from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference
 from glomeruli_segmentation.logging_tools import get_log_level, get_logger
-from glomeruli_segmentation.serialization import result_to_collection
+from glomeruli_segmentation.output_serialization import result_to_collection
 from glomeruli_segmentation.tile_loader import get_tile_loader
 
 
@@ -32,22 +32,17 @@ def main(verbosity: int):
 
     tile_request = functools.partial(api.get_wsi_tile, slide=slide)
     tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))
-    
-    model = nn.Sequential(
-        load_unet(model_path), 
-        nn.Softmax(dim=1),  
-        SingleChannelPassthrough(channel=1))
 
-    output_mask = run_inference(tile_loader, model, batch_size=16)
+    model = nn.Sequential(load_unet(model_path), nn.Softmax(dim=1), SingleChannelPassthrough(channel=1))
 
-    entity_extractor = EntityExtractor(origin=roi.upper_left)
-    extracted_entities = entity_extractor.extract_from_mask(output_mask)
+    model_output = run_inference(tile_loader, model, batch_size=16)
+    glomeruli_contours = get_contours_from_mask(model_output)
 
-    count_result = {"name": "Glomerulus Count", "type": "integer", "value": extracted_entities.count()}
+    number_of_glomeruli = {"name": "Glomerulus Count", "type": "integer", "value": glomeruli_contours.count()}
 
-    api.post_output(key="glomerulus_count", data=count_result)
+    api.post_output(key="glomerulus_count", data=number_of_glomeruli)
 
-    contour_result = result_to_collection(extracted_entities, slide["id"], roi["id"])
+    contour_result = result_to_collection(glomeruli_contours, slide["id"], roi["id"])
 
     api.post_output(key="glomeruli_polygons", data=contour_result)
 
