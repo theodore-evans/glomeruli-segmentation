@@ -9,6 +9,5 @@
 **/*.pyc
 **/*.ipynb
 
-# scripts to be run locally
-install_test_suite.sh
-_*.sh
+# saved models
+*.pth

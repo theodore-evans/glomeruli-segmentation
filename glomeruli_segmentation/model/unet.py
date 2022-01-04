@@ -67,11 +67,8 @@ class DecoderDeConv(DecoderBase):
     def _init(self, in_channels, middle_channels, out_channels, scale_factor):
         assert scale_factor == 2
         return nn.Sequential(
-            # nn.Dropout2d(p=0.1, inplace=True),
             ConvBn(in_channels, middle_channels, kernel_size=3, padding=1),
-            # Parameters were chosen to avoid artifacts, suggested by https://distill.pub/2016/deconv-checkerboard/
             nn.ConvTranspose2d(middle_channels, out_channels, kernel_size=4, stride=2, padding=1),
-            # upsample(scale_factor=2)
         )
 
 
@@ -99,22 +96,16 @@ class UNet(SegNet):
         num_filters=16,
         n_classes=1,
         pretrained="imagenet",
-        activation=None,
-        frozen_layers=0,
         objectness=False,
         tta=0,
         scales=None,
         resize=None,
-        ocnet=False,
         align_corners=False,
         decoder="simple",
         dropout=0.1,
         num_head_features=None,
         cat_features=False,
         deep_supervision=False,
-        frozen_batchnorm=False,
-        refine=False,
-        image_classification=False,
     ):
         super().__init__(objectness=objectness, tta=tta, scales=scales, resize=resize)
         Decoder = dict(
@@ -127,11 +118,7 @@ class UNet(SegNet):
 
         net, _, _ = create_basenet(
             backbone,
-            activation=activation,
             pretrained=pretrained,
-            frozen_batchnorm=frozen_batchnorm,
-            frozen_layers=frozen_layers,
-            # replace_stride_with_dilation=[False, True, True]
         )
 
         self.encoder1 = nn.Sequential(net[0], nn.MaxPool2d(kernel_size=3, stride=2, padding=1))  # 64  64
@@ -216,19 +203,19 @@ class UNet(SegNet):
             )
 
     def _forward(self, x):
-        e1 = self.encoder1(x)  # ; print('e1', e1.size())
-        e2 = self.encoder2(e1)  # ; print('e2', e2.size())
-        e3 = self.encoder3(e2)  # ; print('e3', e3.size())
-        e4 = self.encoder4(e3)  # ; print('e4', e4.size())
-        e5 = self.encoder5(e4)  # ; print('e5', e5.size())
+        e1 = self.encoder1(x)
+        e2 = self.encoder2(e1)
+        e3 = self.encoder3(e2)
+        e4 = self.encoder4(e3)
+        e5 = self.encoder5(e4)
         # c = self.center(self.pool(e5))#; print('c', c.size())
-        c = self.center(e5)  # ; print('c', c.size())
+        c = self.center(e5)
 
-        d5 = self.decoder5(c, e5)  # ; print('d5', d5.size())
-        d4 = self.decoder4(d5, e4)  # ; print('d4', d4.size())
-        d3 = self.decoder3(d4, e3)  # ; print('d3', d3.size())
-        d2 = self.decoder2(d3, e2)  # ; print('d2', d2.size())
-        d1 = self.decoder1(d2, e1)  # ; print('d1', d1.size())
+        d5 = self.decoder5(c, e5)
+        d4 = self.decoder4(d5, e4)
+        d3 = self.decoder3(d4, e3)
+        d2 = self.decoder2(d3, e2)
+        d1 = self.decoder1(d2, e1)
 
         if self.cat_features:
             d1_size = d1.size()[2:]
@@ -239,15 +226,13 @@ class UNet(SegNet):
                 align_corners=self.align_corners,
             )
             us = [upsampler(d) for d in (d5, d4, d3, d2)] + [d1]
-            # ds = [self.dropout(u) for u in us]
-            # d = torch.cat(ds, 1)
             d = torch.cat(us, 1)
             d = self.dropout(d)
         else:
             d = self.dropout(d1)
 
         d = self.neck(d)
-        mask = self.mask_head(d)  # ; print("mask", mask.size())
+        mask = self.mask_head(d)
 
         if self.training:
             outputs = dict(out=mask)
@@ -260,13 +245,3 @@ class UNet(SegNet):
                 return outputs
 
         return mask
-
-
-if __name__ == "__main__":
-    net = UNet(backbone="Resnet50", pretrained=False)
-    img = torch.zeros((3, 256, 256))
-    # target = torch.zeros((1, net.image_size[0], net.image_size[1]), dtype=torch.long)
-    outputs = net.predict(img)
-    print(outputs.shape)
-    # loss = net.criterion(outputs, {'mask': target}, loss_func=torch.nn.functional.binary_cross_entropy_with_logits)
-    # print(loss)

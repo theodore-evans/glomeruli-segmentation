@@ -7,11 +7,6 @@ from .basic import Sequential, get_num_of_channels
 def create_basenet(
     name,
     pretrained,
-    activation=None,
-    frozen_batchnorm=False,
-    in_channels=3,
-    trainable_layers=None,
-    frozen_layers=0,
     **kwargs,
 ):
     if name == "Resnet34":

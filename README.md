@@ -1,40 +1,28 @@
-# HuBMAP Kidney Segmentation App
+# EMPAIA Glomeruli Segmentation Demo App
 
-A demonstrator app for the EMPAIA App Test Suite, wrapping an inference model developed by Tuguldur Erdene-Ochir and Yuan Xu (TU-Berlin) for the Kaggle challenge [**HuBMAP: Hacking the Kidney** - Identify glomeruli in human kidney tissue images](https://www.kaggle.com/c/hubmap-kidney-segmentation). 
+A demonstrator app for the [EMPAIA Ecosystem for Digital Pathology](https://www.empaia.org/), as featured in [Romberg, D., Strohmenger, K., Jansen, C., Küster, T., Weiss, N., Geißler, C., ... & Homeyer, A. (2021). EMPAIA App Interface: An open and vendor-neutral interface for AI applications in pathology. Computer Methods and Programs in Biomedicine, 106596.](https://doi.org/10.1016/j.cmpb.2021.106596)
+
+API specification can be found on [EMPAIA Developer Portal](https://developer.empaia.org/app_developer_docs/draft-3/#/)
+
+The app wraps a segmentation model developed and trained by Tuguldur Erdene-Ochir (TU-Berlin) and Yuan Xu (TU-Berlin) for the Kaggle challenge [**HuBMAP: Hacking the Kidney** - Identify glomeruli in human kidney tissue images](https://www.kaggle.com/c/hubmap-kidney-segmentation):
 
 > [The] challenge is to detect functional tissue units (FTUs) across different tissue preparation pipelines. An FTU is defined as a “three-dimensional block of cells centered around a capillary, such that each cell in this block is within diffusion distance from any other cell in the same block” (de Bo
 no, 2013). The goal of this competition is the implementation of a successful and robust glomeruli FTU detector. &mdash; <cite>“HuBMAP - Hacking the Kidney.” Accessed February 28, 2021. https://kaggle.com/c/hubmap-kidney-segmentation.</cite>
 
-## Building the app image
-
-- Clone the project
-- In the project directory, `docker build <build arguments> .`
-
-## App outputs in EATS web client
+Sample output:
 
 ![](assets/app_screenshot.png)
 
-## Training Data
+### Running the app
 
- > [...] The HuBMAP data used in this hackathon includes 11 fresh frozen and 9 Formalin Fixed Paraffin Embedded (FFPE) PAS kidney images. Glomeruli FTU annotations exist for all 20 tissue samples; some of these will be shared for training, and others will be used to judge submissions.
-> There are over 600,000 glomeruli in each human kidney (Nyengaard, 1992). Normal glomeruli typically range from 100-350μm in diameter with a roughly spherical shape (Kannan, 2019).  &mdash; <cite>“HuBMAP - Hacking the Kidney.” Accessed February 28, 2021. https://kaggle.com/c/hubmap-kidney-segmentation/data.</cite>
+- Clone the project
+- In the project directory, `docker build -t <image-tag> .` (requires internet access to download pre-trained model weights)
+- A lightweight testing environment for the EMPAIA ecosystem can be run with the EMPAIA App Test Suite ([EATS](https://gitlab.com/empaia/integration/empaia-app-test-suite))
+- The `image-tag` chosen will be provided to the EATS when registering the app
 
-  Available from [**Kaggle**](https://www.kaggle.com/c/hubmap-kidney-segmentation/data):
+## App details
 
-  ```
-  tree -L 1 /data/hubmap-kidney-segmentation
-  /data/hubmap-kidney-segmentation
-  ├── HuBMAP-20-dataset_information.csv
-  ├── sample_submission.csv
-  ├── test
-  ├── train
-  └── train.csv
-  ```
-  
-* The model was trained on 13 TIFF files of 500MB - 5GB each, with metadata and annotations in polygon and RLE formats
-
-## Model
-  <!-- **Available at** [**NextCloud**](https://nx9836.your-storageshare.de/s/HSq8StKLB6WYncy). Email <theodore.evans@dai-labor.de> for access. **Do not distribute.** -->
+### Model
 * `hacking_kidney_16934_best_metric.model-384e1332.pth`
   * single fold/model kaggle LB: 0.873
   * input patch 1024x1024
@@ -55,20 +43,23 @@ no, 2013). The goal of this competition is the implementation of a successful an
       --data-aug-clahe-p=0.2 \
       --data-aug-distort-p=0.7
   ```
-<!-- 
-# Demo
+ 
+### Training data
 
-![](assets/demo_screenshot.png)
+The model was trained on 13 TIFF files of 500MB - 5GB each, with metadata and annotations in polygon and RLE formats
 
-1. Download the data to `./data/hubmap-kidney-segmentation`
-2. Download the model into the project directory
-3. Install Anaconda and use the provided environment:
-  ```bash
-  conda env create -f environment.yml
-  conda activate hacking_kidney
+ > [...] The HuBMAP data used in this hackathon includes 11 fresh frozen and 9 Formalin Fixed Paraffin Embedded (FFPE) PAS kidney images. Glomeruli FTU annotations exist for all 20 tissue samples; some of these will be shared for training, and others will be used to judge submissions.
+> There are over 600,000 glomeruli in each human kidney (Nyengaard, 1992). Normal glomeruli typically range from 100-350μm in diameter with a roughly spherical shape (Kannan, 2019).  &mdash; <cite>“HuBMAP - Hacking the Kidney.” Accessed February 28, 2021. https://kaggle.com/c/hubmap-kidney-segmentation/data.</cite>
+
+  Available from [**Kaggle**](https://www.kaggle.com/c/hubmap-kidney-segmentation/data):
+
   ```
-4. Run the streamlit demo 
-  ```bash
-  streamlit run demo.py -- --image-size=1024 --mode=valid --model hacking_kidney_16934_best_metric.model-384e1332.pth
+  tree -L 1 /data/hubmap-kidney-segmentation
+  /data/hubmap-kidney-segmentation
+  ├── HuBMAP-20-dataset_information.csv
+  ├── sample_submission.csv
+  ├── test
+  ├── train
+  └── train.csv
   ```
-5. Access the UI on `http://localhost:8501/` -->
+  

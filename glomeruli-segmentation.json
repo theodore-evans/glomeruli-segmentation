@@ -1,29 +1,29 @@
 {
     "$schema": "https://developer.empaia.org/schema/ead-app-schema-draft-3.json",
-    "name": "HuBMAP Kidney Segmentation App",
-    "name_short": "HubMAP",
-    "namespace": "org.empaia.dai.hubmap_hacking_kidney.v1",
+    "name": "Glomeruli Segmentation App",
+    "name_short": "GloMAP",
+    "namespace": "org.empaia.dai.glomeruli_segmentation.v1",
     "description": "Kidney segmentation algorithm for detection and counting of glomeruli in kidney WSI data",
     "inputs": {
-        "kidney_wsi": {
+        "slide": {
             "type": "wsi"
         },
-        "my_rectangle": {
+        "region_of_interest": {
             "type": "rectangle",
-            "reference": "inputs.kidney_wsi"
+            "reference": "inputs.slide"
         }
     },
     "outputs": {
         "glomerulus_count": {
             "type": "integer",
-            "reference": "inputs.my_rectangle"
+            "reference": "inputs.region_of_interest"
         },
         "glomeruli_polygons": {
             "type": "collection",
-            "reference": "inputs.my_rectangle",
+            "reference": "inputs.region_of_interest",
             "items": {
                 "type": "polygon",
-                "reference": "inputs.kidney_wsi"
+                "reference": "inputs.slide"
             }
         }
     }
