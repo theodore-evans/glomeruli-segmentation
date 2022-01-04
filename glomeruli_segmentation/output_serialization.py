@@ -2,7 +2,7 @@ from typing import List, Tuple
 from glomeruli_segmentation.data_classes import Rectangle, Wsi
 
 
-def result_to_collection(contours: List[Tuple[int,int]], slide: Wsi, roi: Rectangle):
+def serialize_result_to_collection(contours: List[Tuple[int,int]], slide: Wsi, roi: Rectangle):
     
     collection = {
         "item_type": "polygon",

@@ -8,7 +8,7 @@ from glomeruli_segmentation.api_interface import ApiInterface
 from glomeruli_segmentation.entity_extractor import get_contours_from_mask
 from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference
 from glomeruli_segmentation.logging_tools import get_log_level, get_logger
-from glomeruli_segmentation.output_serialization import result_to_collection
+from glomeruli_segmentation.output_serialization import serialize_result_to_collection
 from glomeruli_segmentation.tile_loader import get_tile_loader
 
 
@@ -42,9 +42,9 @@ def main(verbosity: int):
 
     api.post_output(key="glomerulus_count", data=number_of_glomeruli)
 
-    contour_result = result_to_collection(glomeruli_contours, slide["id"], roi["id"])
+    annotations = serialize_result_to_collection(glomeruli_contours, slide, roi)
 
-    api.post_output(key="glomeruli_polygons", data=contour_result)
+    api.post_output(key="glomeruli_polygons", data=annotations)
 
     api.put_finalize()
 
