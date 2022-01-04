@@ -13,7 +13,7 @@ from glomeruli_segmentation.request_hooks import check_for_errors_hook, response
 
 
 class ApiInterface:
-    def __init__(self, api_url: str, job_id: str, headers: str, logger: Logger = get_logger()):
+    def __init__(self, api_url: str, job_id: str, headers: dict, logger: Logger = get_logger()):
 
         self.logger = logger
         self.api_url = api_url
@@ -26,7 +26,7 @@ class ApiInterface:
         request_hooks = [check_for_errors_hook, response_logging_hook]
         self.session.hooks["response"] = [hook(self.logger) for hook in request_hooks]
 
-    def get_input(self, key: str) -> dict:
+    def get_input(self, key: str) -> Response:
         """
         get slide input data by key as defined in EAD
         """

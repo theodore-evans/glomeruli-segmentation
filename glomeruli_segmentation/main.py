@@ -25,8 +25,7 @@ def main(verbosity: int):
         logger.error("Missing EMPAIA API environment variables")
         raise e
 
-    api = ApiInterface(verbosity, api_url, job_id, headers, logger=get_logger("api", app_log_level))
-
+    api = ApiInterface(api_url, job_id, headers, logger=get_logger("api", app_log_level))
     roi = api.get_rectangle("region_of_interest")
     slide = api.get_wsi("slide")
 
@@ -34,16 +33,15 @@ def main(verbosity: int):
     tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))
 
     model = nn.Sequential(load_unet(model_path), nn.Softmax(dim=1), SingleChannelPassthrough(channel=1))
-
     model_output = run_inference(tile_loader, model, batch_size=16)
-    glomeruli_contours = get_contours_from_mask(model_output)
+    glomeruli_contours, _ = get_contours_from_mask(model_output)
 
-    number_of_glomeruli = {"name": "Glomerulus Count", "type": "integer", "value": glomeruli_contours.count()}
-
+    # TODO: add contour confidence output as collection
+        
+    number_of_glomeruli = {"name": "Glomerulus Count", "type": "integer", "value": len(glomeruli_contours)}
     api.post_output(key="glomerulus_count", data=number_of_glomeruli)
 
     annotations = serialize_result_to_collection(glomeruli_contours, slide, roi)
-
     api.post_output(key="glomeruli_polygons", data=annotations)
 
     api.put_finalize()

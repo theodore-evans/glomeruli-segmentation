@@ -6,10 +6,10 @@ from numpy import ndarray, uint8
 
 from glomeruli_segmentation.data_classes import Tile
 
-_Contour = List[Tuple[int, int]]
+_Contour = Tuple[int, int]
 
 
-def _threshold_to_binary_mask(image: ndarray, threshold: float, positive_value: uint8 = 255) -> ndarray:
+def _threshold_to_binary_mask(image: ndarray, threshold: float, positive_value: uint8 = uint8(255)) -> ndarray:
     thresholded_mask = np.zeros_like(image, dtype=uint8)
     _, thresholded_mask = cv.threshold(
         src=image, dst=thresholded_mask, thresh=threshold, maxval=positive_value, type=cv.THRESH_BINARY

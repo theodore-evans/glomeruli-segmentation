@@ -1,0 +1,25 @@
+Name                                               Stmts   Miss  Cover
+----------------------------------------------------------------------
+glomeruli_segmentation/__init__.py                     0      0   100%
+glomeruli_segmentation/api_interface.py               45     45     0%
+glomeruli_segmentation/data_classes.py                43      1    98%
+glomeruli_segmentation/entity_extractor.py            27      0   100%
+glomeruli_segmentation/inference.py                   54      0   100%
+glomeruli_segmentation/logging_tools.py               15     15     0%
+glomeruli_segmentation/main.py                        39     39     0%
+glomeruli_segmentation/model/__init__.py               1      0   100%
+glomeruli_segmentation/model/basenet/__init__.py      35      5    86%
+glomeruli_segmentation/model/basenet/basic.py         87     45    48%
+glomeruli_segmentation/model/basenet/scse.py          25      7    72%
+glomeruli_segmentation/model/basenet/tf_like.py       41     21    49%
+glomeruli_segmentation/model/basenet/utils.py         12      3    75%
+glomeruli_segmentation/model/segnet.py               120     84    30%
+glomeruli_segmentation/model/unet.py                  98     14    86%
+glomeruli_segmentation/output_serialization.py        11     11     0%
+glomeruli_segmentation/request_hooks.py               32     32     0%
+glomeruli_segmentation/tile_loader.py                 22      0   100%
+glomeruli_segmentation/util/__init__.py                0      0   100%
+glomeruli_segmentation/util/combine_masks.py          32      1    97%
+glomeruli_segmentation/util/preprocessing.py          12     12     0%
+----------------------------------------------------------------------
+TOTAL                                                751    335    55%

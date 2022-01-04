@@ -35,6 +35,8 @@ mypy = "^0.930"
 matplotlib = "^3.5.1"
 ipykernel = "^6.6.1"
 scipy = "^1.7.3"
+data-science-types = "^0.2.23"
+types-requests = "^2.26.3"
 
 [tool.black]
 line-length = 110

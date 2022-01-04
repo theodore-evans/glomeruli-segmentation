@@ -35,7 +35,7 @@ class Wsi:
 
 @dataclass
 class Rectangle:
-    upper_left: NamedTuple
+    upper_left: Vector2
     width: int
     height: int
     level: int = 0

@@ -97,8 +97,8 @@ def test_returns_shifted_contours_for_shifted_tile():
     for contour in contours:
         for coordinate in contour:
             x, y = coordinate
+            print(x, y)
             assert x > 200 and y > 200
-
 
 def test_returns_one_confidence_per_annotation():
     shape = (256, 256, 1)
