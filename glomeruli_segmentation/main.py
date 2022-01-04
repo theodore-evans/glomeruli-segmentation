@@ -5,7 +5,7 @@ import os
 import torch.nn as nn
 
 from glomeruli_segmentation.api_interface import ApiInterface
-from glomeruli_segmentation.entity_extractor import EntityExtractor, get_contours_from_mask
+from glomeruli_segmentation.entity_extractor import get_contours_from_mask
 from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference
 from glomeruli_segmentation.logging_tools import get_log_level, get_logger
 from glomeruli_segmentation.output_serialization import result_to_collection
