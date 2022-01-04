@@ -1,3 +1,31 @@
-# This file is a template, and might need editing before it works on your project.
-include:
-  template: Jobs/Code-Quality.gitlab-ci.yml
+image: python:3.8
+
+stages:
+  - test
+  - isort
+  - lint
+
+before_script:
+  - pip install poetry
+  - poetry config virtualenvs.create false
+  - poetry install
+
+tests:
+  stage: test
+  script:
+    - poetry run pytest
+
+isort:
+  stage: isort
+  script:
+    - poetry run isort .
+
+lint:
+  stage: lint
+  script:
+    - poetry run black .
+
+# Static Type check:
+#   stage: types
+#   script:
+#     - poetry run mypy .
