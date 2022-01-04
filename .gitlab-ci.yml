@@ -1,9 +1,9 @@
 image: python:3.8
 
 stages:
-  - test
   - isort
   - lint
+  - test
 
 before_script:
   - pip install poetry
@@ -13,7 +13,7 @@ before_script:
 tests:
   stage: test
   script:
-    - poetry run pytest
+    - poetry run python3 -m pytest
 
 isort:
   stage: isort
