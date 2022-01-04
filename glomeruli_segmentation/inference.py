@@ -33,6 +33,7 @@ def _resize_image(
         interpolation=interpolation,
     )
 
+
 class SingleChannelPassthrough(nn.Module):
     def __init__(self, channel: int = 0):
         super().__init__()
@@ -40,7 +41,8 @@ class SingleChannelPassthrough(nn.Module):
 
     def forward(self, input):
         return input[:, self.channel : self.channel + 1, :, :]
-    
+
+
 def load_unet(model_path: str, map_location: str = "cpu"):
     model_data = torch.load(model_path, map_location=map_location)
     unet = UNet(**model_data["kwargs"])

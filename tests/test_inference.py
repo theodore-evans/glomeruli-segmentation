@@ -3,10 +3,9 @@ import torch
 import torch.nn as nn
 
 from glomeruli_segmentation.data_classes import Rectangle, Tile
-from glomeruli_segmentation.inference import load_unet, run_inference, SingleChannelPassthrough
+from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference
 from glomeruli_segmentation.tile_loader import get_tile_loader
 from tests.helper_methods import make_tile, make_tile_getter
-
 
 one_channel_passthrough = SingleChannelPassthrough()
 

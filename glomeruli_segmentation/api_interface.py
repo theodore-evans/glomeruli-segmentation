@@ -9,8 +9,7 @@ from requests import Response
 
 from glomeruli_segmentation.data_classes import Rectangle, Tile, Wsi
 from glomeruli_segmentation.logging_tools import get_logger
-from glomeruli_segmentation.request_hooks import (check_for_errors_hook,
-                                                  response_logging_hook)
+from glomeruli_segmentation.request_hooks import check_for_errors_hook, response_logging_hook
 
 
 class ApiInterface:

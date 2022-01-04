@@ -14,6 +14,7 @@ class Vector3:
 
 Vector2 = namedtuple("Vector2", "x y")
 
+
 @dataclass
 class Level:
     extent: Vector3
