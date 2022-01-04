@@ -1,8 +1,6 @@
 from typing import List, Tuple
 from glomeruli_segmentation.data_classes import Rectangle, Wsi
 
-from glomeruli_segmentation.entity_extractor import ExtractedEntities
-
 
 def result_to_collection(contours: List[Tuple[int,int]], slide: Wsi, roi: Rectangle):
     
