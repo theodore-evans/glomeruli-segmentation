@@ -37,7 +37,7 @@ RUN pip3 install -r /tmp/requirements.txt
 COPY ./src /app
 
 # Download model weights
-RUN mkdir -p /model && curl -OJ https://nextcloud.empaia.org/s/dMmHbbAEfwccnRg/download && mv hacking_kidney_16934_best_metric_full.model-384e1332.pth /model
-ENV MODEL_PATH /model/hacking_kidney_16934_best_metric_full.model-384e1332.pth
+RUN mkdir -p /model && curl -OJ https://nx9836.your-storageshare.de/s/7FGbJRn97NYB5pD/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth /model
+ENV MODEL_PATH /model/glomeruli_segmentation_16934_best_metric.model-384e1332.pth
       
 CMD ["python3", "main.py", "-v"]
