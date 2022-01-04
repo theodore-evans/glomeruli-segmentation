@@ -1,6 +1,5 @@
 from typing import Collection
 
-import cv2
 import numpy as np
 from cv2 import contourArea
 from scipy.ndimage.filters import gaussian_filter

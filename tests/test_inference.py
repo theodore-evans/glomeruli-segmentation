@@ -1,5 +1,4 @@
 import numpy as np
-import torch
 import torch.nn as nn
 
 from glomeruli_segmentation.data_classes import Rectangle, Tile
