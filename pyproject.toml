@@ -32,6 +32,8 @@ pytest-pep8 = "^1.0.6"
 pytest-pythonpath = "^0.7.3"
 docker = "^5.0.3"
 mypy = "^0.930"
+matplotlib = "^3.5.1"
+ipykernel = "^6.6.1"
 
 [tool.black]
 line-length = 110

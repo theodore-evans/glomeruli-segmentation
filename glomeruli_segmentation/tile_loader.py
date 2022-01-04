@@ -6,15 +6,17 @@ from glomeruli_segmentation.data_classes import Rectangle, Tile, Vector2
 def get_tile_loader(
     get_tile: Callable[[Rectangle], Tile],
     region: Rectangle,
-    window: Tuple[int,int],
-    stride: Optional[Tuple[int,int]] = None,
+    window: Tuple[int, int],
+    stride: Optional[Tuple[int, int]] = None,
 ) -> Iterable[Tile]:
-    
+
     window_width, window_height = window
     stride_x, stride_y = stride if stride else window
 
     start_x, start_y = region.upper_left
-    effective_shape = Vector2(region.width - window_width + stride_x, region.height - window_height + stride_y)
+    effective_shape = Vector2(
+        region.width - window_width + stride_x, region.height - window_height + stride_y
+    )
 
     whole_columns = effective_shape.x // stride_x
     columns_remainder = effective_shape.x % stride_x

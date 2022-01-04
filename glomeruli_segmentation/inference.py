@@ -25,7 +25,7 @@ def _torch_tensor_to_ndarray(torch_tensor: Tensor):
 
 
 def _resize_image(
-    image: np.ndarray, target_shape: Tuple[int,int], interpolation: int = cv2.INTER_LINEAR
+    image: np.ndarray, target_shape: Tuple[int, int], interpolation: int = cv2.INTER_LINEAR
 ) -> np.ndarray:
     return cv2.resize(
         image,
@@ -33,9 +33,16 @@ def _resize_image(
         interpolation=interpolation,
     )
 
+class SingleChannelPassthrough(nn.Module):
+    def __init__(self, channel: int = 0):
+        super().__init__()
+        self.channel = channel
 
-def load_unet(path_to_state_dict: str, map_location: str = "cpu"):
-    model_data = torch.load(path_to_state_dict, map_location=map_location)
+    def forward(self, input):
+        return input[:, self.channel : self.channel + 1, :, :]
+    
+def load_unet(model_path: str, map_location: str = "cpu"):
+    model_data = torch.load(model_path, map_location=map_location)
     unet = UNet(**model_data["kwargs"])
     unet.load_state_dict(model_data["state_dict"])
     return unet

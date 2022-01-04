@@ -1,5 +1,6 @@
+from collections import namedtuple
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, NamedTuple, Tuple
 
 from numpy import array_equal, ndarray
 
@@ -11,17 +12,7 @@ class Vector3:
     z: int
 
 
-@dataclass
-class Vector2:
-    x: int
-    y: int
-
-    def __getitem__(self, key):
-        return (self.x, self.y)[key]
-
-    def __iter__(self):
-        return (value for value in (self.x, self.y))
-
+Vector2 = namedtuple("Vector2", "x y")
 
 @dataclass
 class Level:
@@ -43,12 +34,12 @@ class Wsi:
 
 @dataclass
 class Rectangle:
-    upper_left: Vector2
+    upper_left: NamedTuple
     width: int
     height: int
     level: int = 0
     id: str = ""
-    
+
     def __post_init__(self):
         self.upper_left = Vector2(*self.upper_left)
 

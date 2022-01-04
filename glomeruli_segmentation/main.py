@@ -6,7 +6,7 @@ import torch.nn as nn
 
 from glomeruli_segmentation.api_interface import ApiInterface
 from glomeruli_segmentation.entity_extractor import EntityExtractor
-from glomeruli_segmentation.inference import load_unet, run_inference
+from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference
 from glomeruli_segmentation.logging_tools import get_log_level, get_logger
 from glomeruli_segmentation.serialization import result_to_collection
 from glomeruli_segmentation.tile_loader import get_tile_loader
@@ -32,8 +32,11 @@ def main(verbosity: int):
 
     tile_request = functools.partial(api.get_wsi_tile, slide=slide)
     tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))
-
-    model = nn.Sequential(load_unet(model_path), nn.Softmax(dim=1))
+    
+    model = nn.Sequential(
+        load_unet(model_path), 
+        nn.Softmax(dim=1),  
+        SingleChannelPassthrough(channel=1))
 
     output_mask = run_inference(tile_loader, model, batch_size=16)
 
