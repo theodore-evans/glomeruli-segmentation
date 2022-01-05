@@ -8,9 +8,7 @@ from tests.helper_methods import make_tile, make_tile_getter
 
 one_channel_passthrough = SingleChannelPassthrough()
 
-downscaling_model = nn.Sequential(
-    nn.MaxPool2d(kernel_size=3, stride=2, padding=1), SingleChannelPassthrough(channel=0)
-)
+downscaling_model = nn.Sequential(nn.MaxPool2d(kernel_size=3, stride=2, padding=1), SingleChannelPassthrough(channel=0))
 
 
 def test_returns_a_mask_for_a_single_tile():

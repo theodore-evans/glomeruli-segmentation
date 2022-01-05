@@ -14,9 +14,7 @@ def get_tile_loader(
     stride_x, stride_y = stride if stride else window
 
     start_x, start_y = region.upper_left
-    effective_shape = Vector2(
-        region.width - window_width + stride_x, region.height - window_height + stride_y
-    )
+    effective_shape = Vector2(region.width - window_width + stride_x, region.height - window_height + stride_y)
 
     whole_columns = effective_shape.x // stride_x
     columns_remainder = effective_shape.x % stride_x
@@ -38,8 +36,7 @@ def get_tile_loader(
             corners.append(Vector2(x, y))
 
     rectangles = [
-        Rectangle(upper_left=corner, width=window_width, height=window_height, level=region.level)
-        for corner in corners
+        Rectangle(upper_left=corner, width=window_width, height=window_height, level=region.level) for corner in corners
     ]
 
     return (get_tile(rect) for rect in rectangles)

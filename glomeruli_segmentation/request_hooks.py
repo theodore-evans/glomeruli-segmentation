@@ -36,9 +36,7 @@ def response_logging_hook(logger: logging.Logger) -> Callable:
     def hook(r: requests.Response, *args, **kwargs):
         if logger.level < logging.WARN:
             url = urlparse(r.url)
-            logger.info(
-                f'{url.scheme}://{url.netloc} "{r.request.method} {url.path}" {r.status_code} {r.reason}'
-            )
+            logger.info(f'{url.scheme}://{url.netloc} "{r.request.method} {url.path}" {r.status_code} {r.reason}')
         if logger.level < logging.INFO:
             logger.debug(f"{r.headers=}")
             try:

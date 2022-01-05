@@ -53,9 +53,7 @@ class Conv2dSame(nn.Conv2d):
         groups=1,
         bias=True,
     ):
-        super(Conv2dSame, self).__init__(
-            in_channels, out_channels, kernel_size, stride, 0, dilation, groups, bias
-        )
+        super(Conv2dSame, self).__init__(in_channels, out_channels, kernel_size, stride, 0, dilation, groups, bias)
 
     def forward(self, x):
         return conv2d_same(x, self.weight, self.bias, self.stride, self.dilation, self.groups)

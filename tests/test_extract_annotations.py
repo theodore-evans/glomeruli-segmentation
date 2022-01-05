@@ -100,6 +100,7 @@ def test_returns_shifted_contours_for_shifted_tile():
             print(x, y)
             assert x > 200 and y > 200
 
+
 def test_returns_one_confidence_per_annotation():
     shape = (256, 256, 1)
     rect_left = Rectangle(upper_left=Vector2(0, 0), width=shape[0], height=shape[1])

@@ -1,13 +1,14 @@
 from typing import List, Tuple
+
 from glomeruli_segmentation.data_classes import Rectangle, Wsi
 
 
-def serialize_result_to_collection(contours: List[Tuple[int,int]], slide: Wsi, roi: Rectangle):
-    
+def serialize_result_to_collection(contours: List[Tuple[int, int]], slide: Wsi, roi: Rectangle):
+
     npp = slide.pixel_size_nm
     num_levels = len(slide.levels)
     num_contours = len(contours)
-    
+
     polygons: List[dict] = []
 
     for i, contour in enumerate(contours):

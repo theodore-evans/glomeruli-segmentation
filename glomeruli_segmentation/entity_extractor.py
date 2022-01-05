@@ -18,9 +18,7 @@ def _threshold_to_binary_mask(image: ndarray, threshold: float, positive_value: 
 
 
 def _find_contours(thresholded_mask: ndarray) -> List[_Contour]:
-    contours, _ = cv.findContours(
-        image=thresholded_mask, mode=cv.RETR_EXTERNAL, method=cv.CHAIN_APPROX_SIMPLE
-    )
+    contours, _ = cv.findContours(image=thresholded_mask, mode=cv.RETR_EXTERNAL, method=cv.CHAIN_APPROX_SIMPLE)
     return [contour.squeeze() for contour in contours]
 
 

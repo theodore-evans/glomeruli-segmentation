@@ -4,9 +4,7 @@ import sys
 DEFAULT_FORMATTER = logging.Formatter("%(asctime)s | %(name)s | %(levelname)s | %(message)s")
 
 
-def get_log_level(
-    verbosity: int = 0, default_log_level: int = logging.WARN, min_log_level: int = logging.DEBUG
-) -> int:
+def get_log_level(verbosity: int = 0, default_log_level: int = logging.WARN, min_log_level: int = logging.DEBUG) -> int:
     return max(default_log_level - 10 * verbosity, min_log_level)
 
 

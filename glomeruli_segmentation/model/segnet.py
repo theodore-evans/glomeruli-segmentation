@@ -51,9 +51,7 @@ class SegNet(nn.Module):
         super().__init__()
         if scales and resize:
             resize = None
-            warnings.warn(
-                f"testing scales = {scales}, please make sure input matches training resize = {resize}"
-            )
+            warnings.warn(f"testing scales = {scales}, please make sure input matches training resize = {resize}")
 
         self.objectness = objectness
         self.tta = tta

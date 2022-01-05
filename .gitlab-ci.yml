@@ -2,7 +2,8 @@ image: python:3.8
 
 stages:
   - codecheck
-  - test 
+  - unit_tests
+  # - test_app
 
 before_script:
   - pip install poetry
@@ -23,8 +24,8 @@ codecheck:
     - poetry run isort --check tests
     - poetry run pylint tests
 
-tests:
-  stage: test
+unit_tests:
+  stage: unit_tests
   tags:
     - empaia
   before_script:
@@ -33,3 +34,8 @@ tests:
   script:
     - curl -OJ https://nx9836.your-storageshare.de/s/7FGbJRn97NYB5pD/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth ./tests
     - poetry run python3 -m pytest
+
+# test_app:
+#   stage: test_app
+#   tags:
+#     - empaia
