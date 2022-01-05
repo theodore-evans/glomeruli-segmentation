@@ -56,7 +56,7 @@ modules = ["src"]
 [tool.pylint.master]
 ignore = ["model"]
 extension-pkg-whitelist=["cv2","torch"]
-generated-members=["torch"]
+generated-members=["cv2", "torch"]
 
 [tool.pylint."MESSAGES CONTROL"]
 max-line-length = 120
