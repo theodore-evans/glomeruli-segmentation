@@ -1,19 +1,17 @@
+image: python:3.8
+
 stages:
   - codecheck
-  - unit_tests
-  - test_app
+  - test
 
 before_script:
+  - python -m pip install --upgrade pip
   - pip install poetry
   - poetry config virtualenvs.create false
+  - poetry install
 
 codecheck:
   stage: codecheck
-  tags:
-    - empaia
-  variables:
-  before_script:
-    - poetry install
   script:
     - poetry run black --check glomeruli_segmentation
     - poetry run isort --check glomeruli_segmentation
@@ -23,42 +21,34 @@ codecheck:
     - poetry run pylint tests
 
 unit_tests:
-  image: python:3.8
-  stage: unit_tests
-  tags:
-    - empaia
-  before_script:
-    - apt update && apt install ffmpeg libsm6 libxext6 git -y
-    - poetry install
-    - curl -OJ https://nx9836.your-storageshare.de/s/7FGbJRn97NYB5pD/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth ./tests
-
+  stage: test
   script:
+    - apt update && apt install -y libgl1-mesa-dev
+    - curl -OJ https://nx9836.your-storageshare.de/s/7FGbJRn97NYB5pD/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth ./tests
     - poetry run python3 -m pytest
 
-test_app:
-  stage: test_app
-  tags:
-    - empaia
-  before_script:
-    - curl -OJ https://nx9836.your-storageshare.de/s/Pws2am5cd6wGdZw/download && mv new_converted_kidney_bigtiles.tif /data
-    - git clone --recurse-submodule https://gitlab.cc-asp.fraunhofer.de/empaia/app-test-suite/empaia-app-test-suite.git
-    - cd empaia-app-test-suite
-    - poetry export --dev --without-hashes -f requirements.txt > requirements.txt
-    - pip3 install -r requirements.txt
-    - poetry build -f wheel
-    - echo "{\"/data/\":\"/data\"}" > ./wsi-mount-points.json
-    - python3 -m venv eats
-    - source eats/bin/activate
-    - pip3 install wheel
-    - pip3 install ./dist/*.whl
-    - eats services up ./wsi-mount-points.json
-    - eats services wait
-    - cd ..
-  script:
-    - eats apps register ./glomeruli-segmentation.json glomeruli-segmentation > app.env
-    - export $(xargs <app.env)
-    - eats jobs register ./inputs $APP_ID > job.env
-    - export $(xargs <job.env)
-    - export EMPAIA_APP_API=http://localhost:8082
-    - eats jobs set-running $EMPAIA_JOB_ID
-    - python3 glomeruli_segmentation/main.py -v
+
+# test_app:
+#   stage: test
+#   script:
+#     - curl -OJ https://nx9836.your-storageshare.de/s/Pws2am5cd6wGdZw/download && mv new_converted_kidney_bigtiles.tif /data
+#     - git clone --recurse-submodule https://gitlab.com/empaia/integration/empaia-app-test-suite
+#     - cd empaia-app-test-suite
+#     - poetry install
+#     - poetry build -f wheel
+#     - echo "{\"/data/\":\"/data\"}" > ./wsi-mount-points.json
+#     - cat ./wsi-mount-points.json
+#     - python3 -m venv eats
+#     - source eats/bin/activate
+#     - pip3 install wheel
+#     - pip3 install ./dist/*.whl
+#     - eats services up ./wsi-mount-points.json
+#     - eats services wait
+#     - cd ..
+#     - eats apps register ./glomeruli-segmentation.json glomeruli-segmentation > app.env
+#     - export $(xargs <app.env)
+#     - eats jobs register ./inputs $APP_ID > job.env
+#     - export $(xargs <job.env)
+#     - export EMPAIA_APP_API=http://localhost:8082
+#     - eats jobs set-running $EMPAIA_JOB_ID
+#     - python3 glomeruli_segmentation/main.py -v
