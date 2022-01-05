@@ -55,6 +55,7 @@ test_app:
     - eats services up ./wsi-mount-points.json
     - eats services wait
     - cd ..
+  script:
     - eats apps register ./glomeruli-segmentation.json glomeruli-segmentation > app.env
     - export $(xargs <app.env)
     - eats jobs register ./inputs $APP_ID > job.env
