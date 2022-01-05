@@ -7,7 +7,7 @@ stages:
  
 
 before_script:
-  - apk update && apk install ffmpeg libsm6 libxext6  -y
+  - apt update && apt install ffmpeg libsm6 libxext6  -y
   - pip install poetry
   - poetry config virtualenvs.create false
   - poetry install
