@@ -20,7 +20,7 @@ def check_for_errors_hook(logger: logging.Logger) -> Callable:
             try:
                 parsed_error = json.loads(error_text)
                 logger.error(json.dumps(parsed_error, indent=4, sort_keys=True))
-            except:
+            except TypeError:
                 logger.error(error_text)
             finally:
                 raise e
@@ -44,7 +44,7 @@ def response_logging_hook(logger: logging.Logger) -> Callable:
             try:
                 parsed_response = json.loads(r.text)
                 logger.debug(f"r.text={json.dumps(parsed_response, indent=4, sort_keys=True)}")
-            except:
+            except TypeError:
                 pass
 
     return hook

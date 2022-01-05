@@ -1,6 +1,6 @@
 from collections import namedtuple
 from dataclasses import dataclass
-from typing import List, NamedTuple, Tuple
+from typing import List, Tuple
 
 from numpy import array_equal, ndarray
 

@@ -37,17 +37,30 @@ ipykernel = "^6.6.1"
 scipy = "^1.7.3"
 data-science-types = "^0.2.23"
 types-requests = "^2.26.3"
+pycodestyle = "^2.8.0"
+pylint = "^2.12.2"
 
 [tool.black]
-line-length = 110
+line-length = 120
 target-version = ['py38']
 
 [tool.isort]
+line_length = 120
 profile = "black"
-known_first_party = "poetry"
+multi_line_output = 3
+include_trailing_comma = true
 
 [tool.portray]
 modules = ["src"]
+
+[tool.pylint.master]
+ignore = ["model"]
+extension-pkg-whitelist=["cv2","torch"]
+generated-members=["torch"]
+
+[tool.pylint."MESSAGES CONTROL"]
+max-line-length = 120
+disable = "R,C,W0613,W0511,W0703,W0212,E0611"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

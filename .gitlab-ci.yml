@@ -1,34 +1,35 @@
 image: python:3.8
 
 stages:
-  - test
-  - isort
-  - lint
- 
+  - codecheck
+  - test 
 
 before_script:
-  - apt update && apt install ffmpeg libsm6 libxext6  -y
   - pip install poetry
   - poetry config virtualenvs.create false
-  - poetry install
+
+codecheck:
+  stage: codecheck
+  tags:
+    - empaia
+  variables:
+  before_script:
+    - poetry install
+  script:
+    - poetry run black --check glomeruli_segmentation
+    - poetry run isort --check glomeruli_segmentation
+    - poetry run pylint glomeruli_segmentation
+    - poetry run black --check tests
+    - poetry run isort --check tests
+    - poetry run pylint tests
 
 tests:
   stage: test
+  tags:
+    - empaia
+  before_script:
+    - apt update && apt install ffmpeg libsm6 libxext6 git -y
+    - poetry install
   script:
     - curl -OJ https://nx9836.your-storageshare.de/s/7FGbJRn97NYB5pD/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth ./tests
     - poetry run python3 -m pytest
-
-isort:
-  stage: isort
-  script:
-    - poetry run isort .
-
-lint:
-  stage: lint
-  script:
-    - poetry run black .
-
-# Static Type check:
-#   stage: types
-#   script:
-#     - poetry run mypy .

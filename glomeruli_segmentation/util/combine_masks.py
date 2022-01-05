@@ -49,7 +49,7 @@ def combine_masks(
         normalization[x_start:x_end, y_start:y_end] += 1
 
     if np.min(normalization) == 0:
-        raise ValueError(f"Divide by zero in tile combination")
+        raise ValueError("Divide by zero in tile combination")
     combined /= normalization
 
     return Tile(image=combined, rect=bounds)

@@ -39,8 +39,8 @@ class SingleChannelPassthrough(nn.Module):
         super().__init__()
         self.channel = channel
 
-    def forward(self, input):
-        return input[:, self.channel : self.channel + 1, :, :]
+    def forward(self, inputs):
+        return inputs[:, self.channel : self.channel + 1, :, :]
 
 
 def load_unet(model_path: str, map_location: str = "cpu"):
@@ -68,13 +68,12 @@ def run_inference(tiles: Iterable[Tile], model: nn.Module, batch_size: int = 1) 
         except StopIteration:
             break
         finally:
-            if len(tensors) == 0:
-                break
-            input_batch = torch.stack(tensors, dim=0).to(device)
-            output_batch: Tensor = model(input_batch)
-            for output, rect in zip(output_batch, rects):
-                mask = _torch_tensor_to_ndarray(output).squeeze()
-                resized_mask = _resize_image(mask, tile.rect.shape)
-                mask_tiles.append(Tile(image=resized_mask, rect=rect))
+            if len(tensors) > 0:
+                input_batch = torch.stack(tensors, dim=0).to(device)
+                output_batch: Tensor = model(input_batch)
+                for output, rect in zip(output_batch, rects):
+                    mask = _torch_tensor_to_ndarray(output).squeeze()
+                    resized_mask = _resize_image(mask, tile.rect.shape)
+                    mask_tiles.append(Tile(image=resized_mask, rect=rect))
 
     return combine_masks(mask_tiles)
