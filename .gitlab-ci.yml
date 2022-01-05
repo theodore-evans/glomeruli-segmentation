@@ -15,7 +15,7 @@ before_script:
 tests:
   stage: test
   script:
-    - curl -OJ https://nx9836.your-storageshare.de/s/7FGbJRn97NYB5pD/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth /tests
+    - curl -OJ https://nx9836.your-storageshare.de/s/7FGbJRn97NYB5pD/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth ./tests
     - poetry run python3 -m pytest
 
 isort:
