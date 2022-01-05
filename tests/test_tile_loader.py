@@ -1,7 +1,6 @@
-import numpy as np
 from pytest import raises
 
-from glomeruli_segmentation.data_classes import Rectangle, Tile
+from glomeruli_segmentation.data_classes import Rectangle
 from glomeruli_segmentation.tile_loader import get_tile_loader
 from glomeruli_segmentation.util.combine_masks import combine_masks, get_bounds
 from tests.helper_methods import make_tile, make_tile_getter
