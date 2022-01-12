@@ -36,8 +36,6 @@ def main(verbosity: int):
     model_output = run_inference(tile_loader, model, batch_size=16)
     glomeruli_contours, _ = get_contours_from_mask(model_output)
 
-    # TODO: add contour confidence output as collection
-
     number_of_glomeruli = {"name": "Glomerulus Count", "type": "integer", "value": len(glomeruli_contours)}
     api.post_output(key="glomerulus_count", data=number_of_glomeruli)
 
