@@ -1,1 +1,0 @@
-{"activation": null, "frozen_layers": 0, "n_classes": 2, "feature_layers": null, "pretrained": "imagenet", "frozen_batchnorm": false, "objectness": false, "resize": 1024, "decoder": "scse", "backbone": "Resnet34", "num_head_features": 32, "cat_features": true}
