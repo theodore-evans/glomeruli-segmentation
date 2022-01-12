@@ -1,6 +1,6 @@
-# EMPAIA Glomeruli Segmentation Demo App
+# EMPAIA Kidney Glomeruli Segmentation App
 
-A demonstrator app for the [EMPAIA Ecosystem for Digital Pathology](https://www.empaia.org/), as featured in [Romberg, D., Strohmenger, K., Jansen, C., Küster, T., Weiss, N., Geißler, C., ... & Homeyer, A. (2021). EMPAIA App Interface: An open and vendor-neutral interface for AI applications in pathology. Computer Methods and Programs in Biomedicine, 106596.](https://doi.org/10.1016/j.cmpb.2021.106596)
+A demonstrator application for the [EMPAIA Ecosystem for Digital Pathology](https://www.empaia.org/), as featured in [Romberg, D., Strohmenger, K., Jansen, C., Küster, T., Weiss, N., Geißler, C., ... & Homeyer, A. (2021). EMPAIA App Interface: An open and vendor-neutral interface for AI applications in pathology. Computer Methods and Programs in Biomedicine, 106596.](https://doi.org/10.1016/j.cmpb.2021.106596)
 
 API specification can be found on [EMPAIA Developer Portal](https://developer.empaia.org/app_developer_docs/draft-3/#/)
 
