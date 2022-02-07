@@ -10,6 +10,8 @@ from logging_tools import get_log_level, get_logger
 from output_serialization import serialize_result_to_collection
 from tile_loader import get_tile_loader
 
+BATCH_SIZE = 16
+
 
 def main(verbosity: int):
     app_log_level = get_log_level(verbosity)
@@ -32,8 +34,8 @@ def main(verbosity: int):
     tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))
 
     model = nn.Sequential(load_unet(model_path), nn.Softmax(dim=1), SingleChannelPassthrough(channel=1))
-    model_output = run_inference(tile_loader, model, batch_size=16)
-    glomeruli_contours, _ = get_contours_from_mask(model_output)
+    segmentation_mask = run_inference(tile_loader, model, batch_size=BATCH_SIZE)
+    glomeruli_contours, _ = get_contours_from_mask(segmentation_mask)
 
     number_of_glomeruli = {"name": "Glomerulus Count", "type": "integer", "value": len(glomeruli_contours)}
     api.post_output(key="glomerulus_count", data=number_of_glomeruli)
