@@ -19,8 +19,6 @@ class ApiInterface:
         self.job_id = job_id
         self.headers = headers
 
-        self.logger.info(f"{self.api_url=} {self.job_id=}")
-
         self.session = requests.Session()
         request_hooks = [check_for_errors_hook, response_logging_hook]
         self.session.hooks["response"] = [hook(self.logger) for hook in request_hooks]

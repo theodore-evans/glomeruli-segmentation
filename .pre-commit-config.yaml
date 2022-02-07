@@ -1,9 +1,13 @@
 repos:
+-   repo: https://github.com/asottile/seed-isort-config
+    rev: v2.2.0
+    hooks:
+    -   id: seed-isort-config
 -   repo: https://github.com/pre-commit/mirrors-isort
     rev: v5.8.0
     hooks:
     - id: isort
-      args: ["--profile", "black", --check-only]
+      args: ["--profile", "black"]
 -   repo: https://github.com/ambv/black
     rev: 21.5b0
     hooks:
@@ -11,5 +15,4 @@ repos:
       args:
         - "--config"
         - "./pyproject.toml"
-        - "--check"
       language_version: python3.8
