@@ -34,7 +34,7 @@ RUN python3 -m venv $VIRTUAL_ENV
 RUN /opt/venv/bin/python3 -m pip install --upgrade pip
 RUN pip3 install -r /tmp/requirements.txt
 
-COPY ./src /app
+COPY ./glomeruli_segmentation /app
 
 # Download model weights
 RUN mkdir -p /model && curl -OJ https://nx9836.your-storageshare.de/s/7FGbJRn97NYB5pD/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth /model

@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from glomeruli_segmentation.data_classes import Rectangle, Wsi
+from data_classes import Rectangle, Wsi
 
 
 def serialize_result_to_collection(contours: List[Tuple[int, int]], slide: Wsi, roi: Rectangle):
