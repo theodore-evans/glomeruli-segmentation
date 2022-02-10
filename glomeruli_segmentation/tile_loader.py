@@ -1,6 +1,6 @@
 from typing import Callable, Iterable, Optional, Tuple
 
-from data_classes import Rectangle, Tile, Vector2
+from glomeruli_segmentation.data_classes import Rectangle, Tile, Vector2
 
 
 def get_tile_loader(

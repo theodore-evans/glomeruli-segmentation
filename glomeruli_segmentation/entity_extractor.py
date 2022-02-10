@@ -2,8 +2,9 @@ from typing import List, Tuple
 
 import cv2 as cv
 import numpy as np
-from data_classes import Tile
 from numpy import ndarray, uint8
+
+from glomeruli_segmentation.data_classes import Tile
 
 _Contour = Tuple[int, int]
 

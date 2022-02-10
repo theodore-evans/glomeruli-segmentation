@@ -5,10 +5,11 @@ import numpy as np
 import torch
 import torch.cuda as cuda
 import torch.nn as nn
-from data_classes import Tile
-from model.unet import UNet
 from torch import Tensor
-from util.combine_masks import combine_masks
+
+from glomeruli_segmentation.data_classes import Tile
+from glomeruli_segmentation.model.unet import UNet
+from glomeruli_segmentation.util.combine_masks import combine_masks
 
 
 def _ndarray_to_torch_tensor(array: np.ndarray):

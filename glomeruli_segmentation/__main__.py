@@ -3,12 +3,13 @@ import functools
 import os
 
 import torch.nn as nn
-from api_interface import ApiInterface
-from entity_extractor import get_contours_from_mask
-from inference import SingleChannelPassthrough, load_unet, run_inference
-from logging_tools import get_log_level, get_logger
-from output_serialization import serialize_result_to_collection
-from tile_loader import get_tile_loader
+
+from glomeruli_segmentation.api_interface import ApiInterface
+from glomeruli_segmentation.entity_extractor import get_contours_from_mask
+from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference
+from glomeruli_segmentation.logging_tools import get_log_level, get_logger
+from glomeruli_segmentation.output_serialization import serialize_result_to_collection
+from glomeruli_segmentation.tile_loader import get_tile_loader
 
 BATCH_SIZE = 16
 
