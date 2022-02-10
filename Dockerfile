@@ -15,7 +15,7 @@ RUN poetry export --without-hashes -f requirements.txt > requirements.txt
 RUN poetry build
 
 # install stage
-FROM pytorch/pytorch:1.9.0-cuda10.2-cudnn7-runtime
+FROM pytorch/pytorch:1.9.0-cuda11.1-cudnn8-runtime
 
 RUN apt-get update -y 
 
