@@ -2,7 +2,7 @@ from typing import Collection
 
 import numpy as np
 from cv2 import contourArea
-from scipy.ndimage.filters import gaussian_filter
+from scipy.ndimage import gaussian_filter
 
 from glomeruli_segmentation.data_classes import Rectangle, Tile, Vector2
 from glomeruli_segmentation.entity_extractor import get_contours_from_mask

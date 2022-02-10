@@ -49,7 +49,7 @@ line_length = 120
 profile = "black"
 multi_line_output = 3
 include_trailing_comma = true
-known_third_party = ["PIL", "api_interface", "cv2", "data_classes", "desert", "entity_extractor", "inference", "logging_tools", "marshmallow", "model", "numpy", "output_serialization", "pytest", "request_hooks", "requests", "scipy", "tile_loader", "torch", "torchvision", "util"]
+known_third_party = ["PIL", "cv2", "desert", "marshmallow", "numpy", "pytest", "requests", "scipy", "torch", "torchvision"]
 
 [tool.portray]
 modules = ["src"]
