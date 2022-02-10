@@ -1,18 +1,19 @@
 from collections import namedtuple
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, NamedTuple, Tuple
 
 from numpy import array_equal, ndarray
 
 
-@dataclass
-class Vector3:
+class Vector3(NamedTuple):
     x: int
     y: int
     z: int
 
 
-Vector2 = namedtuple("Vector2", "x y")
+class Vector2(NamedTuple):
+    x: int
+    y: int
 
 
 @dataclass

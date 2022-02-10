@@ -2,14 +2,14 @@ from typing import Collection, List
 
 import numpy as np
 
-from glomeruli_segmentation.data_classes import Rectangle, Tile, Vector2
+from glomeruli_segmentation.data_classes import Rectangle, Tile
 from glomeruli_segmentation.util.combine_masks import combine_masks
 
 square = np.ones((10, 10))
-rect1 = Rectangle(upper_left=Vector2(0, 0), width=10, height=10)
-rect2 = Rectangle(upper_left=Vector2(10, 0), width=10, height=10)
-rect3 = Rectangle(upper_left=Vector2(0, 10), width=10, height=10)
-rect4 = Rectangle(upper_left=Vector2(10, 10), width=10, height=10)
+rect1 = Rectangle(upper_left=(0, 0), width=10, height=10)
+rect2 = Rectangle(upper_left=(10, 0), width=10, height=10)
+rect3 = Rectangle(upper_left=(0, 10), width=10, height=10)
+rect4 = Rectangle(upper_left=(10, 10), width=10, height=10)
 non_overlapping_squares = [rect1, rect2, rect3, rect4]
 
 square_tile = lambda rect: Tile(image=square, rect=rect)
