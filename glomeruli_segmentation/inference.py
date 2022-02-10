@@ -1,4 +1,4 @@
-from typing import Iterable, Tuple
+from typing import Iterable, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -6,32 +6,23 @@ import torch
 import torch.cuda as cuda
 import torch.nn as nn
 from torch import Tensor
+from torchvision.transforms.transforms import Compose
 
 from glomeruli_segmentation.data_classes import Tile
 from glomeruli_segmentation.model.unet import UNet
 from glomeruli_segmentation.util.combine_masks import combine_masks
 
 
-def _ndarray_to_torch_tensor(array: np.ndarray):
+def _ndarray_to_torch_tensor(array: np.ndarray, transform: Optional[Compose] = None):
     tensor_view = torch.from_numpy(np.atleast_3d(array))
     torch_tensor = tensor_view.permute(2, 0, 1)
-    return torch_tensor
+    return transform(torch_tensor) if transform else torch_tensor
 
 
 def _torch_tensor_to_ndarray(torch_tensor: Tensor):
     numpy_format = torch_tensor.permute(1, 2, 0).detach().to("cpu")
     array = np.array(numpy_format)
     return array
-
-
-def _resize_image(
-    image: np.ndarray, target_shape: Tuple[int, int], interpolation: int = cv2.INTER_LINEAR
-) -> np.ndarray:
-    return cv2.resize(
-        image,
-        target_shape,
-        interpolation=interpolation,
-    )
 
 
 class SingleChannelPassthrough(nn.Module):
@@ -50,7 +41,9 @@ def load_unet(model_path: str, map_location: str = "cpu"):
     return unet
 
 
-def run_inference(tiles: Iterable[Tile], model: nn.Module, batch_size: int = 1) -> Tile:
+def run_inference(
+    tiles: Iterable[Tile], model: nn.Module, batch_size: int = 1, transform: Optional[Compose] = None
+) -> Tile:
     device = torch.device("cuda" if cuda.is_available() else "cpu")
     model = model.to(device).eval()
     torch.set_grad_enabled(False)
@@ -63,7 +56,7 @@ def run_inference(tiles: Iterable[Tile], model: nn.Module, batch_size: int = 1) 
             rects = []
             for _ in range(batch_size):
                 tile: Tile = next(tiles)
-                tensors.append(_ndarray_to_torch_tensor(tile.image))
+                tensors.append(_ndarray_to_torch_tensor(tile.image, transform))
                 rects.append(tile.rect)
         except StopIteration:
             break

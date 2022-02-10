@@ -10,8 +10,10 @@ from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet
 from glomeruli_segmentation.logging_tools import get_log_level, get_logger
 from glomeruli_segmentation.output_serialization import serialize_result_to_collection
 from glomeruli_segmentation.tile_loader import get_tile_loader
+from glomeruli_segmentation.util.preprocessing import kaggle_test_transform
 
 BATCH_SIZE = 16
+TRANSFORM = kaggle_test_transform
 
 
 def main(verbosity: int):
@@ -35,7 +37,7 @@ def main(verbosity: int):
     tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))
 
     model = nn.Sequential(load_unet(model_path), nn.Softmax(dim=1), SingleChannelPassthrough(channel=1))
-    segmentation_mask = run_inference(tile_loader, model, batch_size=BATCH_SIZE)
+    segmentation_mask = run_inference(tile_loader, model, batch_size=BATCH_SIZE, transform=TRANSFORM)
     glomeruli_contours, _ = get_contours_from_mask(segmentation_mask)
 
     number_of_glomeruli = {"name": "Glomerulus Count", "type": "integer", "value": len(glomeruli_contours)}
