@@ -1,19 +1,26 @@
-from collections import namedtuple
 from dataclasses import dataclass
 from typing import List, NamedTuple, Tuple
 
 from numpy import array_equal, ndarray
 
 
-class Vector3(NamedTuple):
+@dataclass
+class Vector3:
     x: int
     y: int
     z: int
 
 
-class Vector2(NamedTuple):
+@dataclass
+class Vector2:
     x: int
     y: int
+
+    def __iter__(self):
+        return iter((self.x, self.y))
+
+    def __getitem__(self, index):
+        return (self.x, self.y)[index]
 
 
 @dataclass
@@ -31,7 +38,6 @@ class Wsi:
     pixel_size_nm: Vector3
     tile_extent: Vector3
     levels: List[Level]
-    # add additional non-required fields
 
 
 @dataclass

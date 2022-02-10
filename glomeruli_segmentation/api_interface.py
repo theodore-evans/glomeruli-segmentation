@@ -3,7 +3,7 @@ from logging import Logger
 
 import desert
 import requests
-from marshmallow import EXCLUDE
+from marshmallow import EXCLUDE, INCLUDE
 from PIL import Image
 from requests import Response
 
@@ -35,12 +35,12 @@ class ApiInterface:
 
     def get_rectangle(self, key: str) -> Rectangle:
         resp = self.get_input(key)
-        schema = desert.schema(Rectangle, meta={"unknown": EXCLUDE})
+        schema = desert.schema(Rectangle, meta={"unknown": INCLUDE})
         return schema.load(resp)
 
     def get_wsi(self, key: str) -> Wsi:
         resp = self.get_input(key)
-        schema = desert.schema(Wsi, meta={"unknown": EXCLUDE})
+        schema = desert.schema(Wsi, meta={"unknown": INCLUDE})
         return schema.load(resp)
 
     def post_output(self, key: str, data: dict) -> Response:

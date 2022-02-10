@@ -35,6 +35,7 @@ def test_returns_one_contour_for_circular_mask():
 
     assert isinstance(contours, Collection)
     assert isinstance(contours[0], Collection)
+    assert len(contours[0]) > 10
     assert len(contours[0][0]) == 2
     assert len(contours) == 1
 
@@ -49,6 +50,7 @@ def test_returns_two_contours_for_two_circular_masks():
 
     assert isinstance(contours, Collection)
     assert isinstance(contours[0], Collection)
+    assert len(contours[0]) > 10
     assert len(contours[0][0]) == 2
     assert len(contours) == 2
 
@@ -63,6 +65,7 @@ def test_returns_one_contour_for_blurred_circular_mask():
 
     assert isinstance(contours, Collection)
     assert isinstance(contours[0], Collection)
+    assert len(contours[0]) > 10
     assert len(contours[0][0]) == 2
     assert len(contours) == 1
 
@@ -79,7 +82,9 @@ def test_returns_different_contour_for_different_thresholds():
 
     assert len(contours_high) == 1
     assert len(contours_low) == 1
+    assert len(contours_high[0]) > 10
     assert len(contours_high[0]) != len(contours_low[0]) or not np.allclose(contours_high, contours_low)
+    print(type(contours_high[0]), contours_high[0])
     assert contourArea(contours_high[0]) < contourArea(contours_low[0])
 
 
@@ -94,6 +99,7 @@ def test_returns_shifted_contours_for_shifted_tile():
     assert isinstance(contours, Collection)
     assert isinstance(contours[0], Collection)
     assert len(contours) == 1
+    assert len(contours[0]) > 10
     for contour in contours:
         for coordinate in contour:
             x, y = coordinate
@@ -110,6 +116,7 @@ def test_returns_one_confidence_per_annotation():
     contours, confidences = get_contours_from_mask(combine_masks(tiles))
 
     assert len(contours) == 2
+    assert len(contours[0]) > 10
     assert len(contours) == len(confidences)
     assert confidences[0] == confidences[1]
     assert all(confidence >= 0 and confidence <= 1 for confidence in confidences)
@@ -124,9 +131,11 @@ def test_confidence_reflect_mask_values():
 
     contours, confidences = get_contours_from_mask(combine_masks(tiles), threshold=0.75)
     assert len(contours) == 1
+    assert len(contours[0]) > 10
 
     contours, confidences = get_contours_from_mask(combine_masks(tiles), threshold=0.25)
     assert len(contours) == 2
+    assert len(contours[0]) > 10
     assert len(contours) == len(confidences)
     assert confidences[0] < confidences[1]
     assert all(confidence >= 0 and confidence <= 1 for confidence in confidences)
