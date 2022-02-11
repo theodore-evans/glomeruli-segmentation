@@ -117,17 +117,18 @@ def test_recombined_with_averaged_overlaps():
     assert combined.rect == original_rect
 
 
-# def test_recombine_large_tile_with_image_like_array():
-#     shape = (1024, 1024, 3)
-#     original = np.arange(shape[0] * shape[1] * shape[2]).reshape(shape)
-#     rectangles = [
-#         Rectangle(upper_left=(0, 0), width=512, height=512),
-#         Rectangle(upper_left=(512, 0), width=512, height=512),
-#         Rectangle(upper_left=(0, 512), width=512, height=512),
-#         Rectangle(upper_left=(512, 512), width=512, height=512),
-#     ]
-#     tiles = _split_image_into_tiles(original, rectangles)
+def test_recombine_large_tile_with_image_like_array():
+    shape = (5000, 1024)
+    original = np.arange(shape[0] * shape[1]).reshape(shape)
+    rectangles = [
+        Rectangle(upper_left=(0, 0), width=1024, height=1024),
+        Rectangle(upper_left=(1024, 0), width=1024, height=1024),
+        Rectangle(upper_left=(2048, 0), width=1024, height=1024),
+        Rectangle(upper_left=(3072, 0), width=1024, height=1024),
+        Rectangle(upper_left=(3976, 0), width=1024, height=1024),
+    ]
+    tiles = _split_image_into_tiles(original, rectangles)
 
-#     combined = combine_tiles(tiles)
-#     assert np.array_equal(combined.image, original)
-#     assert combined.rect == Rectangle(upper_left=(0, 0), width=shape[0], height=shape[1])
+    combined = combine_masks(tiles)
+    assert np.array_equal(combined.image, original)
+    assert combined.rect == Rectangle(upper_left=(0, 0), width=shape[0], height=shape[1])

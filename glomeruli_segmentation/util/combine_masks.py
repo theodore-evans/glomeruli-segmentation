@@ -26,7 +26,8 @@ def get_bounds(
         y_max = max(y + rect.height, y_max)
         level = rect.level
 
-    return Rectangle(upper_left=Vector2((x_min, y_min)), width=x_max - x_min, height=y_max - y_min, level=level)
+    bounds = Rectangle(upper_left=Vector2((x_min, y_min)), width=x_max - x_min, height=y_max - y_min, level=level)
+    return bounds
 
 
 def combine_masks(

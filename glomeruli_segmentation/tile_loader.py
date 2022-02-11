@@ -29,9 +29,9 @@ def get_tile_loader(
             x, y = (start_x + i * stride_x, start_y + j * stride_y)
 
             if i - whole_columns >= 0:
-                x = region.width - window_width
+                x = start_x + region.width - window_width
             if j - whole_rows >= 0:
-                y = region.height - window_height
+                y = start_y + region.height - window_height
 
             corners.append(Vector2((x, y)))
 
