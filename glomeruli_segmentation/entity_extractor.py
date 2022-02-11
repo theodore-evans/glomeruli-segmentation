@@ -1,10 +1,10 @@
-from typing import List, Tuple, Union
+from typing import List, Tuple
 
 import cv2 as cv
 import numpy as np
 from numpy import ndarray, uint8
 
-from glomeruli_segmentation.data_classes import Tile, Vector2
+from glomeruli_segmentation.data_classes import Tile
 
 _Contour = List[Tuple[int, int]]
 

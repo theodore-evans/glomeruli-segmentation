@@ -5,15 +5,16 @@ import os
 import torch.nn as nn
 
 from glomeruli_segmentation.api_interface import ApiInterface
+from glomeruli_segmentation.data_classes import Rectangle, Wsi
 from glomeruli_segmentation.entity_extractor import get_contours_from_mask
 from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference
 from glomeruli_segmentation.logging_tools import get_log_level, get_logger
 from glomeruli_segmentation.output_serialization import serialize_result_to_collection
 from glomeruli_segmentation.tile_loader import get_tile_loader
-from glomeruli_segmentation.util.preprocessing import kaggle_test_transform
+from glomeruli_segmentation.util.preprocessing import get_kaggle_test_transform
 
 BATCH_SIZE = 16
-TRANSFORM = kaggle_test_transform
+TRANSFORM = get_kaggle_test_transform()
 
 
 def main(verbosity: int):
@@ -30,8 +31,8 @@ def main(verbosity: int):
         raise e
 
     api = ApiInterface(api_url, job_id, headers, logger=get_logger("api", app_log_level))
-    roi = api.get_rectangle("region_of_interest")
-    slide = api.get_wsi("slide")
+    roi = api.get_input("region_of_interest", Rectangle)
+    slide = api.get_input("slide", Wsi)
 
     tile_request = functools.partial(api.get_wsi_tile, slide=slide)
     tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))

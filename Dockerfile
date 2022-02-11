@@ -15,17 +15,20 @@ RUN poetry export --without-hashes -f requirements.txt > requirements.txt
 RUN poetry build
 
 # install stage
-FROM pytorch/pytorch:1.9.0-cuda11.1-cudnn8-runtime
+FROM pytorch/pytorch:1.8.1-cuda11.1-cudnn8-runtime
 
 RUN apt-get update -y 
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     git \
     curl \
+    python3.8 \
     python3-pip \
     python3-venv \
     libgl1-mesa-glx \
     libglib2.0-0
+
+RUN rm /usr/bin/python3 && ln -s python3.8 /usr/bin/python3
 
 RUN echo python3 --version
 

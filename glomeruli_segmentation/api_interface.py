@@ -1,9 +1,10 @@
 from io import BytesIO
 from logging import Logger
+from typing import Type, Union
 
 import desert
 import requests
-from marshmallow import EXCLUDE, INCLUDE
+from marshmallow import EXCLUDE, INCLUDE, ValidationError
 from PIL import Image
 from requests import Response
 
@@ -24,24 +25,18 @@ class ApiInterface:
         request_hooks = [check_for_errors_hook, response_logging_hook]
         self.session.hooks["response"] = [hook(self.logger) for hook in request_hooks]
 
-    def get_input(self, key: str) -> Response:
-        """
-        get slide input data by key as defined in EAD
-        """
+    # FIXME: marshmallow.exceptions.ValidationError: {'upper_left': {'_schema': ['Invalid input type.']}}
+    def get_input(self, key: str, data_class: Type) -> Union[Rectangle, Wsi]:
+
         url = f"{self.api_url}/v0/{self.job_id}/inputs/{key}"
         resp = self.session.get(url, headers=self.headers)
-
-        return resp
-
-    def get_rectangle(self, key: str) -> Rectangle:
-        resp = self.get_input(key)
-        schema = desert.schema(Rectangle, meta={"unknown": INCLUDE})
-        return schema.load(resp)
-
-    def get_wsi(self, key: str) -> Wsi:
-        resp = self.get_input(key)
-        schema = desert.schema(Wsi, meta={"unknown": INCLUDE})
-        return schema.load(resp)
+        response_json = resp.json()
+        try:
+            schema = desert.schema(data_class, meta={"unknown": EXCLUDE})
+            return schema.load(response_json)
+        except:
+            self.logger.error(response_json)
+            raise
 
     def post_output(self, key: str, data: dict) -> Response:
         """

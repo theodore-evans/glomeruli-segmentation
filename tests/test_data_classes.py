@@ -2,7 +2,7 @@ from glomeruli_segmentation.data_classes import Rectangle, Vector2
 
 
 def test_vector2_subscriptable():
-    vec = Vector2(1, 2)
+    vec = Vector2((1, 2))
     x, y = vec
     assert vec[0] == 1
     assert vec[1] == 2

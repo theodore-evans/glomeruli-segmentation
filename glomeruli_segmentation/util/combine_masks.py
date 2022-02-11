@@ -12,8 +12,11 @@ def get_bounds(
     """
     Finds the bounding rectangle for a collection of rectangles
     """
+
     x_max = y_max = -maxsize - 1
     x_min = y_min = maxsize
+
+    level = 0
 
     for rect in rectangles:
         x, y = rect.upper_left
@@ -23,7 +26,7 @@ def get_bounds(
         y_max = max(y + rect.height, y_max)
         level = rect.level
 
-    return Rectangle(upper_left=Vector2(x_min, y_min), width=x_max - x_min, height=y_max - y_min, level=level)
+    return Rectangle(upper_left=Vector2((x_min, y_min)), width=x_max - x_min, height=y_max - y_min, level=level)
 
 
 def combine_masks(
@@ -35,7 +38,6 @@ def combine_masks(
     """
     bounds = get_bounds((tile.rect for tile in tiles))
     x_min, y_min = bounds.upper_left
-
     combined = np.zeros((bounds.width, bounds.height))
     normalization = np.zeros_like(combined)
 
