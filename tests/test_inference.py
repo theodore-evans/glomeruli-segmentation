@@ -34,24 +34,6 @@ def test_applies_a_max_pooling_model():
     assert mask.rect == rect
 
 
-def test_applies_a_model_with_batching():
-    rect = Rectangle(upper_left=(0, 0), width=256, height=256)
-    input_tile = make_tile(rect)
-    tile_loader = get_tile_loader(make_tile_getter(input_tile), input_tile.rect, window=(128, 128))
-    mask = run_inference_on_tiles(tile_loader, downscaling_model, batch_size=2)
-    assert mask.image.shape == input_tile.image.shape[:2]
-    assert mask.rect == rect
-
-
-def test_applies_a_model_with_one_big_batch():
-    rect = Rectangle(upper_left=(0, 0), width=256, height=256)
-    input_tile = make_tile(rect)
-    tile_loader = get_tile_loader(make_tile_getter(input_tile), input_tile.rect, window=(128, 128))
-    mask = run_inference_on_tiles(tile_loader, downscaling_model, batch_size=4)
-    assert mask.image.shape == input_tile.image.shape[:2]
-    assert mask.rect == rect
-
-
 MODEL_PATH = "tests/glomeruli_segmentation_16934_best_metric.model-384e1332.pth"
 TRANSFORM = get_kaggle_test_transform()
 

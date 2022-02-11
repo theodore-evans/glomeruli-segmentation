@@ -59,7 +59,7 @@ def run_inference_on_tiles(tiles: Iterable[Tile], model: nn.Module, transform: O
     device = torch.device("cpu")
 
     logger = get_logger("inference", log_level=logging.INFO)
-    logger.info(f"Running inference on {device}")
+    logger.info(f"Running inference on {str(device).upper()}")
 
     if device == torch.device("cuda"):
         torch.cuda.empty_cache()
@@ -72,7 +72,7 @@ def run_inference_on_tiles(tiles: Iterable[Tile], model: nn.Module, transform: O
     for tile in tiles:
         array = np.array(tile.image, dtype=np.float32) / 255
         inputs = _ndarray_to_torch_tensor(array)[None, :, :, :].to(device)
-        inputs = transform(inputs)
+        inputs = transform(inputs) if transform else inputs
         output = model(inputs)
         output = _torch_tensor_to_ndarray(torch.squeeze(output, 0))
         resized = _resize_image(output, tile.rect.shape)

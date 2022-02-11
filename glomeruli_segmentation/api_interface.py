@@ -4,7 +4,7 @@ from typing import Type, Union
 
 import desert
 import requests
-from marshmallow import EXCLUDE, INCLUDE, ValidationError
+from marshmallow import EXCLUDE
 from PIL import Image
 from requests import Response
 

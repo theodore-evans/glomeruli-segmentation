@@ -85,7 +85,7 @@ def test_returns_different_contour_for_different_thresholds():
     assert len(contours_high[0]) > 10
     assert len(contours_high[0]) != len(contours_low[0]) or not np.allclose(contours_high, contours_low)
     print(type(contours_high[0]), contours_high[0])
-    assert contourArea(contours_high[0]) < contourArea(contours_low[0])
+    assert contourArea(np.array(contours_high[0])) < contourArea(np.array(contours_low[0]))
 
 
 def test_returns_shifted_contours_for_shifted_tile():

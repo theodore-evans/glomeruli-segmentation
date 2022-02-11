@@ -1,26 +1,7 @@
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
-from marshmallow import fields
 from numpy import array_equal, ndarray
-
-# @dataclass
-# class Vector2:
-#     coords: List[int]
-
-#     @property
-#     def x(self):
-#         return self.coords[0]
-
-#     @property
-#     def y(self):
-#         return self.coords[1]
-
-#     def __iter__(self):
-#         return iter(self.coords)
-
-#     def __getitem__(self, index):
-#         return self.coords[index]
 
 
 class Vector2(Tuple):
