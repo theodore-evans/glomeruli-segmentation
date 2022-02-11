@@ -9,18 +9,18 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
+python = "^3.8,<3.11"
 opencv_python = "^4.5.1.48"
 requests = "^2.25"
 Pillow = "^8.3.2"
 imagecodecs = "^2021.4.28"
-marshmallow = "^3.14.1"
-desert = "^2020.11.18"
 numpy = "^1.20.2"
 torch = "1.8.1"
 torchvision = "0.9.1"
-koila = "^0.1.1"
 marshmallow-union = "^0.1.15"
+marshmallow = "^3.14.1"
+desert = "^2020.11.18"
+koila = "^0.1.1"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.5b0", allow-prereleases = true}
@@ -52,7 +52,7 @@ line_length = 120
 profile = "black"
 multi_line_output = 3
 include_trailing_comma = true
-known_third_party = ["PIL", "cv2", "desert", "koila", "marshmallow", "numpy", "pytest", "requests", "scipy", "torch", "torchvision"]
+known_third_party = ["PIL", "cv2", "desert", "marshmallow", "matplotlib", "numpy", "pytest", "requests", "scipy", "torch", "torchvision"]
 
 [tool.portray]
 modules = ["src"]

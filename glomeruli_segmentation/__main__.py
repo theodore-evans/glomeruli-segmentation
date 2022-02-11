@@ -7,7 +7,7 @@ import torch.nn as nn
 from glomeruli_segmentation.api_interface import ApiInterface
 from glomeruli_segmentation.data_classes import Rectangle, Wsi
 from glomeruli_segmentation.entity_extractor import get_contours_from_mask
-from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference
+from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference_on_tiles
 from glomeruli_segmentation.logging_tools import get_log_level, get_logger
 from glomeruli_segmentation.output_serialization import serialize_result_to_collection
 from glomeruli_segmentation.tile_loader import get_tile_loader
@@ -33,12 +33,11 @@ def main(verbosity: int):
     api = ApiInterface(api_url, job_id, headers, logger=get_logger("api", app_log_level))
     roi = api.get_input("region_of_interest", Rectangle)
     slide = api.get_input("slide", Wsi)
-
     tile_request = functools.partial(api.get_wsi_tile, slide=slide)
     tile_loader = get_tile_loader(tile_request, roi, window=(1024, 1024))
 
     model = nn.Sequential(load_unet(model_path), nn.Softmax(dim=1), SingleChannelPassthrough(channel=1))
-    segmentation_mask = run_inference(tile_loader, model, batch_size=BATCH_SIZE, transform=TRANSFORM)
+    segmentation_mask = run_inference_on_tiles(tile_loader, model, batch_size=BATCH_SIZE, transform=TRANSFORM)
     glomeruli_contours, _ = get_contours_from_mask(segmentation_mask)
 
     number_of_glomeruli = {"name": "Glomerulus Count", "type": "integer", "value": len(glomeruli_contours)}

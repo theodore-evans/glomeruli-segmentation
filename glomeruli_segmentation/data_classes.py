@@ -1,26 +1,36 @@
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
 
+from marshmallow import fields
 from numpy import array_equal, ndarray
 
+# @dataclass
+# class Vector2:
+#     coords: List[int]
 
-@dataclass
-class Vector2:
-    coords: Tuple[int, int]
+#     @property
+#     def x(self):
+#         return self.coords[0]
 
+#     @property
+#     def y(self):
+#         return self.coords[1]
+
+#     def __iter__(self):
+#         return iter(self.coords)
+
+#     def __getitem__(self, index):
+#         return self.coords[index]
+
+
+class Vector2(Tuple):
     @property
     def x(self):
-        return self.coords[0]
+        return self[0]
 
     @property
     def y(self):
-        return self.coords[1]
-
-    def __iter__(self):
-        return iter(self.coords)
-
-    def __getitem__(self, index):
-        return self.coords[index]
+        return self[1]
 
 
 @dataclass
@@ -52,9 +62,10 @@ class Wsi:
     levels: List[Level]
 
 
+# TODO: fix this slightly hacky solution (caused by limitations to desert) by defining a schema manually
 @dataclass
 class Rectangle:
-    upper_left: Vector2
+    upper_left: List[int]
     width: int
     height: int
     level: int = 0

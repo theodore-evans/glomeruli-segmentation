@@ -2,7 +2,7 @@ import numpy as np
 import torch.nn as nn
 
 from glomeruli_segmentation.data_classes import Rectangle, Tile
-from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference
+from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference_on_tiles
 from glomeruli_segmentation.tile_loader import get_tile_loader
 from glomeruli_segmentation.util.preprocessing import get_kaggle_test_transform
 from tests.helper_methods import make_tile, make_tile_getter
@@ -17,7 +17,7 @@ def test_returns_a_mask_for_a_single_tile():
     input_tile = make_tile(rect)
     tile_loader = iter([input_tile])
 
-    mask = run_inference(tile_loader, one_channel_passthrough)
+    mask = run_inference_on_tiles(tile_loader, one_channel_passthrough)
     assert isinstance(mask, Tile)
     assert mask.image.shape == input_tile.image.shape[:2]
     assert mask.rect == rect
@@ -29,7 +29,7 @@ def test_applies_a_max_pooling_model():
     rect = Rectangle(upper_left=(0, 0), width=256, height=256)
     input_tile = make_tile(rect)
     tile_loader = get_tile_loader(make_tile_getter(input_tile), input_tile.rect, window=(128, 128))
-    mask = run_inference(tile_loader, downscaling_model)
+    mask = run_inference_on_tiles(tile_loader, downscaling_model)
     assert mask.image.shape == input_tile.image.shape[:2]
     assert mask.rect == rect
 
@@ -38,7 +38,7 @@ def test_applies_a_model_with_batching():
     rect = Rectangle(upper_left=(0, 0), width=256, height=256)
     input_tile = make_tile(rect)
     tile_loader = get_tile_loader(make_tile_getter(input_tile), input_tile.rect, window=(128, 128))
-    mask = run_inference(tile_loader, downscaling_model, batch_size=2)
+    mask = run_inference_on_tiles(tile_loader, downscaling_model, batch_size=2)
     assert mask.image.shape == input_tile.image.shape[:2]
     assert mask.rect == rect
 
@@ -47,7 +47,7 @@ def test_applies_a_model_with_one_big_batch():
     rect = Rectangle(upper_left=(0, 0), width=256, height=256)
     input_tile = make_tile(rect)
     tile_loader = get_tile_loader(make_tile_getter(input_tile), input_tile.rect, window=(128, 128))
-    mask = run_inference(tile_loader, downscaling_model, batch_size=4)
+    mask = run_inference_on_tiles(tile_loader, downscaling_model, batch_size=4)
     assert mask.image.shape == input_tile.image.shape[:2]
     assert mask.rect == rect
 
@@ -65,6 +65,6 @@ def test_applies_real_model():
 
     model = nn.Sequential(load_unet(MODEL_PATH), nn.Softmax(dim=1), SingleChannelPassthrough(channel=1))
 
-    mask = run_inference(tile_loader, model, transform=TRANSFORM)
+    mask = run_inference_on_tiles(tile_loader, model, transform=TRANSFORM)
     assert mask.image.shape == input_tile.image.shape[:2]
     assert mask.rect == rect

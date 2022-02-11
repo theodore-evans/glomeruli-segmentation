@@ -15,7 +15,7 @@ RUN poetry export --without-hashes -f requirements.txt > requirements.txt
 RUN poetry build
 
 # install stage
-FROM pytorch/pytorch:1.8.1-cuda11.1-cudnn8-runtime
+FROM pytorch/pytorch:1.8.1-cuda10.2-cudnn7-runtime
 
 RUN apt-get update -y 
 
@@ -28,15 +28,24 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     libgl1-mesa-glx \
     libglib2.0-0
 
-RUN rm /usr/bin/python3 && ln -s python3.8 /usr/bin/python3
+RUN : \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        software-properties-common \
+    && add-apt-repository -y ppa:deadsnakes \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        python3.8-venv \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && :
 
-RUN echo python3 --version
+RUN python3 --version
 
 ENV VIRTUAL_ENV /opt/app/venv
 ENV PATH ${VIRTUAL_ENV}/bin:${PATH}
-RUN python3 -m venv $VIRTUAL_ENV \
-&& /opt/app/venv/bin/python3 -m pip install --upgrade pip \
-&& pip3 install wheel
+RUN python3.8 -m venv $VIRTUAL_ENV \
+    && /opt/app/venv/bin/python3 -m pip install --upgrade pip \
+    && pip3 install wheel
 COPY --from=builder /root/app/requirements.txt /tmp
 RUN pip3 install -r /tmp/requirements.txt
 COPY --from=builder /root/app/dist/*.whl /tmp
