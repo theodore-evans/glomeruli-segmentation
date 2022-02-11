@@ -6,7 +6,6 @@ import numpy as np
 import torch
 import torch.cuda as cuda
 import torch.nn as nn
-from matplotlib.collections import Collection
 from torch import Tensor
 from torchvision.transforms.transforms import Compose
 
@@ -16,9 +15,6 @@ from glomeruli_segmentation.util.combine_masks import combine_masks
 
 
 def _ndarray_to_torch_tensor(array: np.ndarray, transform: Optional[Compose] = None):
-    # FIXME: type issues with image dtype
-    # return torch._C._nn.upsample_bilinear2d(input, output_size, align_corners, scale_factors)
-    # RuntimeError: "upsample_bilinear2d_channels_last" not implemented for 'Byte'
     tensor_view = torch.from_numpy(np.atleast_3d(array))
     torch_tensor = tensor_view.permute(2, 0, 1)
     return transform(torch_tensor) if transform else torch_tensor
@@ -82,7 +78,7 @@ def run_inference_on_tiles(
         resized = _resize_image(output, tile.rect.shape)
         mask_tiles.append(Tile(image=resized, rect=tile.rect))
 
-    # FIXME:
+    # FIXME for GPU support:
     # while True:
     #     try:
     #         tensors = []    device = torch.device("cpu")
