@@ -47,7 +47,7 @@ class ApiInterface:
 
         return resp
 
-    def get_wsi_tile(self, slide: Wsi, rect: Rectangle) -> Tile:
+    def get_wsi_tile(self, rect: Rectangle, slide: Wsi) -> Tile:
         """
         get a WSI tile on level 0
 
