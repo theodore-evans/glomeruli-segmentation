@@ -1,9 +1,9 @@
 {
   "name": "region_of_interest",
   "type": "rectangle",
-  "upper_left": [10000, 3000],
-  "width": 5000,
-  "height": 1024,
+  "upper_left": [14500, 6500],
+  "width": 4000,
+  "height": 2000,
   "reference_id": "f4b74837-3d53-44ad-8e4d-69e4a15aa676",
   "reference_type": "wsi",
   "npp_created": 256000

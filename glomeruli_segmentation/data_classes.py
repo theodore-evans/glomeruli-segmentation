@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple
 from numpy import array_equal, ndarray
 
 
-class Vector2(Tuple):
+class Vector2(List):
     @property
     def x(self):
         return self[0]
@@ -53,7 +53,7 @@ class Rectangle:
     id: str = ""
 
     def __post_init__(self):
-        self.upper_left = Vector2(tuple(self.upper_left))
+        self.upper_left = Vector2((self.upper_left))
 
     @property
     def shape(self) -> Tuple:

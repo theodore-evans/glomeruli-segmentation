@@ -2,7 +2,7 @@ import numpy as np
 import torch.nn as nn
 
 from glomeruli_segmentation.data_classes import Rectangle, Tile
-from glomeruli_segmentation.inference import SingleChannelPassthrough, load_unet, run_inference_on_tiles
+from glomeruli_segmentation.run_inference import SingleChannelPassthrough, load_unet, run_inference_on_tiles
 from glomeruli_segmentation.tile_loader import get_tile_loader
 from glomeruli_segmentation.util.preprocessing import get_kaggle_test_transform
 from tests.helper_methods import make_tile, make_tile_getter

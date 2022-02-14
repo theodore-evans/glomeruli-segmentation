@@ -26,7 +26,7 @@ def get_bounds(
         y_max = max(y + rect.height, y_max)
         level = rect.level
 
-    bounds = Rectangle(upper_left=Vector2((x_min, y_min)), width=x_max - x_min, height=y_max - y_min, level=level)
+    bounds = Rectangle(upper_left=(x_min, y_min), width=x_max - x_min, height=y_max - y_min, level=level)
     return bounds
 
 
@@ -39,7 +39,7 @@ def combine_masks(
     """
     bounds = get_bounds((tile.rect for tile in tiles))
     x_min, y_min = bounds.upper_left
-    combined = np.zeros((bounds.width, bounds.height))
+    combined = np.zeros((bounds.height, bounds.width))
     normalization = np.zeros_like(combined)
 
     for tile in tiles:
@@ -48,8 +48,8 @@ def combine_masks(
         x_end = x_start + tile.rect.width
         y_start = y - y_min
         y_end = y_start + tile.rect.height
-        combined[x_start:x_end, y_start:y_end] += tile.image
-        normalization[x_start:x_end, y_start:y_end] += 1
+        combined[y_start:y_end, x_start:x_end] += tile.image
+        normalization[y_start:y_end, x_start:x_end] += 1
 
     if np.min(normalization) == 0:
         raise ValueError("Divide by zero in tile combination")

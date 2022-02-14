@@ -5,7 +5,7 @@ from cv2 import contourArea
 from scipy.ndimage import gaussian_filter
 
 from glomeruli_segmentation.data_classes import Rectangle, Tile
-from glomeruli_segmentation.entity_extractor import get_contours_from_mask
+from glomeruli_segmentation.extract_contours import get_contours_from_mask
 from glomeruli_segmentation.util.combine_masks import combine_masks
 
 

@@ -16,6 +16,22 @@ from glomeruli_segmentation.model.unet import UNet
 from glomeruli_segmentation.util.combine_masks import combine_masks
 
 
+class SingleChannelPassthrough(nn.Module):
+    def __init__(self, channel: int = 0):
+        super().__init__()
+        self.channel = channel
+
+    def forward(self, inputs):
+        return inputs[:, self.channel : self.channel + 1, :, :]
+
+
+def load_unet(model_path: str, map_location: str = "cpu"):
+    model_data = torch.load(model_path, map_location=map_location)
+    unet = UNet(**model_data["kwargs"])
+    unet.load_state_dict(model_data["state_dict"])
+    return unet
+
+
 def _ndarray_to_torch_tensor(array: np.ndarray, transform: Optional[Compose] = None):
     tensor_view = torch.from_numpy(np.atleast_3d(array))
     torch_tensor = tensor_view.permute(2, 0, 1)
@@ -38,24 +54,9 @@ def _resize_image(
     )
 
 
-class SingleChannelPassthrough(nn.Module):
-    def __init__(self, channel: int = 0):
-        super().__init__()
-        self.channel = channel
-
-    def forward(self, inputs):
-        return inputs[:, self.channel : self.channel + 1, :, :]
-
-
-def load_unet(model_path: str, map_location: str = "cpu"):
-    model_data = torch.load(model_path, map_location=map_location)
-    unet = UNet(**model_data["kwargs"])
-    unet.load_state_dict(model_data["state_dict"])
-    return unet
-
-
 def run_inference_on_tiles(tiles: Iterable[Tile], model: nn.Module, transform: Optional[Compose] = None) -> Tile:
 
+    # HACK: temporarily hardcoded to use CPU until GPU issues fixed
     device = torch.device("cpu")
 
     logger = get_logger("inference", log_level=logging.INFO)
@@ -66,7 +67,6 @@ def run_inference_on_tiles(tiles: Iterable[Tile], model: nn.Module, transform: O
         call("nvidia-smi")
 
     model = model.to(device).eval()
-
     # TODO: add GPU support and lazy tensor loading
     mask_tiles = []
     for tile in tiles:
@@ -79,4 +79,6 @@ def run_inference_on_tiles(tiles: Iterable[Tile], model: nn.Module, transform: O
         mask_tiles.append(Tile(image=resized, rect=tile.rect))
 
     logger.info(f"Combining {len(mask_tiles)} tiles")
-    return combine_masks(mask_tiles)
+    combined = combine_masks(mask_tiles)
+    image = combined.image
+    return combined
