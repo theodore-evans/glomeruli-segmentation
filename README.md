@@ -17,8 +17,9 @@ Sample output:
 
 - Clone the project
 - In the project directory, `docker build -t <image-tag> .` (requires internet access to download pre-trained model weights)
+  - Provide the Docker image tag to the EATS when registering the app
 - A lightweight testing environment for the EMPAIA ecosystem can be run with the EMPAIA App Test Suite ([EATS](https://gitlab.com/empaia/integration/empaia-app-test-suite))
-- The `image-tag` chosen will be provided to the EATS when registering the app
+- Download the WSI `new_converted_kidney_bigtiles.tif` to the data directory mounted by the EATS
 
 ## App details
 

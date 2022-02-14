@@ -1,25 +1,36 @@
-from collections import namedtuple
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from numpy import array_equal, ndarray
+
+
+class Vector2(List):
+    @property
+    def x(self):
+        return self[0]
+
+    @property
+    def y(self):
+        return self[1]
 
 
 @dataclass
 class Vector3:
     x: int
     y: int
-    z: int
+    z: Optional[int] = None
 
+    def __iter__(self):
+        return iter(c for c in (self.x, self.y, self.z) if c is not None)
 
-Vector2 = namedtuple("Vector2", "x y")
+    def __getitem__(self, index):
+        return list(self)[index]
 
 
 @dataclass
 class Level:
     extent: Vector3
     downsample_factor: int
-    generated: bool
 
 
 @dataclass
@@ -30,19 +41,19 @@ class Wsi:
     pixel_size_nm: Vector3
     tile_extent: Vector3
     levels: List[Level]
-    # add additional non-required fields
 
 
+# TODO: fix this slightly hacky solution (caused by limitations to desert) by defining a schema manually
 @dataclass
 class Rectangle:
-    upper_left: Vector2
+    upper_left: List[int]
     width: int
     height: int
     level: int = 0
     id: str = ""
 
     def __post_init__(self):
-        self.upper_left = Vector2(*self.upper_left)
+        self.upper_left = Vector2((self.upper_left))
 
     @property
     def shape(self) -> Tuple:
