@@ -19,11 +19,11 @@ def _threshold_to_binary_mask(image: ndarray, threshold: float = 0.5, positive_v
 
 def _find_contours(thresholded_mask: ndarray) -> List[_Contour]:
     contours, _ = cv.findContours(image=thresholded_mask, mode=cv.RETR_EXTERNAL, method=cv.CHAIN_APPROX_SIMPLE)
-    return [np.fliplr(contour.squeeze()) for contour in contours]
+    return [contour.squeeze() for contour in contours]
 
 
 def _get_contour_confidence(contour: _Contour, mask: ndarray, thresholded_mask: ndarray) -> float:
-    x, y, h, w = cv.boundingRect(contour)
+    y, x, h, w = cv.boundingRect(contour)
     bounded_mask = mask[x : x + w, y : y + h]
     bounded_binary_mask = thresholded_mask[x : x + w, y : y + h]
     pixel_confidences = bounded_mask[bounded_binary_mask != 0]

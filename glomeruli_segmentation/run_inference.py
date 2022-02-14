@@ -80,5 +80,4 @@ def run_inference_on_tiles(tiles: Iterable[Tile], model: nn.Module, transform: O
 
     logger.info(f"Combining {len(mask_tiles)} tiles")
     combined = combine_masks(mask_tiles)
-    image = combined.image
     return combined
