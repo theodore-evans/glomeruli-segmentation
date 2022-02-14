@@ -5,7 +5,8 @@ from typing import Iterable, Optional, Tuple
 import cv2
 import numpy as np
 import torch
-import torch.cuda as cuda
+
+# import torch.cuda as cuda
 import torch.nn as nn
 from torch import Tensor
 from torchvision.transforms.transforms import Compose

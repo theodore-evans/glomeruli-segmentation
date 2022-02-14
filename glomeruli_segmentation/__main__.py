@@ -1,6 +1,5 @@
 import argparse
 import functools
-import json
 import os
 
 import torch.nn as nn
@@ -24,7 +23,7 @@ def main(verbosity: int):
     try:
         api_url = os.environ["EMPAIA_APP_API"]
         job_id = os.environ["EMPAIA_JOB_ID"]
-        headers = {"Authorization": f"Bearer {os.environ['EMPAIA_TOKEN']}"}
+        headers = {"Authorization": "Bearer {os.environ['EMPAIA_TOKEN']}"}
         model_path = os.environ["MODEL_PATH"]
     except KeyError as e:
         logger.error("Missing EMPAIA API environment variables")

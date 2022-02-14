@@ -3,7 +3,7 @@ from typing import Collection, Iterable
 
 import numpy as np
 
-from glomeruli_segmentation.data_classes import Rectangle, Tile, Vector2
+from glomeruli_segmentation.data_classes import Rectangle, Tile
 
 
 def get_bounds(
