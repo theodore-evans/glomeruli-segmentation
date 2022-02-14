@@ -38,7 +38,7 @@ def response_logging_hook(logger: logging.Logger) -> Callable:
             url = urlparse(r.url)
             logger.info(f'{url.scheme}://{url.netloc} "{r.request.method} {url.path}" {r.status_code} {r.reason}')
         if logger.level < logging.INFO:
-            logger.debug(f"{r.headers=}")
+            logger.debug(f"{r.headers}")
             try:
                 parsed_response = json.loads(r.text)
                 logger.debug(f"r.text={json.dumps(parsed_response, indent=4, sort_keys=True)}")
