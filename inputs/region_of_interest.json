@@ -6,5 +6,10 @@
   "height": 2000,
   "reference_id": "f4b74837-3d53-44ad-8e4d-69e4a15aa676",
   "reference_type": "wsi",
-  "npp_created": 256000
+  "npp_created": 499,
+  "npp_viewing": [
+    499,
+    256000
+  ],
+  "id": "090e5537-4712-40f7-88b0-53cefa905b18"
 }

@@ -45,7 +45,7 @@ class ApiInterface:
         url = f"{self.api_url}/v0/{self.job_id}/outputs/{key}"
         resp = self.session.post(url, json=data, headers=self.headers)
 
-        return resp
+        return resp.json()
 
     def get_wsi_tile(self, rect: Rectangle, slide: Wsi) -> Tile:
         """
