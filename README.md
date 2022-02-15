@@ -11,7 +11,7 @@ no, 2013). The goal of this competition is the implementation of a successful an
 
 Sample output:
 
-![](assets/app_screenshot.png)
+![](screenshots/app_screenshot.png)
 
 ### Running the app
 
