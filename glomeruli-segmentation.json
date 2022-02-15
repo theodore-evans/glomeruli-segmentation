@@ -4,27 +4,53 @@
     "name_short": "GloMAP",
     "namespace": "org.empaia.dai.glomeruli_segmentation.v1",
     "description": "Kidney segmentation algorithm for detection and counting of glomeruli in kidney WSI data",
+    "classes": {
+        "glomerulus": {
+            "name": "Glomerulus"
+        },
+        "anomaly": {
+            "name": "Possible anomaly"
+        }
+    },
     "inputs": {
         "slide": {
             "type": "wsi"
         },
         "region_of_interest": {
             "type": "rectangle",
-            "reference": "inputs.slide"
+            "reference": "inputs.slide",
+            "classes": [
+                "org.empaia.global.v1.classes.roi"
+            ]
+
         }
     },
     "outputs": {
-        "glomerulus_count": {
-            "type": "integer",
-            "reference": "inputs.region_of_interest"
-        },
-        "glomeruli_polygons": {
+        "glomeruli": {
             "type": "collection",
             "reference": "inputs.region_of_interest",
             "items": {
                 "type": "polygon",
                 "reference": "inputs.slide"
             }
+        },
+        "glomeruli_confidences": {
+            "type": "collection",
+            "items": {
+                "type": "float",
+                "reference": "outputs.glomeruli.items"
+            }
+        },
+        "glomeruli_classifications": {
+            "type": "collection",
+            "items" : {
+                "type": "class",
+                "reference": "outputs.glomeruli.items"
+            }
+        },
+        "glomeruli_count": {
+            "type": "integer",
+            "reference": "inputs.region_of_interest"
         }
     }
 }

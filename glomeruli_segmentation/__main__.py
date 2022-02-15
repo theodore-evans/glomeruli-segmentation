@@ -8,12 +8,17 @@ from glomeruli_segmentation.api_interface import ApiInterface
 from glomeruli_segmentation.data_classes import Rectangle, Wsi
 from glomeruli_segmentation.extract_contours import get_contours_from_mask
 from glomeruli_segmentation.logging_tools import get_log_level, get_logger
-from glomeruli_segmentation.output_serialization import serialize_result_to_collection
+from glomeruli_segmentation.output_serialization import (
+    classifications_to_collection,
+    confidences_to_collection,
+    contours_to_collection,
+)
 from glomeruli_segmentation.run_inference import SingleChannelPassthrough, load_unet, run_inference_on_tiles
 from glomeruli_segmentation.tile_loader import get_tile_loader
 from glomeruli_segmentation.util.preprocessing import get_kaggle_test_transform
 
 TRANSFORM = get_kaggle_test_transform()
+EAD_NAMESPACE = "org.empaia.dai.glomeruli_segmentation.v1"
 
 
 def main(verbosity: int):
@@ -23,7 +28,7 @@ def main(verbosity: int):
     try:
         api_url = os.environ["EMPAIA_APP_API"]
         job_id = os.environ["EMPAIA_JOB_ID"]
-        headers = {"Authorization": "Bearer {os.environ['EMPAIA_TOKEN']}"}
+        headers = {"Authorization": f"Bearer {os.environ['EMPAIA_TOKEN']}"}
         model_path = os.environ["MODEL_PATH"]
     except KeyError as e:
         logger.error("Missing EMPAIA API environment variables")
@@ -39,13 +44,25 @@ def main(verbosity: int):
 
     model = nn.Sequential(load_unet(model_path), nn.Softmax(dim=1), SingleChannelPassthrough(channel=1))
     segmentation_mask = run_inference_on_tiles(tile_loader, model, transform=TRANSFORM)
-    glomeruli_contours, _ = get_contours_from_mask(segmentation_mask)
+    glomeruli_contours, confidence_values = get_contours_from_mask(segmentation_mask)
 
-    number_of_glomeruli = {"name": "Glomerulus Count", "type": "integer", "value": len(glomeruli_contours)}
-    api.post_output(key="glomerulus_count", data=number_of_glomeruli)
+    number_of_glomeruli = {"name": "Glomeruli Count", "type": "integer", "value": len(glomeruli_contours)}
+    api.post_output(key="glomeruli_count", data=number_of_glomeruli)
 
-    annotations = serialize_result_to_collection(glomeruli_contours, slide, roi)
-    api.post_output(key="glomeruli_polygons", data=annotations)
+    annotations = contours_to_collection(glomeruli_contours, slide, roi)
+    annotations = api.post_output(key="glomeruli", data=annotations)
+
+    confidences = confidences_to_collection(annotations, confidence_values)
+    classifications = classifications_to_collection(
+        annotations,
+        confidence_values,
+        pos_condition=lambda x: x > 0.5,
+        pos_class=EAD_NAMESPACE + ".classes.glomerulus",
+        neg_class=EAD_NAMESPACE + ".classes.anomaly",
+    )
+
+    api.post_output(key="glomeruli_confidences", data=confidences)
+    api.post_output(key="glomeruli_classifications", data=classifications)
 
     api.put_finalize()
 
