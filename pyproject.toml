@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "glomeruli-segmentation"
-version = "0.2.0"
+version = "1.0.0"
 description = "Kidney segmentation demo app, as per https://www.kaggle.com/c/hubmap-kidney-segmentation, developed for integration with the EMPAIA platform"
 authors = ["Theodore Evans <theodore.evans@dai-labor.de>", "Emirhan Karagül <emirhan.karaguel@tu-berlin.de>"]
 license = "GPL-3.0-or-later"
