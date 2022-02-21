@@ -1,4 +1,6 @@
-# EMPAIA Kidney Glomeruli Segmentation App
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6208423.svg)](https://doi.org/10.5281/zenodo.6208423)
+
+# EMPAIA Kidney Glomeruli Segmentation App 
 
 A demonstrator application for the [EMPAIA Ecosystem for Digital Pathology](https://www.empaia.org/), as featured in [Romberg, D., Strohmenger, K., Jansen, C., Küster, T., Weiss, N., Geißler, C., ... & Homeyer, A. (2021). EMPAIA App Interface: An open and vendor-neutral interface for AI applications in pathology. Computer Methods and Programs in Biomedicine, 106596.](https://doi.org/10.1016/j.cmpb.2021.106596)
 
@@ -13,6 +15,14 @@ Sample output:
 
 ![](screenshots/app_screenshot.png)
 
+### How to cite
+
+> Evans, Theodore. (2022). EMPAIA Kidney Glomeruli Segmentation App (v1.0.0-stable). Zenodo. https://doi.org/10.5281/zenodo.6208423
+
+Or refer to [Zenodo](https://doi.org/10.5281/zenodo.6208423) for more citation options.
+
+## App details
+
 ### Running the app
 
 - Clone the project
@@ -21,8 +31,6 @@ Sample output:
 - A lightweight testing environment for the EMPAIA ecosystem can be run with the EMPAIA App Test Suite ([EATS](https://gitlab.com/empaia/integration/empaia-app-test-suite))
 - Download the WSI `new_converted_kidney_bigtiles.tif` from [NextCloud](https://nextcloud.empaia.org/s/nfH2gQHiWknnCgQ) to the data directory mounted by the EATS
 - As per v1.0.0 release, GPU support is disabled due to unpredictable behaviour on different hardware. This will be addressed in the next stable release.
-
-## App details
 
 ### Model
 * `hacking_kidney_16934_best_metric.model-384e1332.pth`
