@@ -20,7 +20,7 @@ Sample output:
   - Provide the Docker image tag to the EATS when registering the app
 - A lightweight testing environment for the EMPAIA ecosystem can be run with the EMPAIA App Test Suite ([EATS](https://gitlab.com/empaia/integration/empaia-app-test-suite))
 - Download the WSI `new_converted_kidney_bigtiles.tif` from [NextCloud](https://nextcloud.empaia.org/s/nfH2gQHiWknnCgQ) to the data directory mounted by the EATS
-- As per v1.0.0, GPU support is disabled due to unpredictable behaviour on different hardware. This will be addressed in the next stable release.
+- As per v1.0.0 release, GPU support is disabled due to unpredictable behaviour on different hardware. This will be addressed in the next stable release.
 
 ## App details
 
