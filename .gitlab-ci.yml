@@ -1,8 +1,11 @@
 image: python:3.8
 
 stages:
+  - version_get
+  - version_check
   - codecheck
   - test
+  - build
 
 before_script:
   - python -m pip install --upgrade pip
@@ -20,9 +23,58 @@ codecheck:
     - poetry run isort --check tests
     - poetry run pylint tests
 
+version_get:
+  stage: version_get
+  before_script:
+    - python -m pip install --upgrade pip
+    - pip install poetry
+  script:
+    - VERSION=$(poetry version --short)
+    - echo "VERSION=$VERSION" >> version.env
+  artifacts:
+    reports:
+      dotenv: version.env
+
+version_check:
+  image: docker:19.03.12
+  stage: version_check
+  services:
+    - docker:19.03.12-dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - if [ -z "${CI_REGISTRY_IMAGE}" ]; then exit 1; fi
+    - if [[ "$(docker manifest inspect $1 2> /dev/null)" == "" ]]; then exit 0 else; exit 1; fi
+  after_script:
+    - docker logout $CI_REGISTRY
+  needs:
+    - job: version_get
+
 unit_tests:
   stage: test
   script:
     - apt update && apt install -y libgl1-mesa-dev
     - curl -OJ https://nx9836.your-storageshare.de/s/7FGbJRn97NYB5pD/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth ./tests
     - poetry run python3 -m pytest
+
+build:
+  image: docker:19.03.12
+  stage: build
+  only:
+    - master
+  services:
+    - docker:19.03.12-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$VERSION .
+    - docker push $CI_REGISTRY_IMAGE:$VERSION
+    - docker push $CI_REGISTRY_IMAGE
+  after_script:
+    - docker logout $CI_REGISTRY
+  needs:
+    - job: version_get
+      artifacts: true
+    - job: unit_tests
+
