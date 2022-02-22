@@ -1,6 +1,5 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6208423.svg)](https://doi.org/10.5281/zenodo.6208423)
-
 # EMPAIA Kidney Glomeruli Segmentation App 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6208423.svg)](https://doi.org/10.5281/zenodo.6208423)
 
 A demonstrator application for the [EMPAIA Ecosystem for Digital Pathology](https://www.empaia.org/), as featured in [Romberg, D., Strohmenger, K., Jansen, C., Küster, T., Weiss, N., Geißler, C., ... & Homeyer, A. (2021). EMPAIA App Interface: An open and vendor-neutral interface for AI applications in pathology. Computer Methods and Programs in Biomedicine, 106596.](https://doi.org/10.1016/j.cmpb.2021.106596)
 
@@ -30,13 +29,13 @@ Or refer to [Zenodo](https://doi.org/10.5281/zenodo.6208423) for more citation o
   - Provide the Docker image tag to the EATS when registering the app
 - A lightweight testing environment for the EMPAIA ecosystem can be run with the EMPAIA App Test Suite ([EATS](https://gitlab.com/empaia/integration/empaia-app-test-suite))
 - Download the WSI `new_converted_kidney_bigtiles.tif` from [NextCloud](https://nextcloud.empaia.org/s/nfH2gQHiWknnCgQ) to the data directory mounted by the EATS
-- As per v1.0.0 release, GPU support is disabled due to unpredictable behaviour on different hardware. This will be addressed in the next stable release.
+- As per v1.0.0 release, GPU support is disabled due to unpredictable behaviour on different hardware. This will be addressed in a future stable release.
 
 ### Model
 * `hacking_kidney_16934_best_metric.model-384e1332.pth`
   * single fold/model kaggle LB: 0.873
   * input patch 1024x1024
-  * semi supervised [UNet](https://arxiv.org/abs/1505.04597) with [SCSE](https://arxiv.org/abs/1803.02579) using Resnet34 as backbone: [nn/unet.py](nn/unet.py)
+  * semi supervised [UNet](https://arxiv.org/abs/1505.04597) with [SCSE](https://arxiv.org/abs/1803.02579) using Resnet34 as backbone: [unet.py](glomeruli_segmentation/model/unet.py)
   * example training parameters for supervised learning on 8 GPUs:
   ```
   python -m torch.distributed.launch --nproc_per_node 8 train.py --data-root /data/hubmap-kidney-segmentation --jobs=40 \
