@@ -16,7 +16,25 @@ Sample output:
 
 ### How to cite
 
-> Evans, Theodore. (2022). EMPAIA Kidney Glomeruli Segmentation App (v1.0.0-stable). Zenodo. https://doi.org/10.5281/zenodo.6208423
+> Evans, Theodore, & Karagül, Emirhan. (2022). EMPAIA Kidney Glomeruli Segmentation App (v1.0.0-stable). Zenodo. https://doi.org/10.5281/zenodo.6208423
+
+
+<details><summary>BibTeX citation details</summary>
+
+```
+@software{evans_theodore_2022_6208423,
+  author       = {Evans, Theodore and
+                  Karagül, Emirhan},
+  title        = {EMPAIA Kidney Glomeruli Segmentation App},
+  month        = feb,
+  year         = 2022,
+  publisher    = {Zenodo},
+  version      = {v1.0.0-stable},
+  doi          = {10.5281/zenodo.6208423},
+  url          = {https://doi.org/10.5281/zenodo.6208423}
+}
+```
+</details>
 
 Or refer to [Zenodo](https://doi.org/10.5281/zenodo.6208423) for more citation options.
 
