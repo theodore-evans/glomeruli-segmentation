@@ -22,13 +22,15 @@ def _find_contours(thresholded_mask: ndarray) -> List[_Contour]:
     return [contour.squeeze() for contour in contours]
 
 
-def _get_contour_confidence(contour: _Contour, mask: ndarray, thresholded_mask: ndarray) -> float:
+def _get_contour_confidence(
+    contour: _Contour, mask: ndarray, thresholded_mask: ndarray, num_of_decimals: int = 3
+) -> float:
     y, x, h, w = cv.boundingRect(contour)
     bounded_mask = mask[x : x + w, y : y + h]
     bounded_binary_mask = thresholded_mask[x : x + w, y : y + h]
     pixel_confidences = bounded_mask[bounded_binary_mask != 0]
     mean_pixel_confidence = np.mean(pixel_confidences)
-    return mean_pixel_confidence
+    return round(mean_pixel_confidence, num_of_decimals)
 
 
 def get_contours_from_mask(mask_tile: Tile, threshold: float = 0.5) -> Tuple[List[_Contour], List[float]]:

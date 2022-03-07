@@ -12,6 +12,8 @@ from glomeruli_segmentation.data_classes import Rectangle, Tile, Wsi
 from glomeruli_segmentation.logging_tools import get_logger
 from glomeruli_segmentation.request_hooks import check_for_errors_hook, response_logging_hook
 
+API_VERSION = "v0"
+
 
 class ApiInterface:
     def __init__(self, api_url: str, job_id: str, headers: dict, logger: Logger = get_logger()):
@@ -25,24 +27,23 @@ class ApiInterface:
         request_hooks = [check_for_errors_hook, response_logging_hook]
         self.session.hooks["response"] = [hook(self.logger) for hook in request_hooks]
 
-    # FIXME: marshmallow.exceptions.ValidationError: {'upper_left': {'_schema': ['Invalid input type.']}}
     def get_input(self, key: str, data_class: Type) -> Union[Rectangle, Wsi]:
 
-        url = f"{self.api_url}/v0/{self.job_id}/inputs/{key}"
+        url = f"{self.api_url}/{API_VERSION}/{self.job_id}/inputs/{key}"
         resp = self.session.get(url, headers=self.headers)
-        response_json = resp.json()
+
         try:
             schema = desert.schema(data_class, meta={"unknown": EXCLUDE})
-            return schema.load(response_json)
+            return schema.load(resp.json())
         except:
-            self.logger.error(response_json)
+            self.logger.error(resp.json())
             raise
 
     def post_output(self, key: str, data: dict) -> Response:
         """
         post output data by key as defined in EAD
         """
-        url = f"{self.api_url}/v0/{self.job_id}/outputs/{key}"
+        url = f"{self.api_url}/{API_VERSION}/{self.job_id}/outputs/{key}"
         resp = self.session.post(url, json=data, headers=self.headers)
 
         return resp.json()
@@ -57,7 +58,7 @@ class ApiInterface:
         """
         x, y = rect.upper_left
 
-        url = f"{self.api_url}/v0/{self.job_id}/regions/{slide.id}/level/{rect.level}/start/{x}/{y}/size/{rect.width}/{rect.height}"
+        url = f"{self.api_url}/{API_VERSION}/{self.job_id}/regions/{slide.id}/level/{rect.level}/start/{x}/{y}/size/{rect.width}/{rect.height}"
 
         resp = self.session.get(url, headers=self.headers)
         return Tile(image=Image.open(BytesIO(resp.content)), rect=rect)
@@ -66,7 +67,6 @@ class ApiInterface:
         """
         finalize job, such that no more data can be added and to inform EMPAIA infrastructure about job state
         """
-        url = f"{self.api_url}/v0/{self.job_id}/finalize"
-        resp = self.session.put(url, headers=self.headers)
+        url = f"{self.api_url}/{API_VERSION}/{self.job_id}/finalize"
 
-        return resp
+        return self.session.put(url, headers=self.headers)

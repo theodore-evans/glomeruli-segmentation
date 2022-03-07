@@ -1,13 +1,12 @@
 import logging
+import time
 from subprocess import call
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Optional
 
-import cv2
 import numpy as np
 import torch
-
-# import torch.cuda as cuda
 import torch.nn as nn
+import torchvision.transforms.functional as fn
 from torch import Tensor
 from torchvision.transforms.transforms import Compose
 
@@ -34,51 +33,55 @@ def load_unet(model_path: str, map_location: str = "cpu"):
 
 
 def _ndarray_to_torch_tensor(array: np.ndarray, transform: Optional[Compose] = None):
-    tensor_view = torch.from_numpy(np.atleast_3d(array))
+    tensor_view = torch.as_tensor(np.atleast_3d(array))
     torch_tensor = tensor_view.permute(2, 0, 1)
     return transform(torch_tensor) if transform else torch_tensor
 
 
 def _torch_tensor_to_ndarray(torch_tensor: Tensor):
-    numpy_format = torch_tensor.permute(1, 2, 0).detach().to("cpu")
+    torch_tensor = torch.squeeze(torch_tensor, 0)
+    numpy_format = torch_tensor.permute(1, 2, 0).detach().cpu()
     array = np.array(numpy_format)
     return array
 
 
-def _resize_image(
-    image: np.ndarray, target_shape: Tuple[int, int], interpolation: int = cv2.INTER_LINEAR
-) -> np.ndarray:
-    return cv2.resize(
-        image,
-        target_shape,
-        interpolation=interpolation,
-    )
-
-
 def run_inference_on_tiles(tiles: Iterable[Tile], model: nn.Module, transform: Optional[Compose] = None) -> Tile:
 
-    # HACK: temporarily hardcoded to use CPU until GPU issues fixed
-    device = torch.device("cpu")
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        call("nvidia-smi")
+        dtype = torch.float16
+    else:
+        device = torch.device("cpu")
+        dtype = torch.float32
 
     logger = get_logger("inference", log_level=logging.INFO)
     logger.info(f"Running inference on {str(device).upper()}")
+    start_time = time.time()
 
-    if device == torch.device("cuda"):
-        torch.cuda.empty_cache()
-        call("nvidia-smi")
+    model = model.type(dtype).to(device).eval()
 
-    model = model.to(device).eval()
-    # TODO: add GPU support and lazy tensor loading
     mask_tiles = []
-    for tile in tiles:
-        array = np.array(tile.image, dtype=np.float32) / 255
-        inputs = _ndarray_to_torch_tensor(array)[None, :, :, :].to(device)
-        inputs = transform(inputs) if transform else inputs
-        output = model(inputs)
-        output = _torch_tensor_to_ndarray(torch.squeeze(output, 0))
-        resized = _resize_image(output, tile.rect.shape)
-        mask_tiles.append(Tile(image=resized, rect=tile.rect))
+    iteration_average_time = 0
 
-    logger.info(f"Combining {len(mask_tiles)} tiles")
+    for tile in tiles:
+        iteration_start_time = time.time()
+        array = np.array(tile.image, dtype=np.float32) / 255
+        with torch.no_grad():
+            inputs = _ndarray_to_torch_tensor(array)[None, :, :, :].type(dtype).to(device)
+            inputs = transform(inputs) if transform else inputs
+            output = model(inputs)
+            resized_output = fn.resize(output, list(tile.rect.shape))
+            resized_output = _torch_tensor_to_ndarray(resized_output)
+        mask_tiles.append(Tile(image=resized_output, rect=tile.rect))
+        iteration_average_time += time.time() - iteration_start_time
+
+    elapsed_time = time.time() - start_time
+    number_of_iterations = len(mask_tiles)
+    iteration_average_time /= number_of_iterations
+
+    logger.info(f"Inference completed in {round(elapsed_time, 1)}s, tile average {round(iteration_average_time, 1)}s")
+
     combined = combine_masks(mask_tiles)
+    logger.info(f"Combined {len(mask_tiles)} tiles")
     return combined

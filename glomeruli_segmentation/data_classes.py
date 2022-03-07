@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from numpy import array_equal, ndarray
 
@@ -43,7 +43,6 @@ class Wsi:
     levels: List[Level]
 
 
-# TODO: fix this slightly hacky solution (caused by limitations to desert) by defining a schema manually
 @dataclass
 class Rectangle:
     upper_left: List[int]
@@ -54,10 +53,14 @@ class Rectangle:
 
     def __post_init__(self):
         self.upper_left = Vector2((self.upper_left))
+        return (self.width, self.height)
 
     @property
-    def shape(self) -> Tuple:
-        return (self.width, self.height)
+    def shape(self):
+        """
+        Returns the rectangle shape as a tuple of (height, width)
+        """
+        return (self.height, self.width)
 
 
 @dataclass
