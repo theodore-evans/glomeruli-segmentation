@@ -3,8 +3,7 @@ FROM docker.io/ubuntu:20.04 AS builder
 RUN apt-get update \
 && apt-get install -y python3-venv python3-pip git curl
 
-# service name
-RUN apt-get install -y git curl
+# build module
 ENV PATH /root/.local/bin:/root/.poetry/bin:${PATH}
 RUN mkdir -p /root/.local/bin \
 && ln -s $(which python3) /root/.local/bin/python \
@@ -22,9 +21,6 @@ RUN apt-get update -y
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     git \
     curl \
-    python3.8 \
-    python3-pip \
-    python3-venv \
     libgl1-mesa-glx \
     libglib2.0-0
 
@@ -34,6 +30,8 @@ RUN : \
         software-properties-common \
     && add-apt-repository -y ppa:deadsnakes \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        python3.8 \
+        python3-pip \
         python3.8-venv \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \

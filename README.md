@@ -3,14 +3,14 @@
 
 A demonstrator application for the [EMPAIA Ecosystem for Digital Pathology](https://www.empaia.org/), as featured in [Romberg, D., Strohmenger, K., Jansen, C., Küster, T., Weiss, N., Geißler, C., ... & Homeyer, A. (2021). EMPAIA App Interface: An open and vendor-neutral interface for AI applications in pathology. Computer Methods and Programs in Biomedicine, 106596.](https://doi.org/10.1016/j.cmpb.2021.106596)
 
-API specification can be found on [EMPAIA Developer Portal](https://developer.empaia.org/app_developer_docs/draft-3/#/)
+The API specification with which this app interacts can be found on [EMPAIA Developer Portal](https://developer.empaia.org/app_developer_docs/draft-3/#/)
 
 The app wraps a segmentation model developed and trained by Tuguldur Erdene-Ochir (TU-Berlin) and Yuan Xu (TU-Berlin) for the Kaggle challenge [**HuBMAP: Hacking the Kidney** - Identify glomeruli in human kidney tissue images](https://www.kaggle.com/c/hubmap-kidney-segmentation):
 
 > [The] challenge is to detect functional tissue units (FTUs) across different tissue preparation pipelines. An FTU is defined as a “three-dimensional block of cells centered around a capillary, such that each cell in this block is within diffusion distance from any other cell in the same block” (de Bo
 no, 2013). The goal of this competition is the implementation of a successful and robust glomeruli FTU detector. &mdash; <cite>“HuBMAP - Hacking the Kidney.” Accessed February 28, 2021. https://kaggle.com/c/hubmap-kidney-segmentation.</cite>
 
-Sample output:
+![](screenshots/app_screenshot.png)
 
 ![](screenshots/app_screenshot.png)
 
@@ -40,14 +40,15 @@ Or refer to [Zenodo](https://doi.org/10.5281/zenodo.6208423) for more citation o
 
 ## App details
 
-### Running the app
-
-- Clone the project
+- Clone the project `git clone git@gitlab.com:empaia/examples/kidney-glomeruli-segmentation-app.git`
 - In the project directory, `docker build -t <image-tag> .` (requires internet access to download pre-trained model weights)
-  - Provide the Docker image tag to the EATS when registering the app
-- A lightweight testing environment for the EMPAIA ecosystem can be run with the EMPAIA App Test Suite ([EATS](https://gitlab.com/empaia/integration/empaia-app-test-suite))
-- Download the WSI `new_converted_kidney_bigtiles.tif` from [NextCloud](https://nextcloud.empaia.org/s/nfH2gQHiWknnCgQ) to the data directory mounted by the EATS
-- As per v1.0.0 release, GPU support is disabled due to unpredictable behaviour on different hardware. This will be addressed in a future stable release.
+- A lightweight testing environment for the EMPAIA ecosystem can be run with the EMPAIA App Test Suite ([EATS](https://gitlab.com/empaia/integration/empaia-app-test-suite)). 
+  - Refer to the [developer documentation](https://developer.empaia.org/app_developer_docs/draft-3/#/app_test_suite) for a step-by-step guide to starting EATS and running the app
+  - Download the WSI `new_converted_kidney_bigtiles.tif` from [NextCloud](https://nextcloud.empaia.org/s/nfH2gQHiWknnCgQ) into to the data directory mounted by the EATS
+  - You will need to provide the `ead.json` and your chosen `<image-tag>` when registering the app
+  - Sample EATS input can be found in `./inputs`. Alternatively, the app can be parameterised and run from the Workbench Client.
+
+## App details
 
 ### Model
 * `hacking_kidney_16934_best_metric.model-384e1332.pth`

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "glomeruli-segmentation"
-version = "1.0.2"
+version = "1.1.0"
 description = "Kidney segmentation demo app, as per https://www.kaggle.com/c/hubmap-kidney-segmentation, developed for integration with the EMPAIA platform"
 authors = ["Theodore Evans <theodore.evans@dai-labor.de>", "Emirhan Karagül <emirhan.karaguel@tu-berlin.de>"]
 license = "GPL-3.0-or-later"
@@ -21,6 +21,7 @@ marshmallow-union = "^0.1.15"
 marshmallow = "^3.14.1"
 desert = "^2020.11.18"
 koila = "^0.1.1"
+torchinfo = "^1.6.3"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.5b0", allow-prereleases = true}
@@ -51,7 +52,7 @@ line_length = 120
 profile = "black"
 multi_line_output = 3
 include_trailing_comma = true
-known_third_party = ["PIL", "cv2", "desert", "marshmallow", "numpy", "pytest", "requests", "scipy", "torch", "torchvision"]
+known_third_party = ["PIL", "cv2", "desert", "marshmallow", "numpy", "pytest", "requests", "scipy", "torch", "torchinfo", "torchvision"]
 
 [tool.portray]
 modules = ["src"]

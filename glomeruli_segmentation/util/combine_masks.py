@@ -48,7 +48,7 @@ def combine_masks(
         x_end = x_start + tile.rect.width
         y_start = y - y_min
         y_end = y_start + tile.rect.height
-        combined[y_start:y_end, x_start:x_end] += tile.image
+        combined[y_start:y_end, x_start:x_end] += np.squeeze(tile.image)
         normalization[y_start:y_end, x_start:x_end] += 1
 
     if np.min(normalization) == 0:

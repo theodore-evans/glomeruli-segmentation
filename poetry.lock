@@ -865,6 +865,14 @@ numpy = "*"
 typing-extensions = "*"
 
 [[package]]
+name = "torchinfo"
+version = "1.6.3"
+description = "Model summary in PyTorch, based off of the original torchsummary."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[[package]]
 name = "torchvision"
 version = "0.9.1"
 description = "image and video datasets and models for torch deep learning"
@@ -969,7 +977,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "740bf93d5583989d93c9652fcf6762b5a114f1db0db036030263d7de99f0a0d0"
+content-hash = "2e54c87e5a28f416b534e29a168d8319e6a02e2df2da709e89dabce958e198d4"
 
 [metadata.files]
 "aspy.refactor-imports" = [
@@ -1653,6 +1661,10 @@ torch = [
     {file = "torch-1.8.1-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:a50ea8ed900927fb30cadb63aa7a32fdd59c7d7abe5012348dfbe35a8355c083"},
     {file = "torch-1.8.1-cp39-cp39-win_amd64.whl", hash = "sha256:dac4d10494e74f7e553c92d7263e19ea501742c4825ddd26c4decfa27be95981"},
     {file = "torch-1.8.1-cp39-none-macosx_10_9_x86_64.whl", hash = "sha256:225ee4238c019b28369c71977327deeeb2bd1c6b8557e6fcf631b8866bdc5447"},
+]
+torchinfo = [
+    {file = "torchinfo-1.6.3-py3-none-any.whl", hash = "sha256:5240f420d35902556ba2988b4b3d08ec3dd439bafd90e03f22d73718858dede1"},
+    {file = "torchinfo-1.6.3.tar.gz", hash = "sha256:835c61b5dc328333d34ecc0ff22677eb8ca705013b0fe680b19dddf44a72bc80"},
 ]
 torchvision = [
     {file = "torchvision-0.9.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:da4c4f7363b60b0637354974ea0a29dbc301f66c9f25d92ed5f10637909f3500"},
