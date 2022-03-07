@@ -12,8 +12,6 @@ no, 2013). The goal of this competition is the implementation of a successful an
 
 ![](screenshots/app_screenshot.png)
 
-![](screenshots/app_screenshot.png)
-
 ### How to cite
 
 > Evans, Theodore, & Karagül, Emirhan. (2022). EMPAIA Kidney Glomeruli Segmentation App (v1.0.0-stable). Zenodo. https://doi.org/10.5281/zenodo.6208423
