@@ -1,90 +1,108 @@
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 from uuid import UUID
 
 from glomeruli_segmentation.data_classes import Rectangle, Wsi
 
+Coordinate = Tuple[int, int]
 
-def create_annotation_collection(contours: List[Tuple[int, int]], slide: Wsi, roi: Rectangle) -> Dict[str, Any]:
 
-    npp = slide.pixel_size_nm.x
-    num_levels = len(slide.levels)
-    num_contours = len(contours)
+def create_annotation_collection(
+    name: str,
+    slide: Wsi,
+    roi: Rectangle,
+    annotation_type: str,
+    values: Union[Coordinate, List[Coordinate]],
+    visible_levels: int = -1,
+) -> Dict[str, Any]:
+    """
+    Create a collection of annotations for a given slide, roi, and annotation type.
+
+    :param name: Name of the annotation collection
+    :param slide: Wsi object
+    :param roi: Rectangle object
+    :param annotation_type: Type of annotation
+    :param values: Coordinates of the annotation
+    :param visible_levels: Number of levels to show in the annotation
+    """
+
+    npp = (slide.pixel_size_nm.x + slide.pixel_size_nm.y) / 2
+    num_levels = len(slide.levels) if visible_levels < 0 else visible_levels
+    num_contours = len(values)
 
     items: List[dict] = []
 
-    for i, contour in enumerate(contours):
+    for i, contour in enumerate(values):
         item = {
-            "name": "Glomerulus",
-            "description": f"Glomerulus {i+1}/{num_contours}",
-            "type": "polygon",
+            "name": name,
+            "description": f"{name} {i+1}/{num_contours}",
+            "type": annotation_type,
             "reference_id": slide.id,
             "reference_type": "wsi",
             "coordinates": contour,
             "npp_created": npp,
-            "npp_viewing": [npp, npp * 2 ** num_levels],
+            "npp_viewing": [npp, npp * 2**num_levels],
         }
         items.append(item)
 
-    return {
-        "item_type": "polygon",
+    collection = {
+        "item_type": annotation_type,
         "items": items,
         "reference_id": roi.id,
         "reference_type": "annotation",
     }
 
-
-def classify_annotations(
-    confidences: List[float], condition: Callable[..., bool], class_if_true: str, class_if_false: str
-) -> List[str]:
-
-    classifications = []
-    num_positive_classifications = 0
-    num_negative_classifications = 0
-
-    for confidence in confidences:
-        if condition(confidence):
-            classification = class_if_true
-            num_positive_classifications += 1
-        else:
-            classification = class_if_false
-            num_negative_classifications += 1
-        classifications.append(classification)
-
-    assert num_positive_classifications + num_negative_classifications == len(confidences)
-    return classifications, num_positive_classifications, num_negative_classifications
+    return collection
 
 
-def link_result_details(
-    annotations: Dict[str, Any], confidences: List[float], classifications: List[str]
-) -> Dict[str, Any]:
+def link_results_by_id(reference_result: Dict[str, Any], results: List[Dict[str, Any]]) -> None:
+    """
+    Link a set of results to a reference result by id.
 
-    confidence_collection = {"item_type": "float", "items": []}
-    classification_collection = {"item_type": "class", "items": []}
+    :param reference_result: Reference result
+    :param results: List of results"""
+    try:
+        UUID(reference_result["id"])
+    except (KeyError, ValueError) as invalid_id:
+        raise ValueError(
+            f"{reference_result['name']} id is missing or invalid, POST reference_result before linking other results"
+        ) from invalid_id
 
-    for annotation, confidence, classification in zip(annotations["items"], confidences, classifications):
-        try:
-            UUID(annotation["id"])
-        except (KeyError, ValueError) as invalid_id:
-            raise ValueError(
-                f"{annotation['name']} id is missing or invalid, POST annotation results before linking details"
-            ) from invalid_id
+    for result in results:
+        for reference, item in zip(reference_result["items"], result["items"]):
+            item["reference_id"] = reference["id"]
+            item["reference_type"] = "annotation"
 
-        confidence_collection["items"].append(
-            {
-                "name": "Confidence",
-                "type": "float",
-                "value": confidence,
-                "reference_id": annotation["id"],
-                "reference_type": "annotation",
-            }
-        )
 
-        classification_collection["items"].append(
-            {
-                "value": classification,
-                "reference_id": annotation["id"],
-                "reference_type": "annotation",
-            }
-        )
+def create_results_collection(name: Optional[str], item_type: str, values: List[any]) -> dict:
+    """
+    Create a collection of results for posting to EMPAIA App API.
 
-    return confidence_collection, classification_collection
+    :param name: Name of the result collection
+    :param item_type: Type of result
+    :param values: List of results
+    """
+    collection = {"item_type": item_type, "items": []}
+
+    for value in values:
+        item = {
+            "value": value,
+        }
+        if name is not None:
+            item["name"] = name
+        if item_type != "class":
+            item["type"] = item_type
+        collection["items"].append(item)
+
+    return collection
+
+
+def create_result_scalar(name: str, item_type: str, value: Any) -> dict:
+    """
+    Create a scalar result for posting to EMPAIA App API.
+
+    :param name: Name of the result
+    :param item_type: Type of result
+    :param value: Value of the result
+    """
+    result = {"name": name, "type": item_type, "value": value}
+    return result

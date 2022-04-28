@@ -2,8 +2,8 @@ from typing import Collection, List
 
 import numpy as np
 
-from glomeruli_segmentation.data_classes import Rectangle, Tile
-from glomeruli_segmentation.util.combine_masks import combine_masks
+from glomeruli_segmentation.data_classes import BlendMode, Rectangle, Tile
+from glomeruli_segmentation.util import combine_masks
 
 square = np.ones((10, 10))
 rect1 = Rectangle(upper_left=(0, 0), width=10, height=10)
@@ -110,7 +110,7 @@ def test_recombined_with_averaged_overlaps():
     ]
     tiles = _split_image_into_tiles(original, rectangles)
     tiles[0].image += 100
-    combined = combine_masks(tiles)
+    combined = combine_masks(tiles, blend_mode=BlendMode.MEAN)
     original_blended = np.concatenate([np.full((10, 5), 100), np.full((10, 5), 50), np.full((10, 5), 0)], axis=1)
 
     assert np.array_equal(combined.image, original_blended)

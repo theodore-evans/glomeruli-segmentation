@@ -1,6 +1,7 @@
 from itertools import repeat
 
-from torch._six import container_abcs
+# from torch._six import container_abcs
+import _collections_abc as container_abcs
 
 
 # From PyTorch internals
