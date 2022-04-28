@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "glomeruli-segmentation"
-version = "1.1.0"
+version = "2.0.0-alpha"
 description = "Kidney segmentation demo app, as per https://www.kaggle.com/c/hubmap-kidney-segmentation, developed for integration with the EMPAIA platform"
 authors = ["Theodore Evans <theodore.evans@dai-labor.de>", "Emirhan Karagül <emirhan.karaguel@tu-berlin.de>"]
 license = "GPL-3.0-or-later"
@@ -9,50 +9,44 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.8,<3.11"
-opencv_python = "^4.5.1.48"
-requests = "^2.25"
+python = ">=3.8,<3.11"
 Pillow = "^8.3.2"
 imagecodecs = "^2021.4.28"
-numpy = "^1.20.2"
-torch = "1.8.1"
-torchvision = "0.9.1"
-marshmallow-union = "^0.1.15"
-marshmallow = "^3.14.1"
+numpy = "^1.22.3"
+padl = "^0.2.5"
+torch = "^1.11.0"
+torchvision = "^0.12.0"
+opencv-python = "^4.5.5"
+aiohttp = "^3.8.1"
+marshmallow = "^3.15.0"
 desert = "^2020.11.18"
-koila = "^0.1.1"
-torchinfo = "^1.6.3"
+marshmallow-enum = "^1.5.1"
+marshmallow-union = "^0.1.15"
 
 [tool.poetry.dev-dependencies]
-black = {version = "^21.5b0", allow-prereleases = true}
-openslide-python = "^1.1.2"
-pytest = "^5.2.0"
-pytest-cov = "^2.6.1"
-pytest-flakes = "^2.0.0"
-pytest-pep8 = "^1.0.6"
-pytest-pythonpath = "^0.7.3"
-matplotlib = "^3.5.1"
-scipy = "^1.7.3"
-data-science-types = "^0.2.23"
-types-requests = "^2.26.3"
-pylint = "^2.12.2"
-pre-commit = "^2.16.0"
-seed-isort-config = "^2.2.0"
-click = "^7.1.2"
+empaia-app-test-suite = "^2.0.2"
+black = "^22.3.0"
 isort = "^5.10.1"
-debugpy = "^1.5.1"
-scikit-image = "^0.19.1"
+pre-commit = "^2.18.1"
+pylint = "^2.13.7"
+matplotlib = "^3.5.1"
+openslide-python = "^1.1.2"
+debugpy = "^1.6.0"
+ipykernel = "^6.13.0"
+pytest = "^7.1.2"
+scipy = "^1.8.0"
+notebook = "^6.4.11"
 
 [tool.black]
-line-length = 120
-target-version = ['py38']
+line_length = 120
+target-version = ['py310']
 
 [tool.isort]
 line_length = 120
 profile = "black"
 multi_line_output = 3
 include_trailing_comma = true
-known_third_party = ["PIL", "cv2", "desert", "marshmallow", "numpy", "pytest", "requests", "scipy", "torch", "torchinfo", "torchvision"]
+known_third_party = ["PIL", "aiohttp", "cv2", "desert", "marshmallow", "matplotlib", "numpy", "padl", "pytest", "requests", "scipy", "torch", "torchvision"]
 
 [tool.portray]
 modules = ["src"]

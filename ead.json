@@ -26,7 +26,7 @@
         }
     },
     "outputs": {
-        "glomeruli": {
+        "glomeruli_segmentation": {
             "type": "collection",
             "reference": "inputs.region_of_interest",
             "items": {
@@ -34,21 +34,21 @@
                 "reference": "inputs.slide"
             }
         },
-        "glomeruli_confidences": {
+        "glomeruli_segmentation_confidences": {
             "type": "collection",
             "items": {
                 "type": "float",
-                "reference": "outputs.glomeruli.items"
+                "reference": "outputs.glomeruli_segmentation.items"
             }
         },
-        "glomeruli_classifications": {
+        "glomeruli_segmentation_classifications": {
             "type": "collection",
             "items" : {
                 "type": "class",
-                "reference": "outputs.glomeruli.items"
+                "reference": "outputs.glomeruli_segmentation.items"
             }
         },
-        "glomeruli_count": {
+        "glomeruli_segmentation_count": {
             "type": "integer",
             "reference": "inputs.region_of_interest"
         }

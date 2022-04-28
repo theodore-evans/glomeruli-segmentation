@@ -1,14 +1,21 @@
-from typing import Callable, Iterable, Optional, Tuple
+from typing import Iterable, Optional, Tuple
 
-from glomeruli_segmentation.data_classes import Rectangle, Tile, Vector2
+from glomeruli_segmentation.data_classes import Rectangle, Vector2
 
 
-def get_tile_loader(
-    get_tile: Callable[[Rectangle], Tile],
+def get_patch_rectangles(
     region: Rectangle,
     window: Tuple[int, int],
     stride: Optional[Tuple[int, int]] = None,
-) -> Iterable[Tile]:
+) -> Iterable[Rectangle]:
+    """
+    Get an iterable of rectangles that represent the patches in a region.
+
+    :param region: Rectangle object
+    :param window: Tuple of window size
+    :param stride: Tuple of stride size
+    :return: Iterable of Rectangle objects
+    """
 
     window_width, window_height = window
     stride_x, stride_y = stride if stride else window
@@ -22,8 +29,6 @@ def get_tile_loader(
     whole_rows = effective_shape.y // stride_y
     rows_remainder = effective_shape.y % stride_y
 
-    corners = []
-
     for j in range(whole_rows + (rows_remainder > 0)):
         for i in range(whole_columns + (columns_remainder > 0)):
             x, y = (start_x + i * stride_x, start_y + j * stride_y)
@@ -33,10 +38,4 @@ def get_tile_loader(
             if j - whole_rows >= 0:
                 y = start_y + region.height - window_height
 
-            corners.append(Vector2((x, y)))
-
-    rectangles = [
-        Rectangle(upper_left=corner, width=window_width, height=window_height, level=region.level) for corner in corners
-    ]
-
-    return (get_tile(rect) for rect in rectangles)
+            yield Rectangle(upper_left=[x, y], width=window_width, height=window_height, level=region.level)
