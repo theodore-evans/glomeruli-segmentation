@@ -1,7 +1,7 @@
 image: python:3.10
 
 stages:
-  - version_get
+  # - version_get
   # - version_check
   # - codecheck
   # - test
@@ -69,13 +69,14 @@ build:
     - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 871920D1991BC93C
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
+    - VERSION="test-to-be-deleted"
     - docker build -t $CI_REGISTRY_IMAGE:$VERSION .
     - docker push $CI_REGISTRY_IMAGE:$VERSION
     - docker push $CI_REGISTRY_IMAGE
   after_script:
     - docker logout $CI_REGISTRY
   needs:
-    - job: version_get
-      artifacts: true
+    # - job: version_get
+      # artifacts: true
     # - job: unit_tests
 
