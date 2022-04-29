@@ -13,50 +13,50 @@ before_script:
   - poetry config virtualenvs.create false
   - poetry install
 
-codecheck:
-  stage: codecheck
-  script:
-    - poetry run black --check glomeruli_segmentation
-    - poetry run isort --check glomeruli_segmentation
-    - poetry run pylint glomeruli_segmentation
-    - poetry run black --check tests
-    - poetry run isort --check tests
-    - poetry run pylint tests
+# codecheck:
+#   stage: codecheck
+#   script:
+#     - poetry run black --check glomeruli_segmentation
+#     - poetry run isort --check glomeruli_segmentation
+#     - poetry run pylint glomeruli_segmentation
+#     - poetry run black --check tests
+#     - poetry run isort --check tests
+#     - poetry run pylint tests
 
-version_get:
-  stage: version_get
-  before_script:
-    - python -m pip install --upgrade pip
-    - pip install poetry
-  script:
-    - VERSION=$(poetry version --short)
-    - echo "VERSION=$VERSION" >> version.env
-  artifacts:
-    reports:
-      dotenv: version.env
+# version_get:
+#   stage: version_get
+#   before_script:
+#     - python -m pip install --upgrade pip
+#     - pip install poetry
+#   script:
+#     - VERSION=$(poetry version --short)
+#     - echo "VERSION=$VERSION" >> version.env
+#   artifacts:
+#     reports:
+#       dotenv: version.env
 
-version_check:
-  image: docker:19.03.12
-  stage: version_check
-  services:
-    - docker:19.03.12-dind
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - if [ -z "${CI_REGISTRY_IMAGE}" ]; then exit 1; fi
-    - if [[ "$(docker manifest inspect $1 2> /dev/null)" == "" ]]; then exit 0 else; exit 1; fi
-  after_script:
-    - docker logout $CI_REGISTRY
-  needs:
-    - job: version_get
+# version_check:
+#   image: docker:19.03.12
+#   stage: version_check
+#   services:
+#     - docker:19.03.12-dind
+#   before_script:
+#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+#   script:
+#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+#     - if [ -z "${CI_REGISTRY_IMAGE}" ]; then exit 1; fi
+#     - if [[ "$(docker manifest inspect $1 2> /dev/null)" == "" ]]; then exit 0 else; exit 1; fi
+#   after_script:
+#     - docker logout $CI_REGISTRY
+#   needs:
+#     - job: version_get
 
-unit_tests:
-  stage: test
-  script:
-    - apt update && apt install -y libgl1-mesa-dev
-    - curl -OJ https://nx9836.your-storageshare.de/s/gaqByayBJXcBmPQ/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth ./tests
-    - poetry run python3 -m pytest
+# unit_tests:
+#   stage: test
+#   script:
+#     - apt update && apt install -y libgl1-mesa-dev
+#     - curl -OJ https://nx9836.your-storageshare.de/s/gaqByayBJXcBmPQ/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth ./tests
+#     - poetry run python3 -m pytest
 
 build:
   image: docker:19.03.12
