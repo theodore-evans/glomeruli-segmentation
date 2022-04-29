@@ -23,17 +23,17 @@ before_script:
 #     - poetry run isort --check tests
 #     - poetry run pylint tests
 
-version_get:
-  stage: version_get
-  before_script:
-    - python -m pip install --upgrade pip
-    - pip install poetry
-  script:
-    - VERSION=$(poetry version --short)
-    - echo "VERSION=$VERSION" >> version.env
-  artifacts:
-    reports:
-      dotenv: version.env
+# version_get:
+#   stage: version_get
+#   before_script:
+#     - python -m pip install --upgrade pip
+#     - pip install poetry
+#   script:
+#     - VERSION=$(poetry version --short)
+#     - echo "VERSION=$VERSION" >> version.env
+#   artifacts:
+#     reports:
+#       dotenv: version.env
 
 # version_check:
 #   image: docker:19.03.12
