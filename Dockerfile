@@ -1,9 +1,9 @@
 # build stage
-FROM docker.io/ubuntu:22.04 AS builder
+FROM docker.io/ubuntu:20.04 AS builder
 
-# these lines added to fix build issues in Gitlab CD pipeline https://gitlab.com/empaia/examples/kidney-glomeruli-segmentation-app/-/jobs/2394562808
-RUN apt-get update && apt-get install -y gnupg2
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 871920D1991BC93C
+# # these lines added to fix build issues in Gitlab CD pipeline https://gitlab.com/empaia/examples/kidney-glomeruli-segmentation-app/-/jobs/2394562808
+# RUN apt-get update && apt-get install -y gnupg2
+# RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 871920D1991BC93C
 
 RUN apt-get update \
 && apt-get install -y python3-venv python3-pip git curl
