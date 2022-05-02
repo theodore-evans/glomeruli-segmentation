@@ -15,14 +15,15 @@ def create_annotation_collection(
     visible_levels: int = -1,
 ) -> Dict[str, Any]:
     """
-    Create a collection of annotations for a given slide, roi, and annotation type.
+    Create an annotation collection for posting to EMPAIA App API.
 
     :param name: Name of the annotation collection
-    :param slide: Wsi object
-    :param roi: Rectangle object
+    :param slide: WSI object
+    :param roi: Region of interest
     :param annotation_type: Type of annotation
     :param values: Coordinates of the annotation
     :param visible_levels: Number of levels to show in the annotation
+    :return: Annotation collection
     """
 
     npp = (slide.pixel_size_nm.x + slide.pixel_size_nm.y) / 2
