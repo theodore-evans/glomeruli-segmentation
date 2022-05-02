@@ -61,8 +61,8 @@ unit_tests:
 build:
   image: docker:19.03.12
   stage: build
-  # only:
-  #   - master
+  only:
+    - master
   services:
     - docker:19.03.12-dind
   before_script:
