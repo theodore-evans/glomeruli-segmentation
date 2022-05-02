@@ -5,7 +5,7 @@ inputs_dir=inputs
 
 # if eats command is not recognised, abort
 if ! command -v eats >/dev/null 2>&1; then
-    echo "eats not found. Aborting." >&2
+    echo "eats command not found. Aborting."
     exit 1
 fi
 
