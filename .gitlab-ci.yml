@@ -116,4 +116,5 @@ Push latest:
   needs:
     - job: version_get
       artifacts: true
+    - job: build
 
