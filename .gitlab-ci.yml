@@ -1,4 +1,4 @@
-image: python:3.10
+image: docker:19.03.12
 
 stages:
   - version_get
@@ -6,15 +6,16 @@ stages:
   - codecheck
   - test
   - build
-
-before_script:
-  - python -m pip install --upgrade pip
-  - pip install poetry
-  - poetry config virtualenvs.create false
-  - poetry install
+  - push
 
 codecheck:
+  image: python:3.10
   stage: codecheck
+  before_script:
+    - python -m pip install --upgrade pip
+    - pip install poetry
+    - poetry config virtualenvs.create false
+    - poetry install
   script:
     - poetry run black --check glomeruli_segmentation
     - poetry run isort --check glomeruli_segmentation
@@ -24,26 +25,25 @@ codecheck:
     - poetry run pylint tests
 
 version_get:
+  image: python:3.10
   stage: version_get
   before_script:
     - python -m pip install --upgrade pip
     - pip install poetry
   script:
     - VERSION=$(poetry version --short)
-    - echo "VERSION=$VERSION" >> version.env
+    - echo -e "VERSION=$VERSION" >> version.env
   artifacts:
     reports:
       dotenv: version.env
 
 version_check:
-  image: docker:19.03.12
   stage: version_check
   services:
     - docker:19.03.12-dind
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - if [ -z "${CI_REGISTRY_IMAGE}" ]; then exit 1; fi
     - if [[ "$(docker manifest inspect $1 2> /dev/null)" == "" ]]; then exit 0 else; exit 1; fi
   after_script:
@@ -52,14 +52,19 @@ version_check:
     - job: version_get
 
 unit_tests:
+  image: python:3.10
   stage: test
+  before_script:
+    - python -m pip install --upgrade pip
+    - pip install poetry
+    - poetry config virtualenvs.create false
+    - poetry install
   script:
     - apt update && apt install -y libgl1-mesa-dev
     - curl -OJ https://nx9836.your-storageshare.de/s/gaqByayBJXcBmPQ/download && mv glomeruli_segmentation_16934_best_metric.model-384e1332.pth ./tests
     - poetry run python3 -m pytest
 
 build:
-  image: docker:19.03.12
   stage: build
   only:
     - master
@@ -68,9 +73,22 @@ build:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - docker build -t $CI_REGISTRY_IMAGE:$VERSION .
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    - >
+      docker build
+      --pull
+      --build-arg http_proxy=$http_proxy
+      --build-arg https_proxy=$https_proxy
+      --build-arg no_proxy=$no_proxy
+      --cache-from $CI_REGISTRY_IMAGE:latest
+      --label "org.opencontainers.image.title=$CI_PROJECT_TITLE"
+      --label "org.opencontainers.image.url=$CI_PROJECT_URL"
+      --label "org.opencontainers.image.created=$CI_JOB_STARTED_AT"
+      --label "org.opencontainers.image.revision=$CI_COMMIT_SHA"
+      --label "org.opencontainers.image.version=$VERSION"
+      --tag $CI_REGISTRY_IMAGE:$VERSION
+      .
     - docker push $CI_REGISTRY_IMAGE:$VERSION
-    - docker push $CI_REGISTRY_IMAGE
   after_script:
     - docker logout $CI_REGISTRY
   needs:
@@ -78,5 +96,24 @@ build:
       artifacts: true
     - job: unit_tests
 
-
+Push latest:
+  variables:
+    # We do not need GitLab to clone the source code.
+    GIT_STRATEGY: none
+  stage: push
+  services:
+    - docker:19.03.12-dind
+  only:
+    - master
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:$VERSION
+    - docker tag $CI_REGISTRY_IMAGE:$VERSION $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:latest
+  after_script:
+    - docker logout $CI_REGISTRY
+  needs:
+    - job: version_get
+      artifacts: true
 
