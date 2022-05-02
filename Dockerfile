@@ -1,5 +1,6 @@
 # build stage
-FROM docker.io/ubuntu:22.04 AS builder
+FROM docker.io/ubuntu:20.04 AS builder
+
 RUN apt-get update \
 && apt-get install -y python3-venv python3-pip git curl
 
