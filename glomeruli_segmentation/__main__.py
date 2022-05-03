@@ -32,7 +32,7 @@ from glomeruli_segmentation.output_serialization import (
 
 # TODO: add error reporting to /failure endpoint
 async def main(verbosity: int):
-    app_log_level = get_log_level_for_verbosity(verbosity, default_log_level=INFO)
+    app_log_level = get_log_level_for_verbosity(verbosity)
     logger = get_logger("main", app_log_level)
     logger.info(f"Log level: {log_level_names[app_log_level]}")
 
