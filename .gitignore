@@ -151,7 +151,7 @@ notepad.py
 *.tiff
 
 # Output files
-outputs/
+outputs*/
 job-outputs/
 
 # EATS job files
