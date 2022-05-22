@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import os
 import traceback
+import warnings
 from typing import Type
 
 import numpy as np
@@ -9,18 +10,14 @@ import padl
 import torch
 import torch.nn as nn
 from padl.transforms import Transform
+from shapely.errors import ShapelyDeprecationWarning
 from torchvision import transforms as tvt
-
-from glomeruli_segmentation.config import load_config
 
 tvt = padl.transform(tvt)
 nn = padl.transform(nn)
 
-import warnings
-
-from shapely.errors import ShapelyDeprecationWarning
-
 from glomeruli_segmentation.api_interface import ApiInterface
+from glomeruli_segmentation.config import load_config
 from glomeruli_segmentation.data_classes import Mask, Rect, Tile, Wsi
 from glomeruli_segmentation.extract_results import (
     average_values_in_polygon,
