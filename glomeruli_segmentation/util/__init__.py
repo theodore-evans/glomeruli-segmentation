@@ -1,12 +1,12 @@
 from sys import maxsize
 from typing import Collection, Iterable
 
-from glomeruli_segmentation.data_classes import BlendMode, Mask, Rectangle, Tile
+from glomeruli_segmentation.data_classes import BlendMode, Mask, Rect, Tile
 
 
 def get_bounds(
-    rectangles: Iterable[Rectangle],
-) -> Rectangle:
+    rectangles: Iterable[Rect],
+) -> Rect:
     """
     Finds the bounding rectangle for a collection of rectangles
     """
@@ -21,7 +21,7 @@ def get_bounds(
         y_max = max(y + rect.height, y_max)
         level = rect.level
 
-    return Rectangle(upper_left=[x_min, y_min], width=x_max - x_min, height=y_max - y_min, level=level)
+    return Rect(upper_left=[x_min, y_min], width=x_max - x_min, height=y_max - y_min, level=level)
 
 
 def combine_masks(masks: Collection[Tile], blend_mode: BlendMode = BlendMode.OVERWRITE) -> Tile:
@@ -30,7 +30,7 @@ def combine_masks(masks: Collection[Tile], blend_mode: BlendMode = BlendMode.OVE
     Overlapping image pixels are averaged elementwise
     """
     bounds = get_bounds((tile.rect for tile in masks))
-    combined = Mask.empty(bounds)
+    combined = Mask.empty_zarr(bounds)
 
     for mask in masks:
         combined.insert_patch(mask, blend_mode)

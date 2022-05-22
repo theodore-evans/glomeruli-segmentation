@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Type, Union
 
 import numpy as np
+import zarr
 from numpy import array_equal, ndarray
 from PIL.Image import Image
 from torch import Tensor
@@ -12,16 +13,6 @@ class BlendMode(Enum):
     OVERWRITE = "overwrite"
     MAX = "max"
     MEAN = "mean"
-
-
-def average_non_nan(a, b):
-    """
-    Overwrite all nan elements of a with the corresponding elements of b.
-    Average all non-nan elements of a with the corresponding elements of b.
-    """
-    a[np.isnan(a)] = b[np.isnan(a)]
-    a[~np.isnan(a)] = np.add(a[~np.isnan(a)], b[~np.isnan(a)]) / 2
-    return a
 
 
 class Vector2(List):
@@ -64,7 +55,7 @@ class Wsi:
 
 
 @dataclass
-class Rectangle:
+class Rect:
     upper_left: List[int]
     width: int
     height: int
@@ -86,7 +77,7 @@ class Rectangle:
 @dataclass
 class Tile:
     image: Union[Image, ndarray, Tensor]
-    rect: Rectangle
+    rect: Rect
     id: str = ""
 
     def __eq__(self, other):
@@ -96,6 +87,17 @@ class Tile:
             return False
 
 
+def average_valid(a, b):
+    """
+    Overwrite all nan elements of a with the corresponding elements of b.
+    Average all non-nan elements of a with the corresponding elements of b.
+    """
+    masked_a = np.equal(a, np.ma.masked)
+    a[masked_a] = b[masked_a]
+    a[~masked_a] = np.add(a[~masked_a], b[~masked_a]) / 2
+    return a
+
+
 @dataclass
 class Mask(Tile):
     """
@@ -103,15 +105,22 @@ class Mask(Tile):
     """
 
     @classmethod
-    def empty(cls, rect: Rectangle) -> "Mask":
+    def empty(cls, rect: Rect, dtype: np.dtype = np.uint8) -> "Mask":
+        """
+        Creates an empty mask with the given shape.
+        """
+        return cls(image=np.zeros((rect.height, rect.width), dtype=dtype), rect=rect)
+
+    @classmethod
+    def empty_zarr(cls, rect: Rect, dtype: Type = np.float64, chunks: Tuple[int, int] = (1024, 1024)) -> "Mask":
         """
         Creates an empty mask with the given rectangle.
 
         :param rect: The rectangle to create the mask for
         :param id: The id of the mask, defaults to ""
         """
-        image = np.full(rect.shape, np.nan)
-        return Mask(image=image, rect=rect, id=id)
+        image = zarr.full(rect.shape, np.ma.masked, chunks=chunks, dtype=dtype)
+        return cls(image=image, rect=rect)
 
     def insert_patch(self, new_patch: "Tile", blend_mode: BlendMode = BlendMode.OVERWRITE) -> "Tile":
         """
@@ -132,12 +141,12 @@ class Mask(Tile):
         elif blend_mode == BlendMode.MAX:
             blend = np.fmax
         elif blend_mode == BlendMode.MEAN:
-            blend = average_non_nan
+            blend = average_valid
         else:
             raise NotImplementedError(f"Blend mode '{blend_mode.name}' not implemented")
 
         current_patch_data = self.image[y_start:y_end, x_start:x_end].squeeze()
-        new_patch_data = new_patch.image.squeeze()
+        new_patch_data = new_patch.image[:].squeeze()
         assert (
             new_patch_data.shape == current_patch_data.shape
         ), f"Patch size mismatch: {new_patch_data.shape} != {current_patch_data.shape}"

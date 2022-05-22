@@ -2,7 +2,7 @@
 FROM docker.io/ubuntu:20.04 AS builder
 
 RUN apt-get update \
-&& apt-get install -y python3-venv python3-pip git curl
+    && apt-get install -y --no-install-recommends python3-venv python3-pip git curl
 
 # build module
 ENV PATH /root/.local/bin:/root/.poetry/bin:${PATH}
@@ -31,18 +31,19 @@ RUN : \
         software-properties-common \
     && add-apt-repository -y ppa:deadsnakes \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        python3.10 \
+        python3 \
         python3-pip \
-        python3.10-venv \
+        python3-venv \
+        python3-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && :
 
-RUN python3.10 --version
+RUN python3 --version
 
 ENV VIRTUAL_ENV /opt/app/venv
 ENV PATH ${VIRTUAL_ENV}/bin:${PATH}
-RUN python3.10 -m venv $VIRTUAL_ENV \
+RUN python3 -m venv $VIRTUAL_ENV \
     && /opt/app/venv/bin/python3 -m pip install --upgrade pip \
     && pip3 install wheel
 COPY --from=builder /root/app/requirements.txt /tmp
@@ -58,4 +59,4 @@ ENV MODEL_PATH /model/glomeruli_segmentation_16934_best_metric.model-384e1332.pt
 COPY configuration.json /tmp
 ENV CONFIG_PATH /tmp/configuration.json
       
-CMD ["python3.10", "-m", "glomeruli_segmentation", "-v"]
+CMD ["python3", "-m", "glomeruli_segmentation", "-v"]

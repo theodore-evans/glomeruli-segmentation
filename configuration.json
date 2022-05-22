@@ -17,7 +17,7 @@
     "results_key_stub": "glomeruli_segmentation",
     "normal_class_suffix": "glomerulus",
     "anomaly_class_suffix": "anomaly",
-    "window_size": [
+    "window": [
         1024,
         1024
     ],

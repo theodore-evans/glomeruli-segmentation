@@ -22,6 +22,8 @@ marshmallow = "^3.15.0"
 desert = "^2020.11.18"
 marshmallow-enum = "^1.5.1"
 marshmallow-union = "^0.1.15"
+zarr = "^2.11.3"
+Shapely = "^1.7.0"
 
 [tool.poetry.dev-dependencies]
 empaia-app-test-suite = "^2.0.2"
@@ -36,6 +38,7 @@ ipykernel = "^6.13.0"
 pytest = "^7.1.2"
 scipy = "^1.8.0"
 notebook = "^6.4.11"
+pandas = "^1.4.2"
 
 [tool.black]
 line_length = 120

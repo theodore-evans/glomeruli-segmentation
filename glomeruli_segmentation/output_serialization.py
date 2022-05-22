@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional, Tuple, Union
 from uuid import UUID
 
-from glomeruli_segmentation.data_classes import Rectangle, Wsi
+from glomeruli_segmentation.data_classes import Rect, Wsi
 
 Coordinate = Tuple[int, int]
 
@@ -9,11 +9,12 @@ Coordinate = Tuple[int, int]
 def create_annotation_collection(
     name: str,
     slide: Wsi,
-    roi: Rectangle,
+    roi: Rect,
     annotation_type: str,
     values: Union[Coordinate, List[Coordinate]],
     visible_levels: int = -1,
-) -> Dict[str, Any]:
+    return_items_separately: bool = True,
+) -> Union[Dict[str, Any], Tuple[Dict[str, Any], List[Dict[str, Any]]]]:
     """
     Create an annotation collection for posting to EMPAIA App API.
 
@@ -23,23 +24,21 @@ def create_annotation_collection(
     :param annotation_type: Type of annotation
     :param values: Coordinates of the annotation
     :param visible_levels: Number of levels to show in the annotation
-    :return: Annotation collection
+    :return: empty annotation collection, items
     """
 
     npp = (slide.pixel_size_nm.x + slide.pixel_size_nm.y) / 2
     num_levels = len(slide.levels) if visible_levels < 0 else visible_levels
-    num_contours = len(values)
 
     items: List[dict] = []
 
-    for i, contour in enumerate(values):
+    for coordinates in values:
         item = {
             "name": name,
-            "description": f"{name} {i+1}/{num_contours}",
             "type": annotation_type,
             "reference_id": slide.id,
             "reference_type": "wsi",
-            "coordinates": contour,
+            "coordinates": coordinates,
             "npp_created": npp,
             "npp_viewing": [npp, npp * 2**num_levels],
         }
@@ -47,12 +46,12 @@ def create_annotation_collection(
 
     collection = {
         "item_type": annotation_type,
-        "items": items,
+        "items": [],
         "reference_id": roi.id,
         "reference_type": "annotation",
     }
 
-    return collection
+    return collection, items if return_items_separately else collection
 
 
 def link_results_by_id(reference_result: Dict[str, Any], results: List[Dict[str, Any]]) -> None:
