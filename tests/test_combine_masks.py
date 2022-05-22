@@ -2,20 +2,20 @@ from typing import Collection, List
 
 import numpy as np
 
-from glomeruli_segmentation.data_classes import BlendMode, Rectangle, Tile
+from glomeruli_segmentation.data_classes import BlendMode, Rect, Tile
 from glomeruli_segmentation.util import combine_masks
 
 square = np.ones((10, 10))
-rect1 = Rectangle(upper_left=(0, 0), width=10, height=10)
-rect2 = Rectangle(upper_left=(10, 0), width=10, height=10)
-rect3 = Rectangle(upper_left=(0, 10), width=10, height=10)
-rect4 = Rectangle(upper_left=(10, 10), width=10, height=10)
+rect1 = Rect(upper_left=(0, 0), width=10, height=10)
+rect2 = Rect(upper_left=(10, 0), width=10, height=10)
+rect3 = Rect(upper_left=(0, 10), width=10, height=10)
+rect4 = Rect(upper_left=(10, 10), width=10, height=10)
 non_overlapping_squares = [rect1, rect2, rect3, rect4]
 
 square_tile = lambda rect: Tile(image=square, rect=rect)
 
 
-def _split_image_into_tiles(original: np.ndarray, rectangles: List[Rectangle]) -> Collection[Tile]:
+def _split_image_into_tiles(original: np.ndarray, rectangles: List[Rect]) -> Collection[Tile]:
     tiles = []
     for rect in rectangles:
         x_start = rect.upper_left.x
@@ -52,19 +52,19 @@ def test_recombine_square_tiles():
 def test_recombine_non_square_tiles():
     original = np.arange(20 * 30).reshape(30, 20)
     rectangles = [
-        Rectangle(upper_left=(0, 0), width=10, height=30),
-        Rectangle(upper_left=(10, 0), width=10, height=30),
+        Rect(upper_left=(0, 0), width=10, height=30),
+        Rect(upper_left=(10, 0), width=10, height=30),
     ]
     tiles = _split_image_into_tiles(original, rectangles)
 
     combined = combine_masks(tiles)
     assert np.array_equal(combined.image, original)
-    assert combined.rect == Rectangle(upper_left=(0, 0), width=20, height=30)
+    assert combined.rect == Rect(upper_left=(0, 0), width=20, height=30)
 
 
 def test_combine_one_single_tile():
     original = np.arange(20 * 30).reshape(30, 20)
-    rectangle = Rectangle(upper_left=(0, 0), width=20, height=30)
+    rectangle = Rect(upper_left=(0, 0), width=20, height=30)
 
     combined = combine_masks([Tile(image=original, rect=rectangle)])
     assert np.array_equal(combined.image, original)
@@ -80,7 +80,7 @@ def test_recombine_with_non_zero_origin():
 
     combined = combine_masks(tiles)
     assert np.array_equal(combined.image, original)
-    assert combined.rect == Rectangle(upper_left=(5, 5), width=20, height=20)
+    assert combined.rect == Rect(upper_left=(5, 5), width=20, height=20)
 
 
 def test_recombined_with_overlapping_tiles():
@@ -88,25 +88,25 @@ def test_recombined_with_overlapping_tiles():
     original = np.arange(shape[0] * shape[1]).reshape(shape)
 
     rectangles = [
-        Rectangle(upper_left=(0, 0), width=10, height=10),
-        Rectangle(upper_left=(5, 0), width=10, height=10),
-        Rectangle(upper_left=(0, 5), width=10, height=10),
-        Rectangle(upper_left=(5, 5), width=10, height=10),
+        Rect(upper_left=(0, 0), width=10, height=10),
+        Rect(upper_left=(5, 0), width=10, height=10),
+        Rect(upper_left=(0, 5), width=10, height=10),
+        Rect(upper_left=(5, 5), width=10, height=10),
     ]
     tiles = _split_image_into_tiles(original, rectangles)
 
     combined = combine_masks(tiles)
     assert np.array_equal(combined.image, original)
-    assert combined.rect == Rectangle(upper_left=(0, 0), width=shape[0], height=shape[1])
+    assert combined.rect == Rect(upper_left=(0, 0), width=shape[0], height=shape[1])
 
 
 def test_recombined_with_averaged_overlaps():
     shape = (10, 15)
     original = np.zeros(shape)
-    original_rect = Rectangle(upper_left=(0, 0), width=shape[1], height=shape[0])
+    original_rect = Rect(upper_left=(0, 0), width=shape[1], height=shape[0])
     rectangles = [
-        Rectangle(upper_left=(0, 0), width=10, height=10),
-        Rectangle(upper_left=(5, 0), width=10, height=10),
+        Rect(upper_left=(0, 0), width=10, height=10),
+        Rect(upper_left=(5, 0), width=10, height=10),
     ]
     tiles = _split_image_into_tiles(original, rectangles)
     tiles[0].image += 100
@@ -121,14 +121,14 @@ def test_recombine_large_tile_with_image_like_array():
     shape = (1024, 5000)
     original = np.arange(shape[0] * shape[1]).reshape(shape)
     rectangles = [
-        Rectangle(upper_left=(0, 0), width=1024, height=1024),
-        Rectangle(upper_left=(1024, 0), width=1024, height=1024),
-        Rectangle(upper_left=(2048, 0), width=1024, height=1024),
-        Rectangle(upper_left=(3072, 0), width=1024, height=1024),
-        Rectangle(upper_left=(3976, 0), width=1024, height=1024),
+        Rect(upper_left=(0, 0), width=1024, height=1024),
+        Rect(upper_left=(1024, 0), width=1024, height=1024),
+        Rect(upper_left=(2048, 0), width=1024, height=1024),
+        Rect(upper_left=(3072, 0), width=1024, height=1024),
+        Rect(upper_left=(3976, 0), width=1024, height=1024),
     ]
     tiles = _split_image_into_tiles(original, rectangles)
 
     combined = combine_masks(tiles)
     assert np.array_equal(combined.image, original)
-    assert combined.rect == Rectangle(upper_left=[0, 0], width=shape[1], height=shape[0])
+    assert combined.rect == Rect(upper_left=[0, 0], width=shape[1], height=shape[0])

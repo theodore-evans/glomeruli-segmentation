@@ -23,7 +23,7 @@ class Config:
     torch_vision_mean: Tuple[float, float, float] = (0.485, 0.456, 0.406)
     torch_vision_std: Tuple[float, float, float] = (0.485, 0.456, 0.406)
 
-    window_size: Tuple[int, int] = (1024, 1024)
+    window: Tuple[int, int] = (1024, 1024)
     stride: Tuple[int, int] = (1024, 1024)
     blend_mode: BlendMode = BlendMode.MEAN
 

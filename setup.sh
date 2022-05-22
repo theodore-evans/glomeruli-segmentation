@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# setup stage
-inputs_dir=inputs
+read -p "Job inputs directory (enter for default: inputs): " inputs_dir
+inputs_dir=${inputs_dir:-inputs}
 
 # if eats command is not recognised, abort
 if ! command -v eats >/dev/null 2>&1; then

@@ -1,4 +1,4 @@
-from glomeruli_segmentation.data_classes import Rectangle, Vector2
+from glomeruli_segmentation.data_classes import Rect, Vector2
 
 
 def test_vector2_subscriptable():
@@ -13,7 +13,7 @@ def test_vector2_subscriptable():
 
 
 def test_rectangle_constructor_takes_tuple_but_stores_vector2():
-    rect = Rectangle(upper_left=(15, 20), width=10, height=10, level=0)
+    rect = Rect(upper_left=(15, 20), width=10, height=10, level=0)
     assert isinstance(rect.upper_left, Vector2)
     assert rect.upper_left.x == 15
     assert rect.upper_left.y == 20

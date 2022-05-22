@@ -1,13 +1,13 @@
 from typing import Iterable, Optional, Tuple
 
-from glomeruli_segmentation.data_classes import Rectangle, Vector2
+from glomeruli_segmentation.data_classes import Rect, Vector2
 
 
 def get_patch_rectangles(
-    region: Rectangle,
+    region: Rect,
     window: Tuple[int, int],
     stride: Optional[Tuple[int, int]] = None,
-) -> Iterable[Rectangle]:
+) -> Iterable[Rect]:
     """
     Get an iterable of rectangles that represent the patches in a region.
 
@@ -38,4 +38,4 @@ def get_patch_rectangles(
             if j - whole_rows >= 0:
                 y = start_y + region.height - window_height
 
-            yield Rectangle(upper_left=[x, y], width=window_width, height=window_height, level=region.level)
+            yield Rect(upper_left=[x, y], width=window_width, height=window_height, level=region.level)

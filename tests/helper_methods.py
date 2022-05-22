@@ -1,9 +1,9 @@
 import numpy as np
 
-from glomeruli_segmentation.data_classes import Rectangle, Tile
+from glomeruli_segmentation.data_classes import Rect, Tile
 
 
-def make_tile(rect: Rectangle):
+def make_tile(rect: Rect):
     width, height = (rect.width, rect.height)
     image = np.arange(width * height, dtype=np.float32)
     image = image.reshape((width, height))
@@ -12,7 +12,7 @@ def make_tile(rect: Rectangle):
 
 
 def make_tile_getter(tile: Tile):
-    def tile_getter(rect: Rectangle):
+    def tile_getter(rect: Rect):
         x_start = rect.upper_left.x
         x_end = x_start + rect.width
         y_start = rect.upper_left.y

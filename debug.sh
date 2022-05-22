@@ -1,6 +1,4 @@
 #!/bin/bash
-
-# ensure setup.sh exists
 if [ ! -f setup.sh ]; then
     echo "setup.sh not found. Aborting."
     exit 1
@@ -20,4 +18,4 @@ export $(echo "MODEL_PATH=glomeruli_segmentation_16934_best_metric.model-384e133
 export $(echo "CONFIG_PATH=configuration.json" | tee /dev/tty)
 
 echo "Debug process ready, listening on localhost:5678"
-python -m debugpy --listen 5678 --wait-for-client -m glomeruli_segmentation $@
+python -m debugpy --listen 5678 --wait-for-client -m glomeruli_segmentation $@ 
