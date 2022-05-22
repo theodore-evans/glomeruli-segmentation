@@ -37,6 +37,7 @@ from glomeruli_segmentation.output_serialization import (
     create_results_collection,
     link_results_by_id,
 )
+from glomeruli_segmentation.util import Threshold, batches, coords_to_int
 
 # FIXME: resolves a bug in shapely, to be addressed
 warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
@@ -76,9 +77,6 @@ async def main(verbosity: int):
         >> tvt.Resize(config.window)
         >> Threshold(t=config.binary_threshold)
     )
-
-    # pipeline = padl.fulldump(pipeline)
-    # padl.save(pipeline, "glomeruli-segmentation.padl", force_overwrite=True, compress=True)
 
     try:
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -163,26 +161,6 @@ async def main(verbosity: int):
             logger.error(f"Error: {trace}")
             await api.put_failure(message=trace)
             raise
-
-
-def coords_to_int(polygons):
-    for polygon in polygons:
-        yield [(int(x), int(y)) for x, y in polygon.exterior.coords]
-
-
-@padl.transform
-class Threshold:
-    def __init__(self, t: float):
-        self.t = t
-
-    def __call__(self, image):
-        image[image < self.t] = 0
-        return image
-
-
-def batches(items, batch_size):
-    for i in range(0, len(items), batch_size):
-        yield items[i : i + batch_size]
 
 
 def load_model_as_transform(model_path: str, model_class: Type) -> Transform:

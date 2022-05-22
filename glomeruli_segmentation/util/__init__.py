@@ -1,6 +1,8 @@
 from sys import maxsize
 from typing import Collection, Iterable
 
+import padl
+
 from glomeruli_segmentation.data_classes import BlendMode, Mask, Rect, Tile
 
 
@@ -36,3 +38,23 @@ def combine_masks(masks: Collection[Tile], blend_mode: BlendMode = BlendMode.OVE
         combined.insert_patch(mask, blend_mode)
 
     return combined
+
+
+def coords_to_int(polygons):
+    for polygon in polygons:
+        yield [(int(x), int(y)) for x, y in polygon.exterior.coords]
+
+
+@padl.transform
+class Threshold:
+    def __init__(self, t: float):
+        self.t = t
+
+    def __call__(self, image):
+        image[image < self.t] = 0
+        return image
+
+
+def batches(items, batch_size):
+    for i in range(0, len(items), batch_size):
+        yield items[i : i + batch_size]
